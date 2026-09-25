@@ -286,14 +286,23 @@ input[type=date], input[type=time] { color-scheme: dark; }
 input::placeholder { color: var(--text-3); }
 dialog {
   width: min(480px, calc(100vw - 32px)); padding: 0;
+  max-height: calc(100dvh - 32px); overflow: hidden;
   background: var(--surface); color: var(--text);
   border: 1px solid var(--border); border-radius: var(--radius);
   box-shadow: 0 0 0 1px rgba(157, 255, 45, .08), 0 24px 60px rgba(0, 0, 0, .5);
 }
 dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); }
-.dlg-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+dialog[open] { display: flex; flex-direction: column; }
+#dlgForm { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+.dlg-head { flex: none; display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
 .dlg-head h3 { margin: 0; font-size: 18px; font-weight: 600; }
-.dlg-body { padding: 18px 20px; display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
+.dlg-body { padding: 18px 20px; display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
+.dlg-foot { flex: none; }
+.cpick { display: grid; gap: 8px; }
+.cpick-list { display: flex; flex-wrap: wrap; gap: 6px; max-height: 132px; overflow-y: auto; }
+.cpick-list .chip { text-transform: none; letter-spacing: .02em; font-size: 12px; height: 30px; }
+.cpick-hint { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); align-self: center; }
+.cpick-hint b { color: var(--accent); font-weight: 500; }
 .field { display: grid; gap: 6px; }
 .field.full { grid-column: 1 / -1; }
 .dlg-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 20px; border-top: 1px solid var(--border); }
@@ -334,6 +343,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
   content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 2px;
   background: var(--accent); box-shadow: 0 0 10px rgba(157, 255, 45, .7);
 }
+.tab svg { display: none; width: 20px; height: 20px; }
 .tab-n {
   min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
   display: inline-grid; place-items: center; font-size: 10px;
@@ -447,31 +457,6 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
 }
 @media (max-width: 900px) {
   .ov-grid, .ag-grid { grid-template-columns: minmax(0, 1fr); }
-}
-@media (max-width: 760px) {
-  .wrap { padding: 0 16px 32px; }
-  .overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .overview .stat:last-child { grid-column: 1 / -1; }
-  .stat-value { font-size: clamp(18px, 5.6vw, 26px); }
-  .fin-lists { grid-template-columns: minmax(0, 1fr); }
-  .fin-kpi .v { font-size: 20px; }
-  .tabs { margin: 0 -16px; padding: 0 16px; }
-  .tab { padding: 13px 10px 12px; font-size: 11px; }
-  .view-actions { width: 100%; }
-  .view-actions input[type=search] { width: auto; flex: 1 1 100%; }
-  .view-actions .btn { flex: 1; }
-  .month-switch { flex: 1 1 100%; justify-content: space-between; }
-  .week { grid-template-columns: minmax(0, 1fr); }
-  .day { min-height: 0; flex-direction: row; gap: 12px; }
-  .day-h { flex: none; width: 44px; flex-direction: column; justify-content: flex-start; gap: 2px; }
-  .day-empty { margin: 0; }
-  .cash-row { grid-template-columns: 70px 1fr auto; }
-  .panel { padding: 16px; }
-  .header { padding: 16px 0; }
-  .brand { gap: 14px; }
-  .header-actions { width: 100%; }
-  .header-actions .btn { flex: 1; }
-
   /* Projects table → cards */
   .table-wrap { margin: 0; padding: 0; overflow: visible; }
   table, tbody { display: block; }
@@ -490,7 +475,89 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
   }
   td.c-proj, td.c-prog { grid-column: 1 / -1; }
   td.c-act { grid-column: 1 / -1; display: flex; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 8px !important; }
+  tbody tr { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .wrap { padding: 0 16px 32px; }
+  .overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .overview .stat:last-child { grid-column: 1 / -1; }
+  .stat-value { font-size: clamp(18px, 5.6vw, 26px); }
+  .fin-lists { grid-template-columns: minmax(0, 1fr); }
+  .fin-kpi .v { font-size: 20px; }
+  /* Abas viram barra de navegação inferior */
+  body { padding-bottom: calc(66px + env(safe-area-inset-bottom, 0px)); }
+  .tabs {
+    position: fixed; top: auto; left: 0; right: 0; bottom: 0; margin: 0;
+    padding: 0 0 env(safe-area-inset-bottom, 0px);
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; overflow: visible;
+    border-bottom: 0; border-top: 1px solid var(--border); background: rgba(11, 17, 32, .96);
+  }
+  .tab { flex-direction: column; justify-content: center; gap: 4px; padding: 9px 2px 8px; min-height: 58px; font-size: 9.5px; letter-spacing: .05em; }
+  .tab svg { display: block; }
+  .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  .tab-n { position: absolute; top: 5px; left: calc(50% + 7px); height: 16px; min-width: 16px; font-size: 9px; padding: 0 4px; background: var(--bg); }
+  .tab[aria-selected="true"]::after { top: -1px; bottom: auto; left: 28%; right: 28%; }
+  .toast { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  .view { padding-top: 16px; gap: 16px; }
+  .view-title { font-size: 26px; }
+
+  /* Toque confortável e sem zoom automático no iOS */
+  input, select { font-size: 16px; height: 42px; }
+  .task-form select { height: 42px; }
+  .task-form .btn { height: 42px; min-width: 42px; }
+  .icon-btn { width: 36px; height: 36px; }
+  .btn { height: 38px; }
+  .btn-sm { height: 32px; }
+  .chip { height: 32px; }
+  .task input[type=checkbox] { width: 22px; height: 22px; }
+
+  /* Dialogs como bottom sheet */
+  dialog {
+    width: 100%; max-width: 100%; margin: auto 0 0; max-height: 92dvh;
+    border-radius: 14px 14px 0 0; border-bottom: 0;
+  }
+  .dlg-foot { padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+  .dlg-foot .btn { flex: 1; }
+
+  /* Listas com ações: ações descem para a linha de baixo */
+  .list li.has-actions { flex-wrap: wrap; }
+  .list li.has-actions .grow { flex: 1 1 100%; }
+  .list li.has-actions .li-actions { margin-left: auto; }
+  .chart-box { height: 220px; }
+  .stat { padding: 14px; }
+  .fin-kpi { padding: 12px 14px; }
+  .fin-kpi .v { font-size: clamp(15px, 4.4vw, 20px); }
+  .stat-value { white-space: normal; }
+  .pipe { padding: 12px 14px; }
+  .pipe-n { font-size: 24px; }
+  .panel-head { gap: 10px; }
+  .sort { width: 100%; }
+  .sort select { flex: 1; height: 42px; }
+  .footer { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; line-height: 1.8; }
+  .view-actions { width: 100%; }
+  .view-actions input[type=search] { width: auto; flex: 1 1 100%; }
+  .view-actions .btn { flex: 1; }
+  .month-switch { flex: 1 1 100%; justify-content: space-between; }
+  .week { grid-template-columns: minmax(0, 1fr); }
+  .day { min-height: 0; flex-direction: row; gap: 12px; }
+  .day-h { flex: none; width: 44px; flex-direction: column; justify-content: flex-start; gap: 2px; }
+  .day-empty { margin: 0; }
+  .cash-row { grid-template-columns: 70px 1fr auto; }
+  .panel { padding: 16px; }
+  .header { padding: 16px 0; }
+  .brand { gap: 14px; }
+  .header-actions { width: 100%; }
+  .header-actions .btn { flex: 1; padding: 0 8px; }
+  .logo { font-size: 22px; }
+  .greeting h1 { font-size: 16px; }
+
   .dlg-body { grid-template-columns: 1fr; }
+}
+@media (max-width: 360px) {
+  .overview { grid-template-columns: minmax(0, 1fr); }
+  .overview .stat:last-child { grid-column: auto; }
+  .fin-kpis, .pipeline { grid-template-columns: minmax(0, 1fr); }
+  .tab { font-size: 8.5px; letter-spacing: .02em; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -516,10 +583,10 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
 
   <!-- Navegação por abas -->
   <nav class="tabs" role="tablist" aria-label="Seções do painel">
-    <a class="tab" href="#visao" data-tab="visao" role="tab">Visão geral</a>
-    <a class="tab" href="#projetos" data-tab="projetos" role="tab">Projetos <span class="tab-n" id="tnProjetos"></span></a>
-    <a class="tab" href="#financeiro" data-tab="financeiro" role="tab">Financeiro <span class="tab-n" id="tnFinanceiro"></span></a>
-    <a class="tab" href="#agenda" data-tab="agenda" role="tab">Agenda <span class="tab-n" id="tnAgenda"></span></a>
+    <a class="tab" href="#visao" data-tab="visao" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span class="tab-l">Visão geral</span></a>
+    <a class="tab" href="#projetos" data-tab="projetos" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg><span class="tab-l">Projetos</span><span class="tab-n" id="tnProjetos"></span></a>
+    <a class="tab" href="#financeiro" data-tab="financeiro" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg><span class="tab-l">Financeiro</span><span class="tab-n" id="tnFinanceiro"></span></a>
+    <a class="tab" href="#agenda" data-tab="agenda" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span class="tab-l">Agenda</span><span class="tab-n" id="tnAgenda"></span></a>
   </nav>
 
   <!-- ============ VISÃO GERAL ============ -->
@@ -705,7 +772,7 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
 
 <!-- Dialog genérico -->
 <dialog id="dlg">
-  <form method="dialog" id="dlgForm" autocomplete="off">
+  <form method="dialog" id="dlgForm" autocomplete="off" tabindex="-1" style="outline:none">
     <div class="dlg-head">
       <h3 id="dlgTitle">Editar</h3>
       <button class="icon-btn" type="button" value="cancel" id="dlgClose" aria-label="Fechar">✕</button>
@@ -821,10 +888,10 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
     d('Contador', 'Outros', 250, inMonth(4, 15));
 
     const reunioes = [
-      { id: uid(), data: todayISO(), hora: '14:30', assunto: 'Pulse Fitness · Kickoff sprint 2' },
-      { id: uid(), data: addDays(1), hora: '10:00', assunto: 'Nimbus Tech · Revisão da landing' },
-      { id: uid(), data: addDays(3), hora: '16:00', assunto: 'Dra. Helena · Apresentar orçamento' },
-      { id: uid(), data: addDays(6), hora: '09:30', assunto: 'Studio Verde · Alinhamento de catálogo' },
+      { id: uid(), data: todayISO(), hora: '14:30', cliente: 'Pulse Fitness', assunto: 'Kickoff sprint 2' },
+      { id: uid(), data: addDays(1), hora: '10:00', cliente: 'Nimbus Tech', assunto: 'Revisão da landing' },
+      { id: uid(), data: addDays(3), hora: '16:00', cliente: 'Dra. Helena Prado', assunto: 'Apresentar orçamento' },
+      { id: uid(), data: addDays(6), hora: '09:30', cliente: 'Studio Verde', assunto: 'Alinhamento de catálogo' },
     ];
 
     const t = (texto, tag, feito) => ({ id: uid(), texto, tag, feito: !!feito, data: todayISO() });
@@ -990,6 +1057,7 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
     $('#tnAgenda').title = 'tarefas pendentes hoje';
   }
 
+  const meetTitle = (r) => (r.cliente ? `${r.cliente} · ` : '') + r.assunto;
   const emptyLi = (msg) => `<li class="empty" style="justify-content:center">${msg}</li>`;
   const taskLi = (t, today) => `<li class="task${t.feito ? ' done' : ''}">
       <label>
@@ -1039,7 +1107,7 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
     const meets = state.reunioes.filter((r) => r.data === today).sort((a, b) => a.hora.localeCompare(b.hora));
     $('#ovMeets').innerHTML = meets.length ? meets.map((r) => `<li>
         <span class="num" style="color:var(--accent)">${esc(r.hora)}</span>
-        <div class="grow"><div class="title">${esc(r.assunto)}</div></div>
+        <div class="grow"><div class="title">${esc(meetTitle(r))}</div></div>
       </li>`).join('') : '<li class="meta" style="border:0">Nenhuma reunião hoje.</li>';
     const tasks = todaysTasks();
     const done = tasks.filter((t) => t.feito).length;
@@ -1166,14 +1234,16 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
     if (ui.recebView === 'pendentes') {
       $('#recebList').innerHTML = pend.length ? pend.map((r) => {
         const late = daysUntil(r.dataPrevista) < 0;
-        return `<li>
+        return `<li class="has-actions">
           <div class="grow">
             <div class="title">${esc(r.cliente)}</div>
             <div class="meta${late ? ' late' : ''}"><span class="num">${money(r.valor)}</span><span>· ${fmtDate(r.dataPrevista)}</span>${late ? '<span class="alert">Atrasado</span>' : ''}</div>
           </div>
-          <button class="btn btn-sm" type="button" data-act="receive" data-id="${r.id}" title="Marcar como recebido">✓ Recebido</button>
-          <button class="icon-btn" type="button" data-act="edit-receb" data-id="${r.id}" aria-label="Editar recebimento">${ICON.edit}</button>
-          <button class="icon-btn del" type="button" data-act="del-receb" data-id="${r.id}" aria-label="Excluir recebimento">${ICON.del}</button>
+          <div class="li-actions row-actions">
+            <button class="btn btn-sm" type="button" data-act="receive" data-id="${r.id}" title="Marcar como recebido">✓ Recebido</button>
+            <button class="icon-btn" type="button" data-act="edit-receb" data-id="${r.id}" aria-label="Editar recebimento">${ICON.edit}</button>
+            <button class="icon-btn del" type="button" data-act="del-receb" data-id="${r.id}" aria-label="Excluir recebimento">${ICON.del}</button>
+          </div>
         </li>`;
       }).join('') : emptyLi('Nada pendente');
     } else {
@@ -1191,14 +1261,16 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
     // Despesas do mês selecionado
     const desp = [...f.despesas].sort((a, b) => b.data.localeCompare(a.data));
     $('#despTotal').textContent = money(f.totalDesp);
-    $('#despList').innerHTML = desp.length ? desp.map((d) => `<li>
+    $('#despList').innerHTML = desp.length ? desp.map((d) => `<li class="has-actions">
         <div class="grow">
           <div class="title">${esc(d.descricao)}</div>
           <div class="meta"><span class="cat">${esc(d.categoria)}</span><span>${fmtDate(d.data)}</span></div>
         </div>
-        <span class="num">${money(d.valor)}</span>
-        <button class="icon-btn" type="button" data-act="edit-desp" data-id="${d.id}" aria-label="Editar despesa">${ICON.edit}</button>
-        <button class="icon-btn del" type="button" data-act="del-desp" data-id="${d.id}" aria-label="Excluir despesa">${ICON.del}</button>
+        <div class="li-actions row-actions" style="align-items:center">
+          <span class="num" style="margin-right:6px">${money(d.valor)}</span>
+          <button class="icon-btn" type="button" data-act="edit-desp" data-id="${d.id}" aria-label="Editar despesa">${ICON.edit}</button>
+          <button class="icon-btn del" type="button" data-act="del-desp" data-id="${d.id}" aria-label="Excluir despesa">${ICON.del}</button>
+        </div>
       </li>`).join('') : emptyLi('Sem despesas neste mês');
 
     renderChart();
@@ -1277,7 +1349,7 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
       const d = parse(ds);
       const meets = state.reunioes.filter((r) => r.data === ds).sort((a, b) => a.hora.localeCompare(b.hora));
       const dues = openProj.filter((p) => p.prazo === ds || (i === 0 && p.prazo < ds));
-      const evs = meets.map((r) => `<div class="ev meet"><small>${esc(r.hora)}</small>${esc(r.assunto)}</div>`)
+      const evs = meets.map((r) => `<div class="ev meet"><small>${esc(r.hora)}</small>${esc(meetTitle(r))}</div>`)
         .concat(dues.map((p) => `<div class="ev ${p.prazo < ds ? 'late' : 'due'}"><small>${p.prazo < ds ? 'Vencido ' + fmtDate(p.prazo).slice(0, 5) : 'Entrega'}</small>${esc(p.nome)}</div>`));
       return `<div class="day${i === 0 ? ' today' : ''}">
         <div class="day-h"><b>${pad(d.getDate())}</b><span>${i === 0 ? 'HOJE' : WEEKDAYS[d.getDay()]}</span></div>
@@ -1292,7 +1364,7 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
     $('#meetList').innerHTML = meets.length ? meets.map((r) => `<li>
         ${whenBox(r.data)}
         <div class="grow">
-          <div class="title">${esc(r.assunto)}</div>
+          <div class="title">${esc(meetTitle(r))}</div>
           <div class="meta"><span>${fmtDate(r.data)}</span><span>· ${esc(r.hora || '—')}</span></div>
         </div>
         <button class="icon-btn" type="button" data-act="edit-meet" data-id="${r.id}" aria-label="Editar reunião">${ICON.edit}</button>
@@ -1346,11 +1418,75 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
     $('#dlgSave').textContent = saveLabel;
     $('#dlgCancel').hidden = false;
     onSubmit = submit;
+    initClientPicker();
     dlg.showModal();
+    $('#dlgBody').scrollTop = 0;
+    // No celular, não abre o teclado sozinho (deixa os clientes salvos visíveis)
+    const touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
     const first = dlg.querySelector('.dlg-body input, .dlg-body select');
-    if (first) first.focus();
+    if (first && !touch) first.focus();
+    else $('#dlgForm').focus({ preventScroll: true });
   }
   function closeDialog() { dlg.close(); onSubmit = null; }
+
+  /* Clientes salvos: reunidos de projetos, recebimentos e reuniões */
+  function savedClients() {
+    const map = new Map();
+    const add = (name, date) => {
+      const n = String(name || '').trim();
+      if (!n) return;
+      const k = n.toLowerCase();
+      const cur = map.get(k);
+      if (!cur) map.set(k, { name: n, count: 1, last: date || '' });
+      else { cur.count++; if ((date || '') > cur.last) cur.last = date || ''; }
+    };
+    state.projetos.forEach((p) => add(p.cliente, p.prazo));
+    state.recebimentos.forEach((r) => add(r.cliente, r.dataPrevista));
+    state.reunioes.forEach((r) => add(r.cliente, r.data));
+    return [...map.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'pt-BR'));
+  }
+  // Reaproveita a grafia já salva ("nimbus tech" → "Nimbus Tech") para não duplicar clientes
+  function canonicalClient(name) {
+    const n = String(name || '').trim();
+    const hit = savedClients().find((c) => c.name.toLowerCase() === n.toLowerCase());
+    return hit ? hit.name : n;
+  }
+  function clientField(value, required = true, label = 'Cliente') {
+    return `<div class="field full">
+      <label class="label" for="fCliente">${label}</label>
+      <div class="cpick">
+        <input name="cliente" id="fCliente" ${required ? 'required' : ''} maxlength="60" autocomplete="off" value="${esc(value)}" placeholder="Nome do cliente">
+        <div class="cpick-list" id="cpickList" aria-label="Clientes salvos"></div>
+      </div>
+    </div>`;
+  }
+  function initClientPicker() {
+    const input = $('#fCliente');
+    if (!input) return;
+    const list = $('#cpickList');
+    const all = savedClients();
+    const draw = () => {
+      const typed = input.value.trim();
+      const q = typed.toLowerCase();
+      if (!all.length) {
+        list.innerHTML = '<span class="cpick-hint">Nenhum cliente salvo ainda. O nome digitado fica salvo para as próximas vezes.</span>';
+        return;
+      }
+      const exact = all.some((c) => c.name.toLowerCase() === q);
+      const matches = exact ? all : all.filter((c) => !q || c.name.toLowerCase().includes(q));
+      list.innerHTML = matches.slice(0, 16).map((c) =>
+        `<button type="button" class="chip${c.name.toLowerCase() === q ? ' active' : ''}" data-client="${esc(c.name)}">${esc(c.name)}</button>`
+      ).join('') + (q && !exact ? `<span class="cpick-hint">Novo cliente: <b>${esc(typed)}</b></span>` : '');
+    };
+    input.addEventListener('input', draw);
+    list.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-client]');
+      if (!b) return;
+      input.value = b.dataset.client;
+      draw();
+    });
+    draw();
+  }
   function askConfirm(title, message, okLabel, onYes) {
     openDialog(title, `<p class="full" style="margin:0;color:var(--text-2)">${message}</p>`, () => { onYes(); }, okLabel);
     $('#dlgSave').focus();
@@ -1376,15 +1512,15 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
     const isNew = !p;
     p = p || { cliente: '', nome: '', status: 'orcamento', prazo: addDays(14), progresso: 0, valor: '' };
     const body =
-      field('cliente', 'Cliente', `<input name="cliente" required maxlength="60" value="${esc(p.cliente)}">`) +
-      field('nome', 'Projeto', `<input name="nome" required maxlength="80" value="${esc(p.nome)}">`) +
+      clientField(p.cliente) +
+      field('nome', 'Projeto', `<input name="nome" required maxlength="80" value="${esc(p.nome)}">`, true) +
       field('status', 'Status', `<select name="status">${Object.entries(STATUS).map(([k, l]) => `<option value="${k}"${p.status === k ? ' selected' : ''}>${l}</option>`).join('')}</select>`) +
       field('prazo', 'Prazo de entrega', `<input name="prazo" type="date" required value="${esc(p.prazo)}">`) +
       field('valor', 'Valor (R$)', moneyInput('valor', p.valor === '' ? null : p.valor)) +
       field('progresso', 'Progresso', `<div class="range-row"><input name="progresso" type="range" min="0" max="100" step="5" value="${Number(p.progresso) || 0}" oninput="this.nextElementSibling.value=this.value+'%'"><output>${Number(p.progresso) || 0}%</output></div>`);
     openDialog(isNew ? 'Novo projeto' : 'Editar projeto', body, (fd) => {
       const data = {
-        cliente: fd.cliente.trim(), nome: fd.nome.trim(), status: fd.status,
+        cliente: canonicalClient(fd.cliente), nome: fd.nome.trim(), status: fd.status,
         prazo: fd.prazo, valor: num(fd.valor), progresso: Number(fd.progresso) || 0,
       };
       if (data.status === 'concluido') data.progresso = 100;
@@ -1406,13 +1542,12 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
   function recebForm(r) {
     const isNew = !r;
     r = r || { cliente: '', valor: null, dataPrevista: addDays(7) };
-    const clientes = [...new Set(state.projetos.map((p) => p.cliente))];
     const body =
-      field('cliente', 'Cliente', `<input name="cliente" list="clientesList" required maxlength="60" value="${esc(r.cliente)}"><datalist id="clientesList">${clientes.map((c) => `<option value="${esc(c)}">`).join('')}</datalist>`, true) +
+      clientField(r.cliente) +
       field('valor', 'Valor (R$)', moneyInput('valor', r.valor)) +
       field('dataPrevista', 'Data prevista', `<input name="dataPrevista" type="date" required value="${esc(r.dataPrevista)}">`);
     openDialog(isNew ? 'Novo recebimento' : 'Editar recebimento', body, (fd) => {
-      const data = { cliente: fd.cliente.trim(), valor: num(fd.valor), dataPrevista: fd.dataPrevista };
+      const data = { cliente: canonicalClient(fd.cliente), valor: num(fd.valor), dataPrevista: fd.dataPrevista };
       if (isNew) state.recebimentos.push({ id: uid(), recebido: false, dataRecebido: null, ...data });
       else Object.assign(state.recebimentos.find((x) => x.id === r.id), data);
       commit();
@@ -1439,13 +1574,14 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
 
   function meetForm(m) {
     const isNew = !m;
-    m = m || { data: todayISO(), hora: '10:00', assunto: '' };
+    m = m || { data: todayISO(), hora: '10:00', assunto: '', cliente: '' };
     const body =
-      field('assunto', 'Cliente / assunto', `<input name="assunto" required maxlength="80" value="${esc(m.assunto)}">`, true) +
+      clientField(m.cliente || '', false, 'Cliente (opcional)') +
+      field('assunto', 'Assunto', `<input name="assunto" required maxlength="80" placeholder="Ex.: Revisão do layout" value="${esc(m.assunto)}">`, true) +
       field('data', 'Data', `<input name="data" type="date" required value="${esc(m.data)}">`) +
       field('hora', 'Hora', `<input name="hora" type="time" required value="${esc(m.hora)}">`);
     openDialog(isNew ? 'Nova reunião' : 'Editar reunião', body, (fd) => {
-      const data = { assunto: fd.assunto.trim(), data: fd.data, hora: fd.hora };
+      const data = { cliente: canonicalClient(fd.cliente), assunto: fd.assunto.trim(), data: fd.data, hora: fd.hora };
       if (isNew) state.reunioes.push({ id: uid(), ...data });
       else Object.assign(state.reunioes.find((x) => x.id === m.id), data);
       commit();
