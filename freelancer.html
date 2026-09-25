@@ -58,21 +58,12 @@ button, input, select { font: inherit; color: inherit; }
 
 /* ---------- Layout ---------- */
 .wrap { max-width: 1440px; margin: 0 auto; padding: 0 24px 48px; }
-.layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  gap: 20px;
-  align-items: start;
-}
-.main-col { display: grid; gap: 20px; min-width: 0; }
-.side-col { display: grid; gap: 20px; position: sticky; top: 20px; min-width: 0; }
 
 /* ---------- Header ---------- */
 .header {
   display: flex; align-items: center; justify-content: space-between;
   gap: 16px; flex-wrap: wrap;
-  padding: 22px 0; margin-bottom: 8px;
-  border-bottom: 1px solid var(--border);
+  padding: 22px 0 18px;
 }
 .brand { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
 .logo {
@@ -148,7 +139,7 @@ button, input, select { font: inherit; color: inherit; }
 /* ---------- Overview ---------- */
 .overview {
   display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px; margin: 20px 0;
+  gap: 12px;
 }
 .stat {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
@@ -321,18 +312,160 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
 
 .footer { margin-top: 28px; font-family: var(--font-mono); font-size: 11px; color: var(--text-3); letter-spacing: .06em; text-align: center; }
 
+/* ---------- Tabs / views ---------- */
+.tabs {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+  margin: 0 -24px; padding: 0 24px;
+  background: rgba(11, 17, 32, .88); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  position: relative; display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 14px 13px; white-space: nowrap; text-decoration: none;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-2); transition: color .15s;
+}
+.tab:hover { color: var(--text); }
+.tab:focus-visible { outline: none; color: var(--text); box-shadow: inset 0 0 0 1px var(--accent); border-radius: 6px; }
+.tab[aria-selected="true"] { color: var(--accent); }
+.tab[aria-selected="true"]::after {
+  content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 2px;
+  background: var(--accent); box-shadow: 0 0 10px rgba(157, 255, 45, .7);
+}
+.tab-n {
+  min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+  display: inline-grid; place-items: center; font-size: 10px;
+  border: 1px solid var(--border); color: var(--text-2);
+}
+.tab-n:empty { display: none; }
+.tab-n.warn { color: var(--danger); border-color: rgba(255, 92, 92, .5); background: var(--danger-soft); }
+.view { display: grid; gap: 20px; padding-top: 22px; animation: viewIn .22s ease-out; }
+@keyframes viewIn { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.view-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.view-title { margin: 0; font-size: clamp(26px, 3vw, 34px); font-weight: 600; line-height: 1.1; text-wrap: balance; }
+.view-sub { margin: 4px 0 0; color: var(--text-2); font-size: 14px; }
+.view-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.view-actions input[type=search] { width: 240px; }
+.panel-title.sm { font-size: 17px; }
+.link-btn {
+  background: none; border: 0; padding: 2px 0; cursor: pointer;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-2); border-bottom: 1px solid transparent; transition: color .15s, border-color .15s;
+}
+.link-btn:hover, .link-btn:focus-visible { color: var(--accent); border-color: var(--accent); outline: none; }
+
+/* stat cards como botões de navegação */
+button.stat { text-align: left; cursor: pointer; font: inherit; color: inherit; width: 100%; }
+button.stat:focus-visible { outline: none; border-color: var(--accent); box-shadow: var(--glow); }
+.stat-foot i { font-style: normal; color: var(--text-3); transition: color .15s, transform .15s; display: inline-block; }
+button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px); }
+.overview { margin: 0; }
+
+/* Visão geral */
+.ov-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.attn-item { width: 100%; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 10px; color: inherit; font: inherit; }
+.attn-item:hover .title, .attn-item:focus-visible .title { color: var(--accent); }
+.attn-item:focus-visible { outline: none; }
+.attn-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 8px rgba(255, 92, 92, .6); }
+.attn-dot.amber { background: var(--amber); box-shadow: 0 0 8px rgba(255, 181, 71, .5); }
+.attn-go { font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); white-space: nowrap; }
+.ok-state { display: flex; align-items: center; gap: 10px; padding: 14px 0; color: var(--text-2); font-family: var(--font-mono); font-size: 12px; }
+.ok-state::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px rgba(157, 255, 45, .6); }
+.mini-proj { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; width: 100%; min-width: 0; }
+.mini-proj .title { min-width: 0; }
+.mini-proj .row { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.cash { display: grid; gap: 12px; }
+.cash-row { display: grid; grid-template-columns: 96px 1fr auto; gap: 12px; align-items: center; }
+.cash-row .bar { height: 8px; }
+.cash-row .bar.neutral > span { background: rgba(244, 244, 239, .35); box-shadow: none; }
+.cash-total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 12px; border-top: 1px solid var(--border); }
+.cash-total .v { font-size: 26px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Projetos */
+.pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.pipe {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; display: grid; gap: 10px; text-align: left; cursor: pointer; color: inherit; font: inherit;
+  transition: border-color .15s, box-shadow .15s;
+}
+.pipe:hover, .pipe:focus-visible { outline: none; border-color: rgba(157, 255, 45, .45); box-shadow: var(--glow); }
+.pipe.active { border-color: var(--accent); }
+.pipe-n { font-size: 28px; font-weight: 600; line-height: 1; }
+.pipe .num { color: var(--text-2); font-size: 12px; }
+.sort { display: flex; align-items: center; gap: 8px; }
+.sort select { width: auto; height: 30px; }
+.table-foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 12px; margin-top: 4px; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 12px; color: var(--text-2); }
+.table-foot b { color: var(--text); font-weight: 500; }
+
+/* Financeiro */
+.month-switch { display: flex; align-items: center; gap: 4px; height: 34px; padding: 0 4px; border: 1px solid var(--border); border-radius: var(--radius); }
+.month-switch .label { min-width: 118px; text-align: center; color: var(--text); }
+.fin-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 0; }
+.fin-kpi { background: var(--surface); display: grid; gap: 2px; }
+.fin-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 20px; }
+.fin-grid .chart-box { margin-bottom: 0; }
+.cats { display: grid; gap: 14px; }
+.cat-row { display: grid; gap: 6px; }
+.cat-row .row { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; }
+.cat-row .bar > span { background: rgba(244, 244, 239, .4); box-shadow: none; }
+.cat-row.top .bar > span { background: var(--amber); }
+.cat-row .pct { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); }
+
+/* Agenda */
+.week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+.day {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 10px; min-height: 132px; display: flex; flex-direction: column; gap: 6px; min-width: 0;
+}
+.day.today { border-color: var(--accent); box-shadow: 0 0 18px rgba(157, 255, 45, .08); }
+.day-h { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--font-mono); }
+.day-h b { font-size: 18px; font-weight: 600; }
+.day-h span { font-size: 10px; letter-spacing: .1em; color: var(--text-2); }
+.day.today .day-h span, .day.today .day-h b { color: var(--accent); }
+.ev {
+  font-size: 12px; line-height: 1.35; padding: 5px 7px; border-radius: 5px;
+  border-left: 2px solid var(--text-3); background: rgba(244, 244, 239, .04);
+  overflow-wrap: anywhere;
+}
+.ev small { display: block; font-family: var(--font-mono); font-size: 10px; color: var(--text-2); letter-spacing: .04em; }
+.ev.meet { border-left-color: #7CC8FF; }
+.ev.due { border-left-color: var(--amber); }
+.ev.late { border-left-color: var(--danger); background: var(--danger-soft); }
+.day-evs { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+.day-empty { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-3); margin-top: auto; }
+.ag-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.stack { display: grid; gap: 20px; }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 1180px) {
   .overview { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .layout { grid-template-columns: minmax(0, 1fr); }
-  .side-col { position: static; }
+  .fin-kpis, .pipeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fin-grid { grid-template-columns: minmax(0, 1fr); }
+  .week { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .ov-grid, .ag-grid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 760px) {
   .wrap { padding: 0 16px 32px; }
   .overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .overview .stat:last-child { grid-column: 1 / -1; }
   .stat-value { font-size: clamp(18px, 5.6vw, 26px); }
-  .fin-kpis, .fin-lists { grid-template-columns: minmax(0, 1fr); }
+  .fin-lists { grid-template-columns: minmax(0, 1fr); }
+  .fin-kpi .v { font-size: 20px; }
+  .tabs { margin: 0 -16px; padding: 0 16px; }
+  .tab { padding: 13px 10px 12px; font-size: 11px; }
+  .view-actions { width: 100%; }
+  .view-actions input[type=search] { width: auto; flex: 1 1 100%; }
+  .view-actions .btn { flex: 1; }
+  .month-switch { flex: 1 1 100%; justify-content: space-between; }
+  .week { grid-template-columns: minmax(0, 1fr); }
+  .day { min-height: 0; flex-direction: row; gap: 12px; }
+  .day-h { flex: none; width: 44px; flex-direction: column; justify-content: flex-start; gap: 2px; }
+  .day-empty { margin: 0; }
+  .cash-row { grid-template-columns: 70px 1fr auto; }
   .panel { padding: 16px; }
   .header { padding: 16px 0; }
   .brand { gap: 14px; }
@@ -381,95 +514,191 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
     </div>
   </header>
 
-  <!-- 1. Visão geral -->
-  <section class="overview" aria-label="Visão geral">
-    <div class="stat"><span class="label">Clientes ativos</span><span class="stat-value" id="stClientes">0</span><span class="stat-foot">com projetos abertos</span></div>
-    <div class="stat"><span class="label">Em andamento</span><span class="stat-value" id="stAndamento">0</span><span class="stat-foot" id="stAndamentoFoot">projetos</span></div>
-    <div class="stat"><span class="label">Concluídos no mês</span><span class="stat-value" id="stConcluidos">0</span><span class="stat-foot" id="stMes"></span></div>
-    <div class="stat"><span class="label">Receita do mês</span><span class="stat-value accent" id="stReceita">R$ 0,00</span><span class="stat-foot">recebimentos confirmados</span></div>
-    <div class="stat"><span class="label">A receber</span><span class="stat-value" id="stReceber">R$ 0,00</span><span class="stat-foot" id="stReceberFoot">pendente</span></div>
-  </section>
+  <!-- Navegação por abas -->
+  <nav class="tabs" role="tablist" aria-label="Seções do painel">
+    <a class="tab" href="#visao" data-tab="visao" role="tab">Visão geral</a>
+    <a class="tab" href="#projetos" data-tab="projetos" role="tab">Projetos <span class="tab-n" id="tnProjetos"></span></a>
+    <a class="tab" href="#financeiro" data-tab="financeiro" role="tab">Financeiro <span class="tab-n" id="tnFinanceiro"></span></a>
+    <a class="tab" href="#agenda" data-tab="agenda" role="tab">Agenda <span class="tab-n" id="tnAgenda"></span></a>
+  </nav>
 
-  <div class="layout">
-    <div class="main-col">
+  <!-- ============ VISÃO GERAL ============ -->
+  <section class="view" id="view-visao" data-view="visao" role="tabpanel" aria-label="Visão geral">
+    <div class="overview">
+      <button type="button" class="stat" data-go="projetos" data-status-go="todos"><span class="label">Clientes ativos</span><span class="stat-value" id="stClientes">0</span><span class="stat-foot">com projetos abertos <i>→</i></span></button>
+      <button type="button" class="stat" data-go="projetos" data-status-go="andamento"><span class="label">Em andamento</span><span class="stat-value" id="stAndamento">0</span><span class="stat-foot"><span id="stAndamentoFoot">projetos</span> <i>→</i></span></button>
+      <button type="button" class="stat" data-go="projetos" data-status-go="concluido"><span class="label">Concluídos no mês</span><span class="stat-value" id="stConcluidos">0</span><span class="stat-foot"><span id="stMes"></span> <i>→</i></span></button>
+      <button type="button" class="stat" data-go="financeiro" data-receb-go="recebidos"><span class="label">Receita do mês</span><span class="stat-value accent" id="stReceita">R$ 0,00</span><span class="stat-foot">recebimentos confirmados <i>→</i></span></button>
+      <button type="button" class="stat" data-go="financeiro" data-receb-go="pendentes"><span class="label">A receber</span><span class="stat-value" id="stReceber">R$ 0,00</span><span class="stat-foot"><span id="stReceberFoot">pendente</span> <i>→</i></span></button>
+    </div>
 
-      <!-- 2. Projetos -->
-      <section class="panel" id="projetos">
-        <div class="panel-head">
-          <h2 class="panel-title"><span class="idx">02</span>Projetos</h2>
-          <div class="chips" id="statusFilter" role="tablist" aria-label="Filtrar por status"></div>
-          <button class="btn btn-primary" type="button" id="btnAddProject">+ Novo projeto</button>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Projeto</th><th>Status</th><th>Prazo</th><th>Progresso</th><th>Valor</th><th><span class="sr-only">Ações</span></th></tr>
-            </thead>
-            <tbody id="projectRows"></tbody>
-          </table>
-        </div>
-        <div id="projectEmpty" class="empty" hidden>Nenhum projeto neste filtro.</div>
+    <div class="ov-grid">
+      <section class="panel">
+        <div class="panel-head"><h2 class="panel-title">Precisa de atenção</h2><span class="label" id="attnCount"></span></div>
+        <ul class="list" id="attnList"></ul>
       </section>
 
-      <!-- 3. Financeiro -->
-      <section class="panel" id="financeiro">
-        <div class="panel-head">
-          <h2 class="panel-title"><span class="idx">03</span>Financeiro</h2>
+      <section class="panel">
+        <div class="panel-head"><h2 class="panel-title">Hoje</h2><button class="link-btn" type="button" data-go="agenda">Abrir agenda →</button></div>
+        <h3 class="sub-title">Reuniões</h3>
+        <ul class="list" id="ovMeets"></ul>
+        <h3 class="sub-title" style="margin-top:16px">Tarefas pendentes <span class="task-progress" id="ovTaskProgress"></span></h3>
+        <div class="bar" style="margin-bottom:6px"><span id="ovTaskBar" style="width:0"></span></div>
+        <ul class="list" id="ovTasks"></ul>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2 class="panel-title">Projetos ativos</h2><button class="link-btn" type="button" data-go="projetos">Ver todos →</button></div>
+        <ul class="list" id="ovProjects"></ul>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2 class="panel-title">Caixa do mês</h2><button class="link-btn" type="button" data-go="financeiro">Abrir financeiro →</button></div>
+        <div class="cash" id="ovCash"></div>
+        <h3 class="sub-title" style="margin-top:18px">Próximos recebimentos</h3>
+        <ul class="list" id="ovReceb"></ul>
+      </section>
+    </div>
+  </section>
+
+  <!-- ============ PROJETOS ============ -->
+  <section class="view" id="view-projetos" data-view="projetos" role="tabpanel" aria-label="Projetos" hidden>
+    <div class="view-head">
+      <div>
+        <h2 class="view-title">Projetos</h2>
+        <p class="view-sub">Pipeline, prazos e progresso de cada entrega.</p>
+      </div>
+      <div class="view-actions">
+        <input type="search" id="projSearch" placeholder="Buscar cliente ou projeto…" aria-label="Buscar projetos">
+        <button class="btn btn-primary" type="button" id="btnAddProject">+ Novo projeto</button>
+      </div>
+    </div>
+
+    <div class="pipeline" id="pipeline"></div>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div class="chips" id="statusFilter" role="tablist" aria-label="Filtrar por status"></div>
+        <label class="sort"><span class="label">Ordenar</span>
+          <select id="projSort" aria-label="Ordenar projetos">
+            <option value="prazo">Prazo</option>
+            <option value="valor">Valor</option>
+            <option value="progresso">Progresso</option>
+            <option value="cliente">Cliente</option>
+          </select>
+        </label>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Projeto</th><th>Status</th><th>Prazo</th><th>Progresso</th><th>Valor</th><th><span class="sr-only">Ações</span></th></tr>
+          </thead>
+          <tbody id="projectRows"></tbody>
+        </table>
+      </div>
+      <div id="projectEmpty" class="empty" hidden>Nenhum projeto encontrado.</div>
+      <div class="table-foot" id="projFoot"></div>
+    </section>
+  </section>
+
+  <!-- ============ FINANCEIRO ============ -->
+  <section class="view" id="view-financeiro" data-view="financeiro" role="tabpanel" aria-label="Financeiro" hidden>
+    <div class="view-head">
+      <div>
+        <h2 class="view-title">Financeiro</h2>
+        <p class="view-sub">Faturamento, despesas e o que ainda falta receber.</p>
+      </div>
+      <div class="view-actions">
+        <div class="month-switch">
+          <button class="icon-btn" type="button" id="finPrev" aria-label="Mês anterior">‹</button>
           <span class="label" id="finMonth"></span>
+          <button class="icon-btn" type="button" id="finNext" aria-label="Próximo mês">›</button>
         </div>
-        <div class="fin-kpis">
-          <div class="fin-kpi"><span class="label">Faturamento mensal</span><div class="v pos" id="fnFat">R$ 0,00</div></div>
-          <div class="fin-kpi"><span class="label">Despesas do mês</span><div class="v" id="fnDesp">R$ 0,00</div></div>
-          <div class="fin-kpi"><span class="label">Lucro estimado</span><div class="v" id="fnLucro">R$ 0,00</div></div>
-        </div>
-        <h3 class="sub-title">Faturamento × Despesas · últimos 6 meses</h3>
+        <button class="btn" type="button" id="btnAddDesp">+ Despesa</button>
+        <button class="btn btn-primary" type="button" id="btnAddReceb">+ Recebimento</button>
+      </div>
+    </div>
+
+    <div class="fin-kpis">
+      <div class="fin-kpi"><span class="label">Faturamento</span><div class="v pos" id="fnFat">R$ 0,00</div><span class="stat-foot" id="fnFatFoot"></span></div>
+      <div class="fin-kpi"><span class="label">Despesas</span><div class="v" id="fnDesp">R$ 0,00</div><span class="stat-foot" id="fnDespFoot"></span></div>
+      <div class="fin-kpi"><span class="label">Lucro estimado</span><div class="v" id="fnLucro">R$ 0,00</div><span class="stat-foot" id="fnMargem"></span></div>
+      <div class="fin-kpi"><span class="label">A receber (total)</span><div class="v" id="fnReceber">R$ 0,00</div><span class="stat-foot" id="fnReceberFoot"></span></div>
+    </div>
+
+    <div class="fin-grid">
+      <section class="panel">
+        <h3 class="sub-title">Faturamento × Despesas · 6 meses</h3>
         <div class="chart-box" id="chartBox"><canvas id="finChart" aria-label="Gráfico de faturamento e despesas dos últimos 6 meses" role="img"></canvas></div>
-        <div class="fin-lists">
-          <div>
-            <h3 class="sub-title">Recebimentos pendentes <button class="btn btn-sm" type="button" id="btnAddReceb">+ Adicionar</button></h3>
-            <ul class="list" id="recebList"></ul>
-          </div>
-          <div>
-            <h3 class="sub-title">Despesas do mês <button class="btn btn-sm" type="button" id="btnAddDesp">+ Adicionar</button></h3>
-            <ul class="list" id="despList"></ul>
-          </div>
-        </div>
+      </section>
+      <section class="panel">
+        <h3 class="sub-title">Despesas por categoria</h3>
+        <div class="cats" id="catBreakdown"></div>
       </section>
     </div>
 
-    <!-- 4. Agenda -->
-    <aside class="side-col">
-      <section class="panel" id="agenda">
+    <div class="fin-lists">
+      <section class="panel">
         <div class="panel-head">
-          <h2 class="panel-title"><span class="idx">04</span>Agenda</h2>
+          <h3 class="panel-title sm">Recebimentos</h3>
+          <div class="chips" id="recebTabs"></div>
         </div>
-
-        <div class="agenda-block">
-          <h3 class="sub-title">Próximas reuniões <button class="btn btn-sm" type="button" id="btnAddMeet">+ Reunião</button></h3>
-          <ul class="list" id="meetList"></ul>
-        </div>
-
-        <div class="agenda-block">
-          <h3 class="sub-title">Prazos da semana</h3>
-          <ul class="list" id="weekList"></ul>
-        </div>
-
-        <div class="agenda-block">
-          <h3 class="sub-title">Tarefas do dia <span class="task-progress" id="taskProgress"></span></h3>
-          <div class="chips" id="taskFilter" style="margin-bottom:6px"></div>
-          <ul class="list" id="taskList"></ul>
-          <form class="task-form" id="taskForm" autocomplete="off">
-            <input type="text" id="taskText" placeholder="Nova tarefa…" maxlength="120" aria-label="Nova tarefa" required>
-            <select id="taskTag" aria-label="Etiqueta">
-              <option value="trabalho">Trabalho</option>
-              <option value="pessoal">Pessoal</option>
-            </select>
-            <button class="btn btn-primary" type="submit" aria-label="Adicionar tarefa">+</button>
-          </form>
-        </div>
+        <ul class="list" id="recebList"></ul>
       </section>
-    </aside>
-  </div>
+      <section class="panel">
+        <div class="panel-head">
+          <h3 class="panel-title sm">Despesas do mês</h3>
+          <span class="label" id="despTotal"></span>
+        </div>
+        <ul class="list" id="despList"></ul>
+      </section>
+    </div>
+  </section>
+
+  <!-- ============ AGENDA ============ -->
+  <section class="view" id="view-agenda" data-view="agenda" role="tabpanel" aria-label="Agenda" hidden>
+    <div class="view-head">
+      <div>
+        <h2 class="view-title">Agenda</h2>
+        <p class="view-sub">Próximos 7 dias, reuniões e o checklist de hoje.</p>
+      </div>
+      <div class="view-actions">
+        <button class="btn btn-primary" type="button" id="btnAddMeet">+ Reunião</button>
+      </div>
+    </div>
+
+    <div class="week" id="weekStrip"></div>
+
+    <div class="ag-grid">
+      <section class="panel">
+        <div class="panel-head">
+          <h3 class="panel-title sm">Tarefas do dia <span class="task-progress" id="taskProgress"></span></h3>
+          <div class="chips" id="taskFilter"></div>
+        </div>
+        <div class="bar" style="margin-bottom:8px"><span id="taskBar" style="width:0"></span></div>
+        <ul class="list" id="taskList"></ul>
+        <form class="task-form" id="taskForm" autocomplete="off">
+          <input type="text" id="taskText" placeholder="Nova tarefa…" maxlength="120" aria-label="Nova tarefa" required>
+          <select id="taskTag" aria-label="Etiqueta">
+            <option value="trabalho">Trabalho</option>
+            <option value="pessoal">Pessoal</option>
+          </select>
+          <button class="btn btn-primary" type="submit" aria-label="Adicionar tarefa">+</button>
+        </form>
+      </section>
+
+      <div class="stack">
+        <section class="panel">
+          <h3 class="sub-title">Próximas reuniões</h3>
+          <ul class="list" id="meetList"></ul>
+        </section>
+        <section class="panel">
+          <h3 class="sub-title">Prazos da semana <button class="link-btn" type="button" data-go="projetos">Projetos →</button></h3>
+          <ul class="list" id="weekList"></ul>
+        </section>
+      </div>
+    </div>
+  </section>
 
   <footer class="footer">APEXEL STUDIO · DADOS SALVOS NESTE NAVEGADOR · <button class="btn btn-sm" type="button" id="btnReset" style="height:22px;margin-left:6px">Restaurar exemplo</button></footer>
 </div>
@@ -613,7 +842,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
 
   /* ================= Estado ================= */
   let state;
-  const ui = { statusFilter: 'todos', taskFilter: 'todas' };
+  const ui = { tab: 'visao', statusFilter: 'todos', taskFilter: 'todas', q: '', sort: 'prazo', finMonth: monthKey(todayISO()), recebView: 'pendentes' };
 
   function normalize(data) {
     const base = { version: 1, nome: 'Dev', projetos: [], recebimentos: [], despesas: [], reunioes: [], tarefas: [] };
@@ -637,41 +866,48 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
   function commit() { save(); render(); }
 
   /* ================= Cálculos ================= */
+  const sum = (arr) => arr.reduce((a, x) => a + (Number(x.valor) || 0), 0);
+  const shiftMonth = (mk, n) => { const [y, m] = mk.split('-').map(Number); const d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`; };
+  const monthLabel = (mk) => { const [y, m] = mk.split('-').map(Number); return `${MONTHS[m - 1]} ${y}`; };
+  const plural = (n, s, p) => `${n} ${n === 1 ? s : p}`;
+
+  function monthFinance(mk) {
+    const recebidos = state.recebimentos.filter((r) => r.recebido && monthKey(r.dataRecebido) === mk);
+    const despesas = state.despesas.filter((d) => monthKey(d.data) === mk);
+    const faturamento = sum(recebidos);
+    const totalDesp = sum(despesas);
+    return { recebidos, despesas, faturamento, totalDesp, lucro: faturamento - totalDesp };
+  }
+
   function metrics() {
     const mk = monthKey(todayISO());
     const abertos = state.projetos.filter((p) => p.status !== 'concluido');
     const clientes = new Set(abertos.map((p) => p.cliente.trim().toLowerCase()));
     const andamento = state.projetos.filter((p) => p.status === 'andamento' || p.status === 'revisao');
     const concluidosMes = state.projetos.filter((p) => p.status === 'concluido' && monthKey(p.concluidoEm) === mk);
-    const recebidosMes = state.recebimentos.filter((r) => r.recebido && monthKey(r.dataRecebido) === mk);
     const pendentes = state.recebimentos.filter((r) => !r.recebido);
-    const despesasMes = state.despesas.filter((d) => monthKey(d.data) === mk);
-    const sum = (arr) => arr.reduce((a, x) => a + (Number(x.valor) || 0), 0);
-    const faturamento = sum(recebidosMes);
-    const despesas = sum(despesasMes);
+    const f = monthFinance(mk);
     return {
       clientes: clientes.size,
       andamento: andamento.length,
       emRevisao: andamento.filter((p) => p.status === 'revisao').length,
       concluidosMes: concluidosMes.length,
-      faturamento,
+      faturamento: f.faturamento,
+      despesas: f.totalDesp,
+      lucro: f.lucro,
       aReceber: sum(pendentes),
-      pendentesCount: pendentes.length,
-      despesas,
-      despesasMes,
-      lucro: faturamento - despesas,
+      pendentes,
+      atrasados: pendentes.filter((r) => daysUntil(r.dataPrevista) < 0),
     };
   }
 
-  function last6Months() {
-    const now = new Date();
+  function last6Months(endKey) {
     const out = [];
     for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const key = `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
-      const fat = state.recebimentos.filter((r) => r.recebido && monthKey(r.dataRecebido) === key).reduce((a, r) => a + Number(r.valor || 0), 0);
-      const desp = state.despesas.filter((x) => monthKey(x.data) === key).reduce((a, x) => a + Number(x.valor || 0), 0);
-      out.push({ label: `${MONTHS_SHORT[d.getMonth()]}/${String(d.getFullYear()).slice(2)}`, fat, desp });
+      const key = shiftMonth(endKey, -i);
+      const f = monthFinance(key);
+      const m = Number(key.slice(5, 7));
+      out.push({ label: `${MONTHS_SHORT[m - 1]}/${key.slice(2, 4)}`, fat: f.faturamento, desp: f.totalDesp });
     }
     return out;
   }
@@ -685,13 +921,42 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
     return null;
   }
 
+  const todaysTasks = () => {
+    const today = todayISO();
+    return state.tarefas.filter((t) => t.data === today || (!t.feito && t.data < today));
+  };
+
+  /* ================= Navegação ================= */
+  const TABS = ['visao', 'projetos', 'financeiro', 'agenda'];
+  function tabFromHash() {
+    const h = location.hash.replace('#', '');
+    return TABS.includes(h) ? h : null;
+  }
+  function go(tab) {
+    try { history.replaceState(null, '', '#' + tab); } catch (e) {}
+    showTab(tab);
+    window.scrollTo({ top: 0 });
+  }
+  function showTab(tab) {
+    if (!TABS.includes(tab)) tab = 'visao';
+    ui.tab = tab;
+    document.querySelectorAll('.view').forEach((v) => { v.hidden = v.dataset.view !== tab; });
+    document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', String(t.dataset.tab === tab)));
+    const active = document.querySelector(`.tab[data-tab="${tab}"]`);
+    if (active && active.scrollIntoView) active.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    try { localStorage.setItem(STORAGE_KEY + '.tab', tab); } catch (e) {}
+    renderView();
+  }
+  window.addEventListener('hashchange', () => { const t = tabFromHash(); if (t && t !== ui.tab) showTab(t); });
+
   /* ================= Render ================= */
   function render() {
     renderHeader();
-    renderOverview();
-    renderProjects();
-    renderFinance();
-    renderAgenda();
+    renderTabBadges();
+    renderView();
+  }
+  function renderView() {
+    ({ visao: renderOverview, projetos: renderProjects, financeiro: renderFinance, agenda: renderAgenda })[ui.tab]();
   }
 
   function renderHeader() {
@@ -703,9 +968,37 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
     $('#today').textContent = `${wd} · ${fmtDate(todayISO())}`;
   }
 
+  function renderTabBadges() {
+    const m = metrics();
+    const late = state.projetos.filter((p) => deadlineInfo(p)).length;
+    const tp = $('#tnProjetos');
+    tp.textContent = late || state.projetos.filter((p) => p.status !== 'concluido').length || '';
+    tp.className = 'tab-n' + (late ? ' warn' : '');
+    tp.title = late ? `${late} com prazo crítico` : 'projetos abertos';
+    const tf = $('#tnFinanceiro');
+    tf.textContent = m.atrasados.length || '';
+    tf.className = 'tab-n warn';
+    tf.title = 'recebimentos atrasados';
+    const pend = todaysTasks().filter((t) => !t.feito).length;
+    $('#tnAgenda').textContent = pend || '';
+    $('#tnAgenda').title = 'tarefas pendentes hoje';
+  }
+
+  const emptyLi = (msg) => `<li class="empty" style="justify-content:center">${msg}</li>`;
+  const taskLi = (t, today) => `<li class="task${t.feito ? ' done' : ''}">
+      <label>
+        <input type="checkbox" data-act="toggle-task" data-id="${t.id}" ${t.feito ? 'checked' : ''}>
+        <span class="txt">${esc(t.texto)}${t.data < today ? ' <span class="alert">De ' + fmtDate(t.data).slice(0, 5) + '</span>' : ''}</span>
+      </label>
+      <span class="badge tag tag-${t.tag}">${t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho'}</span>
+      <button class="icon-btn del" type="button" data-act="del-task" data-id="${t.id}" aria-label="Excluir tarefa">${ICON.del}</button>
+    </li>`;
+
+  /* ---------- Visão geral ---------- */
   function renderOverview() {
     const m = metrics();
     const now = new Date();
+    const today = todayISO();
     $('#stClientes').textContent = m.clientes;
     $('#stAndamento').textContent = m.andamento;
     $('#stAndamentoFoot').textContent = m.emRevisao ? `${m.emRevisao} em revisão` : 'projetos ativos';
@@ -713,22 +1006,101 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
     $('#stMes').textContent = `em ${MONTHS[now.getMonth()]}`;
     $('#stReceita').textContent = money(m.faturamento);
     $('#stReceber').textContent = money(m.aReceber);
-    $('#stReceberFoot').textContent = `${m.pendentesCount} recebimento${m.pendentesCount === 1 ? '' : 's'} pendente${m.pendentesCount === 1 ? '' : 's'}`;
+    $('#stReceberFoot').textContent = plural(m.pendentes.length, 'pendente', 'pendentes');
+
+    // Precisa de atenção
+    const items = [];
+    state.projetos.forEach((p) => {
+      const dl = deadlineInfo(p);
+      if (dl) items.push({ sev: daysUntil(p.prazo) < 0 ? 0 : 1, title: p.nome, meta: `${p.cliente} · ${dl.text}`, tab: 'projetos', amber: daysUntil(p.prazo) >= 0, label: 'Prazo' });
+    });
+    m.atrasados.forEach((r) => items.push({ sev: 0, title: `${r.cliente} · ${money(r.valor)}`, meta: `Recebimento previsto para ${fmtDate(r.dataPrevista)}`, tab: 'financeiro', label: 'Cobrar' }));
+    const oldTasks = state.tarefas.filter((t) => !t.feito && t.data < today);
+    if (oldTasks.length) items.push({ sev: 2, title: plural(oldTasks.length, 'tarefa atrasada', 'tarefas atrasadas'), meta: 'De dias anteriores', tab: 'agenda', amber: true, label: 'Agenda' });
+    const orc = state.projetos.filter((p) => p.status === 'orcamento');
+    if (orc.length) items.push({ sev: 3, title: plural(orc.length, 'orçamento aguardando resposta', 'orçamentos aguardando resposta'), meta: money(sum(orc)) + ' em potencial', tab: 'projetos', status: 'orcamento', amber: true, label: 'Pipeline' });
+    items.sort((a, b) => a.sev - b.sev);
+    $('#attnCount').textContent = items.length ? plural(items.length, 'item', 'itens') : '';
+    $('#attnList').innerHTML = items.length ? items.map((it) => `<li>
+        <button type="button" class="attn-item" data-go="${it.tab}"${it.status ? ` data-status-go="${it.status}"` : ''}>
+          <span class="attn-dot${it.amber ? ' amber' : ''}"></span>
+          <span class="grow"><span class="title" style="display:block">${esc(it.title)}</span><span class="meta">${esc(it.meta)}</span></span>
+          <span class="attn-go">${it.label} →</span>
+        </button>
+      </li>`).join('') : '<li class="ok-state">Tudo em dia. Nenhum prazo ou cobrança crítica.</li>';
+
+    // Hoje
+    const meets = state.reunioes.filter((r) => r.data === today).sort((a, b) => a.hora.localeCompare(b.hora));
+    $('#ovMeets').innerHTML = meets.length ? meets.map((r) => `<li>
+        <span class="num" style="color:var(--accent)">${esc(r.hora)}</span>
+        <div class="grow"><div class="title">${esc(r.assunto)}</div></div>
+      </li>`).join('') : '<li class="meta" style="border:0">Nenhuma reunião hoje.</li>';
+    const tasks = todaysTasks();
+    const done = tasks.filter((t) => t.feito).length;
+    $('#ovTaskProgress').textContent = tasks.length ? `${done}/${tasks.length}` : '';
+    $('#ovTaskBar').style.width = tasks.length ? `${(done / tasks.length) * 100}%` : '0';
+    const pend = tasks.filter((t) => !t.feito);
+    $('#ovTasks').innerHTML = pend.length
+      ? pend.slice(0, 5).map((t) => taskLi(t, today)).join('') + (pend.length > 5 ? `<li><button class="link-btn" type="button" data-go="agenda">+ ${pend.length - 5} tarefas →</button></li>` : '')
+      : '<li class="ok-state">Checklist do dia concluído.</li>';
+
+    // Projetos ativos
+    const ativos = state.projetos.filter((p) => p.status === 'andamento' || p.status === 'revisao')
+      .sort((a, b) => a.prazo.localeCompare(b.prazo)).slice(0, 5);
+    $('#ovProjects').innerHTML = ativos.length ? ativos.map((p) => {
+      const dl = deadlineInfo(p);
+      const prog = Math.max(0, Math.min(100, Number(p.progresso) || 0));
+      return `<li><div class="mini-proj">
+        <div class="row"><span class="title">${esc(p.nome)} <span class="proj-client">· ${esc(p.cliente)}</span></span><span class="badge badge-${p.status}" style="font-size:9.5px">${STATUS[p.status]}</span></div>
+        <div class="progress"><div class="bar"><span style="width:${prog}%"></span></div><span class="num">${prog}%</span></div>
+        <div class="meta${dl ? ' late' : ''}"><span>Entrega ${fmtDate(p.prazo)}</span>${dl ? `<span class="alert">${dl.text}</span>` : ''}</div>
+      </div></li>`;
+    }).join('') : emptyLi('Nenhum projeto em andamento');
+
+    // Caixa do mês
+    const max = Math.max(m.faturamento, m.despesas, 1);
+    const margem = m.faturamento ? Math.round((m.lucro / m.faturamento) * 100) : 0;
+    $('#ovCash').innerHTML = `
+      <div class="cash-row"><span class="label">Entradas</span><div class="bar"><span style="width:${(m.faturamento / max) * 100}%"></span></div><span class="num">${money(m.faturamento)}</span></div>
+      <div class="cash-row"><span class="label">Saídas</span><div class="bar neutral"><span style="width:${(m.despesas / max) * 100}%"></span></div><span class="num">${money(m.despesas)}</span></div>
+      <div class="cash-total"><span class="label">Lucro · margem ${margem}%</span><span class="v" style="color:${m.lucro >= 0 ? 'var(--accent)' : 'var(--danger)'}">${money(m.lucro)}</span></div>`;
+    const prox = [...m.pendentes].sort((a, b) => a.dataPrevista.localeCompare(b.dataPrevista)).slice(0, 3);
+    $('#ovReceb').innerHTML = prox.length ? prox.map((r) => {
+      const late = daysUntil(r.dataPrevista) < 0;
+      return `<li><div class="grow"><div class="title">${esc(r.cliente)}</div><div class="meta${late ? ' late' : ''}">${fmtDate(r.dataPrevista)}${late ? ' <span class="alert">Atrasado</span>' : ''}</div></div><span class="num">${money(r.valor)}</span></li>`;
+    }).join('') : '<li class="ok-state">Nada a receber.</li>';
   }
 
+  /* ---------- Projetos ---------- */
   function renderProjects() {
-    // filtros
+    // Pipeline por status
+    $('#pipeline').innerHTML = Object.entries(STATUS).map(([k, label]) => {
+      const list = state.projetos.filter((p) => p.status === k);
+      return `<button type="button" class="pipe${ui.statusFilter === k ? ' active' : ''}" data-status="${k}">
+        <span class="badge badge-${k}" style="justify-self:start">${label}</span>
+        <span class="pipe-n">${list.length}</span>
+        <span class="num">${money(sum(list))}</span>
+      </button>`;
+    }).join('');
+
     const counts = { todos: state.projetos.length };
     Object.keys(STATUS).forEach((k) => { counts[k] = state.projetos.filter((p) => p.status === k).length; });
-    const opts = [['todos', 'Todos'], ...Object.entries(STATUS)];
-    $('#statusFilter').innerHTML = opts.map(([k, label]) =>
+    $('#statusFilter').innerHTML = [['todos', 'Todos'], ...Object.entries(STATUS)].map(([k, label]) =>
       `<button type="button" role="tab" class="chip${ui.statusFilter === k ? ' active' : ''}" data-status="${k}" aria-selected="${ui.statusFilter === k}">${label}<span class="n">${counts[k]}</span></button>`
     ).join('');
 
+    const q = ui.q.trim().toLowerCase();
     const order = { andamento: 0, revisao: 1, orcamento: 2, concluido: 3 };
+    const sorters = {
+      prazo: (a, b) => (order[a.status] - order[b.status]) || String(a.prazo).localeCompare(String(b.prazo)),
+      valor: (a, b) => b.valor - a.valor,
+      progresso: (a, b) => b.progresso - a.progresso,
+      cliente: (a, b) => a.cliente.localeCompare(b.cliente, 'pt-BR'),
+    };
     const list = state.projetos
       .filter((p) => ui.statusFilter === 'todos' || p.status === ui.statusFilter)
-      .sort((a, b) => (order[a.status] - order[b.status]) || String(a.prazo).localeCompare(String(b.prazo)));
+      .filter((p) => !q || `${p.nome} ${p.cliente}`.toLowerCase().includes(q))
+      .sort(sorters[ui.sort] || sorters.prazo);
 
     $('#projectEmpty').hidden = list.length > 0;
     $('#projectRows').innerHTML = list.map((p) => {
@@ -746,36 +1118,73 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
         </div></td>
       </tr>`;
     }).join('');
+    const avg = list.length ? Math.round(list.reduce((a, p) => a + Number(p.progresso || 0), 0) / list.length) : 0;
+    $('#projFoot').innerHTML = `<span>${plural(list.length, 'projeto', 'projetos')} · progresso médio <b>${avg}%</b></span><span>Total <b>${money(sum(list))}</b></span>`;
+    $('#projFoot').hidden = !list.length;
   }
 
+  /* ---------- Financeiro ---------- */
   let chart;
   function renderFinance() {
+    const mk = ui.finMonth;
+    const f = monthFinance(mk);
+    const prev = monthFinance(shiftMonth(mk, -1));
     const m = metrics();
-    const now = new Date();
-    $('#finMonth').textContent = `${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
-    $('#fnFat').textContent = money(m.faturamento);
-    $('#fnDesp').textContent = money(m.despesas);
+    $('#finMonth').textContent = monthLabel(mk);
+    $('#finNext').disabled = mk >= monthKey(todayISO());
+    $('#fnFat').textContent = money(f.faturamento);
+    const delta = prev.faturamento ? Math.round(((f.faturamento - prev.faturamento) / prev.faturamento) * 100) : null;
+    $('#fnFatFoot').textContent = delta === null ? plural(f.recebidos.length, 'recebimento', 'recebimentos') : `${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta)}% vs. mês anterior`;
+    $('#fnDesp').textContent = money(f.totalDesp);
+    $('#fnDespFoot').textContent = plural(f.despesas.length, 'lançamento', 'lançamentos');
     const lucro = $('#fnLucro');
-    lucro.textContent = money(m.lucro);
-    lucro.className = 'v ' + (m.lucro >= 0 ? 'pos' : 'neg');
+    lucro.textContent = money(f.lucro);
+    lucro.className = 'v ' + (f.lucro >= 0 ? 'pos' : 'neg');
+    $('#fnMargem').textContent = f.faturamento ? `margem de ${Math.round((f.lucro / f.faturamento) * 100)}%` : 'sem faturamento';
+    $('#fnReceber').textContent = money(m.aReceber);
+    $('#fnReceberFoot').textContent = m.atrasados.length ? `${m.atrasados.length} atrasado${m.atrasados.length > 1 ? 's' : ''} · ${money(sum(m.atrasados))}` : plural(m.pendentes.length, 'pendente', 'pendentes');
+    $('#fnReceberFoot').style.color = m.atrasados.length ? 'var(--danger)' : '';
 
-    // Recebimentos pendentes
-    const pend = state.recebimentos.filter((r) => !r.recebido).sort((a, b) => a.dataPrevista.localeCompare(b.dataPrevista));
-    $('#recebList').innerHTML = pend.length ? pend.map((r) => {
-      const late = daysUntil(r.dataPrevista) < 0;
-      return `<li>
-        <div class="grow">
-          <div class="title">${esc(r.cliente)}</div>
-          <div class="meta${late ? ' late' : ''}"><span class="num">${money(r.valor)}</span><span>· ${fmtDate(r.dataPrevista)}</span>${late ? '<span class="alert">Atrasado</span>' : ''}</div>
-        </div>
-        <button class="btn btn-sm" type="button" data-act="receive" data-id="${r.id}" title="Marcar como recebido">✓ Recebido</button>
-        <button class="icon-btn" type="button" data-act="edit-receb" data-id="${r.id}" aria-label="Editar recebimento">${ICON.edit}</button>
-        <button class="icon-btn del" type="button" data-act="del-receb" data-id="${r.id}" aria-label="Excluir recebimento">${ICON.del}</button>
-      </li>`;
-    }).join('') : '<li class="empty" style="justify-content:center">Nada pendente 🎉</li>';
+    // Categorias
+    const byCat = CATEGORIAS.map((c) => ({ c, v: sum(f.despesas.filter((d) => d.categoria === c)) })).sort((a, b) => b.v - a.v);
+    const top = byCat[0] ? byCat[0].v : 0;
+    $('#catBreakdown').innerHTML = f.totalDesp ? byCat.map((x, i) => `<div class="cat-row${i === 0 && x.v ? ' top' : ''}">
+        <div class="row"><span>${x.c} <span class="pct">${Math.round((x.v / f.totalDesp) * 100)}%</span></span><span class="num">${money(x.v)}</span></div>
+        <div class="bar"><span style="width:${top ? (x.v / top) * 100 : 0}%"></span></div>
+      </div>`).join('') : '<div class="empty">Sem despesas neste mês</div>';
 
-    // Despesas do mês
-    const desp = [...m.despesasMes].sort((a, b) => b.data.localeCompare(a.data));
+    // Recebimentos (pendentes | recebidos no mês)
+    const pend = [...m.pendentes].sort((a, b) => a.dataPrevista.localeCompare(b.dataPrevista));
+    $('#recebTabs').innerHTML = [['pendentes', 'Pendentes', pend.length], ['recebidos', 'Recebidos no mês', f.recebidos.length]].map(([k, l, n]) =>
+      `<button type="button" class="chip${ui.recebView === k ? ' active' : ''}" data-receb-view="${k}">${l}<span class="n">${n}</span></button>`).join('');
+    if (ui.recebView === 'pendentes') {
+      $('#recebList').innerHTML = pend.length ? pend.map((r) => {
+        const late = daysUntil(r.dataPrevista) < 0;
+        return `<li>
+          <div class="grow">
+            <div class="title">${esc(r.cliente)}</div>
+            <div class="meta${late ? ' late' : ''}"><span class="num">${money(r.valor)}</span><span>· ${fmtDate(r.dataPrevista)}</span>${late ? '<span class="alert">Atrasado</span>' : ''}</div>
+          </div>
+          <button class="btn btn-sm" type="button" data-act="receive" data-id="${r.id}" title="Marcar como recebido">✓ Recebido</button>
+          <button class="icon-btn" type="button" data-act="edit-receb" data-id="${r.id}" aria-label="Editar recebimento">${ICON.edit}</button>
+          <button class="icon-btn del" type="button" data-act="del-receb" data-id="${r.id}" aria-label="Excluir recebimento">${ICON.del}</button>
+        </li>`;
+      }).join('') : emptyLi('Nada pendente');
+    } else {
+      const rec = [...f.recebidos].sort((a, b) => b.dataRecebido.localeCompare(a.dataRecebido));
+      $('#recebList').innerHTML = rec.length ? rec.map((r) => `<li>
+          <div class="grow">
+            <div class="title">${esc(r.cliente)}</div>
+            <div class="meta"><span>Recebido em ${fmtDate(r.dataRecebido)}</span></div>
+          </div>
+          <span class="num" style="color:var(--accent)">${money(r.valor)}</span>
+          <button class="btn btn-sm" type="button" data-act="unreceive" data-id="${r.id}" title="Voltar para pendentes">Desfazer</button>
+        </li>`).join('') : emptyLi(`Nenhum recebimento em ${monthLabel(mk)}`);
+    }
+
+    // Despesas do mês selecionado
+    const desp = [...f.despesas].sort((a, b) => b.data.localeCompare(a.data));
+    $('#despTotal').textContent = money(f.totalDesp);
     $('#despList').innerHTML = desp.length ? desp.map((d) => `<li>
         <div class="grow">
           <div class="title">${esc(d.descricao)}</div>
@@ -784,13 +1193,13 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
         <span class="num">${money(d.valor)}</span>
         <button class="icon-btn" type="button" data-act="edit-desp" data-id="${d.id}" aria-label="Editar despesa">${ICON.edit}</button>
         <button class="icon-btn del" type="button" data-act="del-desp" data-id="${d.id}" aria-label="Excluir despesa">${ICON.del}</button>
-      </li>`).join('') : '<li class="empty" style="justify-content:center">Sem despesas neste mês</li>';
+      </li>`).join('') : emptyLi('Sem despesas neste mês');
 
     renderChart();
   }
 
   function renderChart() {
-    const data = last6Months();
+    const data = last6Months(ui.finMonth);
     if (typeof Chart === 'undefined') {
       $('#chartBox').innerHTML = '<div class="chart-fallback empty">Gráfico indisponível offline (Chart.js não carregou)</div>';
       return;
@@ -803,6 +1212,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
       chart.data.datasets[0].data = fat;
       chart.data.datasets[1].data = desp;
       chart.update();
+      chart.resize();
       return;
     }
     const mono = getComputedStyle(document.documentElement).getPropertyValue('--font-mono').trim();
@@ -843,6 +1253,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
     });
   }
 
+  /* ---------- Agenda ---------- */
   function whenBox(dateStr) {
     const d = parse(dateStr);
     const isToday = dateStr === todayISO();
@@ -851,6 +1262,22 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
 
   function renderAgenda() {
     const today = todayISO();
+    const openProj = state.projetos.filter((p) => p.status !== 'concluido' && p.prazo);
+
+    // Semana: próximos 7 dias (vencidos entram no dia de hoje)
+    const days = [];
+    for (let i = 0; i < 7; i++) days.push(addDays(i));
+    $('#weekStrip').innerHTML = days.map((ds, i) => {
+      const d = parse(ds);
+      const meets = state.reunioes.filter((r) => r.data === ds).sort((a, b) => a.hora.localeCompare(b.hora));
+      const dues = openProj.filter((p) => p.prazo === ds || (i === 0 && p.prazo < ds));
+      const evs = meets.map((r) => `<div class="ev meet"><small>${esc(r.hora)}</small>${esc(r.assunto)}</div>`)
+        .concat(dues.map((p) => `<div class="ev ${p.prazo < ds ? 'late' : 'due'}"><small>${p.prazo < ds ? 'Vencido ' + fmtDate(p.prazo).slice(0, 5) : 'Entrega'}</small>${esc(p.nome)}</div>`));
+      return `<div class="day${i === 0 ? ' today' : ''}">
+        <div class="day-h"><b>${pad(d.getDate())}</b><span>${i === 0 ? 'HOJE' : WEEKDAYS[d.getDay()]}</span></div>
+        <div class="day-evs">${evs.join('') || '<span class="day-empty">Livre</span>'}</div>
+      </div>`;
+    }).join('');
 
     // Reuniões futuras
     const meets = state.reunioes
@@ -864,12 +1291,10 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
         </div>
         <button class="icon-btn" type="button" data-act="edit-meet" data-id="${r.id}" aria-label="Editar reunião">${ICON.edit}</button>
         <button class="icon-btn del" type="button" data-act="del-meet" data-id="${r.id}" aria-label="Excluir reunião">${ICON.del}</button>
-      </li>`).join('') : '<li class="empty" style="justify-content:center">Sem reuniões agendadas</li>';
+      </li>`).join('') : emptyLi('Sem reuniões agendadas');
 
     // Prazos da semana (vencidos + próximos 7 dias)
-    const week = state.projetos
-      .filter((p) => p.status !== 'concluido' && p.prazo && daysUntil(p.prazo) <= 7)
-      .sort((a, b) => a.prazo.localeCompare(b.prazo));
+    const week = openProj.filter((p) => daysUntil(p.prazo) <= 7).sort((a, b) => a.prazo.localeCompare(b.prazo));
     $('#weekList').innerHTML = week.length ? week.map((p) => {
       const dl = deadlineInfo(p);
       return `<li>
@@ -880,10 +1305,10 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
         </div>
         <span class="badge badge-${p.status}" style="font-size:9.5px">${STATUS[p.status]}</span>
       </li>`;
-    }).join('') : '<li class="empty" style="justify-content:center">Nenhum prazo nesta semana</li>';
+    }).join('') : emptyLi('Nenhum prazo nesta semana');
 
-    // Tarefas do dia (inclui pendências de dias anteriores)
-    const todays = state.tarefas.filter((t) => t.data === today || (!t.feito && t.data < today));
+    // Tarefas do dia
+    const todays = todaysTasks();
     const counts = {
       todas: todays.length,
       trabalho: todays.filter((t) => t.tag === 'trabalho').length,
@@ -892,20 +1317,14 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
     $('#taskFilter').innerHTML = [['todas', 'Todas'], ['trabalho', 'Trabalho'], ['pessoal', 'Pessoal']].map(([k, l]) =>
       `<button type="button" class="chip${ui.taskFilter === k ? ' active' : ''}" data-task-filter="${k}">${l}<span class="n">${counts[k]}</span></button>`
     ).join('');
-
     const visible = todays
       .filter((t) => ui.taskFilter === 'todas' || t.tag === ui.taskFilter)
       .sort((a, b) => Number(a.feito) - Number(b.feito));
     const done = todays.filter((t) => t.feito).length;
     $('#taskProgress').textContent = todays.length ? `${done}/${todays.length}` : '';
-    $('#taskList').innerHTML = visible.length ? visible.map((t) => `<li class="task${t.feito ? ' done' : ''}">
-        <label>
-          <input type="checkbox" data-act="toggle-task" data-id="${t.id}" ${t.feito ? 'checked' : ''}>
-          <span class="txt">${esc(t.texto)}${t.data < today ? ' <span class="alert">De ' + fmtDate(t.data).slice(0, 5) + '</span>' : ''}</span>
-        </label>
-        <span class="badge tag tag-${t.tag}">${t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho'}</span>
-        <button class="icon-btn del" type="button" data-act="del-task" data-id="${t.id}" aria-label="Excluir tarefa">${ICON.del}</button>
-      </li>`).join('') : '<li class="empty" style="justify-content:center">Nenhuma tarefa aqui</li>';
+    $('#taskBar').style.width = todays.length ? `${(done / todays.length) * 100}%` : '0';
+    if (ui.taskFilter !== 'todas') $('#taskTag').value = ui.taskFilter;
+    $('#taskList').innerHTML = visible.length ? visible.map((t) => taskLi(t, today)).join('') : emptyLi('Nenhuma tarefa aqui');
   }
 
   /* ================= Dialog / formulários ================= */
@@ -1040,10 +1459,21 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
   const remove = (key, id) => { state[key] = state[key].filter((x) => x.id !== id); };
 
   document.addEventListener('click', (e) => {
+    const tabLink = e.target.closest('.tab[data-tab]');
+    if (tabLink) { e.preventDefault(); go(tabLink.dataset.tab); return; }
+    const nav = e.target.closest('[data-go]');
+    if (nav) {
+      if (nav.dataset.statusGo) { ui.statusFilter = nav.dataset.statusGo; ui.q = ''; $('#projSearch').value = ''; }
+      if (nav.dataset.recebGo) { ui.recebView = nav.dataset.recebGo; ui.finMonth = monthKey(todayISO()); }
+      go(nav.dataset.go);
+      return;
+    }
     const chip = e.target.closest('[data-status]');
-    if (chip) { ui.statusFilter = chip.dataset.status; renderProjects(); return; }
+    if (chip) { ui.statusFilter = ui.statusFilter === chip.dataset.status && chip.classList.contains('pipe') ? 'todos' : chip.dataset.status; renderProjects(); return; }
     const tchip = e.target.closest('[data-task-filter]');
     if (tchip) { ui.taskFilter = tchip.dataset.taskFilter; renderAgenda(); return; }
+    const rchip = e.target.closest('[data-receb-view]');
+    if (rchip) { ui.recebView = rchip.dataset.recebView; renderFinance(); return; }
 
     const btn = e.target.closest('[data-act]');
     if (!btn || btn.type === 'checkbox') return;
@@ -1058,6 +1488,11 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
       case 'receive': {
         const r = byId(state.recebimentos, id);
         if (r) { r.recebido = true; r.dataRecebido = todayISO(); commit(); toast(`${money(r.valor)} recebido de ${r.cliente}`); }
+        break;
+      }
+      case 'unreceive': {
+        const r = byId(state.recebimentos, id);
+        if (r) { r.recebido = false; r.dataRecebido = null; commit(); toast('Recebimento voltou para pendentes'); }
         break;
       }
       case 'edit-receb': recebForm(byId(state.recebimentos, id)); break;
@@ -1082,6 +1517,10 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
   $('#btnAddDesp').addEventListener('click', () => despForm());
   $('#btnAddMeet').addEventListener('click', () => meetForm());
   $('#userName').addEventListener('click', nameForm);
+  $('#projSearch').addEventListener('input', (e) => { ui.q = e.target.value; renderProjects(); });
+  $('#projSort').addEventListener('change', (e) => { ui.sort = e.target.value; renderProjects(); });
+  $('#finPrev').addEventListener('click', () => { ui.finMonth = shiftMonth(ui.finMonth, -1); renderFinance(); });
+  $('#finNext').addEventListener('click', () => { if (ui.finMonth < monthKey(todayISO())) { ui.finMonth = shiftMonth(ui.finMonth, 1); renderFinance(); } });
 
   $('#taskForm').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -1162,7 +1601,12 @@ dialog::backdrop { background: rgba(5, 8, 16, .72); backdrop-filter: blur(3px); 
 
   /* ================= Init ================= */
   state = load();
-  render();
+  let savedTab = null;
+  try { savedTab = localStorage.getItem(STORAGE_KEY + '.tab'); } catch (e) {}
+  ui.tab = tabFromHash() || (TABS.includes(savedTab) ? savedTab : 'visao');
+  renderHeader();
+  renderTabBadges();
+  showTab(ui.tab);
 })();
 </script>
 </body>
