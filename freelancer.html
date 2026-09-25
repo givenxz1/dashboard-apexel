@@ -299,6 +299,9 @@ dialog[open] { display: flex; flex-direction: column; }
 .dlg-body { padding: 18px 20px; display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
 .dlg-foot { flex: none; }
 .cpick { display: grid; gap: 8px; }
+.radio { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; }
+.radio input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
+.import-err { margin: 0; color: var(--danger); font-family: var(--font-mono); font-size: 12px; }
 .cpick-list { display: flex; flex-wrap: wrap; gap: 6px; max-height: 132px; overflow-y: auto; }
 .cpick-list .chip { text-transform: none; letter-spacing: .02em; font-size: 12px; height: 30px; }
 .cpick-hint { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); align-self: center; }
@@ -503,6 +506,7 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
 
   /* Toque confortável e sem zoom automático no iOS */
   input, select { font-size: 16px; height: 42px; }
+  textarea { font-size: 16px; }
   .task-form select { height: 42px; }
   .task-form .btn { height: 42px; min-width: 42px; }
   .icon-btn { width: 36px; height: 36px; }
@@ -1700,23 +1704,62 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
       setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     });
   });
-  $('#btnImport').addEventListener('click', () => $('#importFile').click());
+  // Importar: colar JSON ou escolher arquivo; somar aos dados atuais ou substituir tudo
+  const COLLECTIONS = { projetos: 'projeto', recebimentos: 'recebimento', despesas: 'despesa', reunioes: 'reunião', tarefas: 'tarefa' };
+  function cleanItem(key, x) {
+    const o = { ...x, id: x.id ? String(x.id) : uid() };
+    if ('valor' in o) o.valor = num(o.valor);
+    if (key === 'projetos') { o.progresso = Math.max(0, Math.min(100, Number(o.progresso) || 0)); if (!STATUS[o.status]) o.status = 'orcamento'; o.cliente = canonicalClient(o.cliente); }
+    if (key === 'recebimentos') { o.recebido = !!o.recebido; o.dataRecebido = o.recebido ? (o.dataRecebido || o.dataPrevista || todayISO()) : null; o.cliente = canonicalClient(o.cliente); }
+    if (key === 'despesas' && !CATEGORIAS.includes(o.categoria)) o.categoria = 'Outros';
+    if (key === 'tarefas') { o.feito = !!o.feito; if (o.tag !== 'pessoal') o.tag = 'trabalho'; }
+    return o;
+  }
+  $('#btnImport').addEventListener('click', () => {
+    openDialog('Importar dados', `
+      <div class="field full">
+        <label class="label" for="importText">Cole o JSON aqui</label>
+        <textarea id="importText" name="json" rows="8" placeholder='{"despesas": [ ... ], "recebimentos": [ ... ]}'></textarea>
+        <button class="btn btn-sm" type="button" id="btnPickFile" style="justify-self:start">Ou escolher arquivo .json</button>
+      </div>
+      <fieldset class="field full" style="border:0;padding:0;margin:0;gap:8px">
+        <legend class="label" style="margin-bottom:8px">Como importar</legend>
+        <label class="radio"><input type="radio" name="modo" value="somar" checked> Adicionar aos dados atuais</label>
+        <label class="radio"><input type="radio" name="modo" value="substituir"> Substituir tudo (apaga os dados atuais)</label>
+      </fieldset>
+      <p class="full import-err" id="importErr" hidden></p>`,
+    (fd) => {
+      const err = $('#importErr');
+      let data;
+      try { data = JSON.parse(fd.json || ''); } catch (e) { data = null; }
+      const keys = data && typeof data === 'object' ? Object.keys(COLLECTIONS).filter((k) => Array.isArray(data[k])) : [];
+      if (!keys.length) {
+        err.textContent = 'Não reconheci esse conteúdo. Cole o JSON completo, começando com { e terminando com }.';
+        err.hidden = false;
+        return false;
+      }
+      if (fd.modo === 'substituir') {
+        state = normalize({ nome: data.nome || state.nome });
+      }
+      const added = [];
+      keys.forEach((k) => {
+        const have = new Set(state[k].map((x) => x.id));
+        const fresh = data[k].filter((x) => x && typeof x === 'object').map((x) => cleanItem(k, x)).filter((x) => !have.has(x.id));
+        state[k].push(...fresh);
+        if (fresh.length) added.push(`${fresh.length} ${COLLECTIONS[k]}${fresh.length > 1 ? (k === 'reunioes' ? 'ões' : 's') : ''}`.replace('reuniãoões', 'reuniões'));
+      });
+      commit();
+      toast(added.length ? `Importado: ${added.join(', ')}` : 'Nada novo para importar');
+    }, 'Importar');
+    $('#btnPickFile').addEventListener('click', () => $('#importFile').click());
+    $('#importText').addEventListener('input', () => { $('#importErr').hidden = true; });
+  });
   $('#importFile').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     e.target.value = '';
-    if (!file) return;
-    try {
-      const data = JSON.parse(await file.text());
-      if (!data || typeof data !== 'object' || !Array.isArray(data.projetos)) throw new Error('formato');
-      delete data.exportadoEm;
-      askConfirm('Importar backup', `O arquivo tem ${data.projetos.length} projeto(s). Os dados atuais serão substituídos.`, 'Importar', () => {
-        state = normalize(data);
-        commit();
-        toast('Backup importado');
-      });
-    } catch (err) {
-      toast('Arquivo inválido: não é um backup do Apexel');
-    }
+    if (!file || !$('#importText')) return;
+    try { $('#importText').value = await file.text(); toast(`Arquivo carregado: ${file.name}`); }
+    catch (err) { toast('Não consegui ler esse arquivo'); }
   });
   $('#btnReset').addEventListener('click', () => {
     askConfirm('Carregar exemplo', 'Todos os dados atuais serão substituídos pelos dados de exemplo.', 'Carregar', () => {
