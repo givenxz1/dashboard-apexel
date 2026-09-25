@@ -700,7 +700,7 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
     </div>
   </section>
 
-  <footer class="footer">APEXEL STUDIO · DADOS SALVOS NESTE NAVEGADOR · <button class="btn btn-sm" type="button" id="btnReset" style="height:22px;margin-left:6px">Restaurar exemplo</button></footer>
+  <footer class="footer">APEXEL STUDIO · DADOS SALVOS NESTE NAVEGADOR · <button class="btn btn-sm btn-danger" type="button" id="btnWipe" style="height:22px;margin-left:6px">Zerar tudo</button> <button class="btn btn-sm" type="button" id="btnReset" style="height:22px">Carregar exemplo</button></footer>
 </div>
 
 <!-- Dialog genérico -->
@@ -725,7 +725,7 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
   'use strict';
 
   /* ================= Utilidades ================= */
-  const STORAGE_KEY = 'apexel.freelancer.v1';
+  const STORAGE_KEY = 'apexel.freelancer.v2';
   const $ = (s) => document.querySelector(s);
   const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
   const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -855,8 +855,14 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) return normalize(JSON.parse(raw));
     } catch (e) { /* storage indisponível ou corrompido */ }
-    const data = sampleData();
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+    // Primeira abertura: começa do zero (mantém só o nome, se já existia na versão anterior)
+    const data = normalize({});
+    try {
+      const old = JSON.parse(localStorage.getItem('apexel.freelancer.v1') || 'null');
+      if (old && old.nome) data.nome = old.nome;
+      localStorage.removeItem('apexel.freelancer.v1');
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {}
     return data;
   }
   function save() {
@@ -1042,7 +1048,7 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
     const pend = tasks.filter((t) => !t.feito);
     $('#ovTasks').innerHTML = pend.length
       ? pend.slice(0, 5).map((t) => taskLi(t, today)).join('') + (pend.length > 5 ? `<li><button class="link-btn" type="button" data-go="agenda">+ ${pend.length - 5} tarefas →</button></li>` : '')
-      : '<li class="ok-state">Checklist do dia concluído.</li>';
+      : tasks.length ? '<li class="ok-state">Checklist do dia concluído.</li>' : '<li class="meta" style="border:0">Nenhuma tarefa para hoje.</li>';
 
     // Projetos ativos
     const ativos = state.projetos.filter((p) => p.status === 'andamento' || p.status === 'revisao')
@@ -1577,10 +1583,18 @@ button.stat:hover .stat-foot i { color: var(--accent); transform: translateX(3px
     }
   });
   $('#btnReset').addEventListener('click', () => {
-    askConfirm('Restaurar exemplo', 'Todos os dados atuais serão substituídos pelos dados de exemplo.', 'Restaurar', () => {
+    askConfirm('Carregar exemplo', 'Todos os dados atuais serão substituídos pelos dados de exemplo.', 'Carregar', () => {
       state = sampleData();
       commit();
       toast('Dados de exemplo restaurados');
+    });
+  });
+
+  $('#btnWipe').addEventListener('click', () => {
+    askConfirm('Zerar tudo', 'Projetos, recebimentos, despesas, reuniões e tarefas serão apagados. Exporte um backup antes se quiser guardar algo.', 'Apagar tudo', () => {
+      state = normalize({ nome: state.nome });
+      commit();
+      toast('Tudo zerado');
     });
   });
 
