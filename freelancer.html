@@ -263,6 +263,13 @@ input::placeholder, textarea::placeholder { color: var(--text-3); }
 .list .meta.late { color: var(--danger); }
 .li-actions { display: inline-flex; align-items: center; gap: 2px; }
 .row-actions { display: inline-flex; gap: 2px; }
+.list > li.ignored .title, .list > li.ignored .meta, .list > li.ignored .num { opacity: .45; }
+.list > li.ignored .num { text-decoration: line-through; }
+.ign { font-size: 11px; font-weight: 500; color: var(--text-2); padding: 0 7px; border-radius: 5px; border: 1px dashed rgba(244, 244, 239, .3); white-space: nowrap; }
+.icon-btn.on { color: var(--amber); }
+.check { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; }
+.check input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); box-shadow: none !important; }
+.check small { display: block; font-size: 12px; color: var(--text-3); }
 .cat { font-size: 11.5px; color: var(--text-2); padding: 0 7px; border-radius: 5px; background: rgba(244, 244, 239, .06); }
 .empty {
   display: block; padding: 22px 12px; text-align: center; color: var(--text-3); font-size: 13px;
@@ -806,6 +813,8 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   const CATEGORIAS = ['Comida', 'Investimentos', 'Ferramentas', 'Lazer', 'Pessoal', 'Despesas'];
 
   const ICON = {
+    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+    eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-2.2 3.2"/><path d="M6.6 6.6A17.4 17.4 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m2 2 20 20"/></svg>',
     edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
     del: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>',
   };
@@ -948,8 +957,8 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   const plural = (n, s, p) => `${n} ${n === 1 ? s : p}`;
 
   function monthFinance(mk) {
-    const recebidos = state.recebimentos.filter((r) => r.recebido && monthKey(r.dataRecebido) === mk);
-    const despesas = state.despesas.filter((d) => monthKey(d.data) === mk);
+    const recebidos = state.recebimentos.filter((r) => !r.ignorado && r.recebido && monthKey(r.dataRecebido) === mk);
+    const despesas = state.despesas.filter((d) => !d.ignorado && monthKey(d.data) === mk);
     const faturamento = sum(recebidos);
     const totalDesp = sum(despesas);
     return { recebidos, despesas, faturamento, totalDesp, lucro: faturamento - totalDesp };
@@ -961,7 +970,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     const clientes = new Set(abertos.map((p) => p.cliente.trim().toLowerCase()));
     const andamento = state.projetos.filter((p) => p.status === 'andamento' || p.status === 'revisao');
     const concluidosMes = state.projetos.filter((p) => p.status === 'concluido' && monthKey(p.concluidoEm) === mk);
-    const pendentes = state.recebimentos.filter((r) => !r.recebido);
+    const pendentes = state.recebimentos.filter((r) => !r.recebido && !r.ignorado);
     const f = monthFinance(mk);
     return {
       clientes: clientes.size,
@@ -1123,6 +1132,9 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   }
 
   const meetTitle = (r) => (r.cliente ? `${r.cliente} · ` : '') + r.assunto;
+  // Desconsiderar: o lançamento fica na lista, mas sai de todos os cálculos
+  const ignBtn = (x, kind) => `<button class="icon-btn${x.ignorado ? ' on' : ''}" type="button" data-act="toggle-ignore" data-kind="${kind}" data-id="${x.id}" aria-pressed="${!!x.ignorado}" aria-label="${x.ignorado ? 'Voltar a considerar nos cálculos' : 'Desconsiderar dos cálculos'}" title="${x.ignorado ? 'Voltar a considerar nos cálculos' : 'Desconsiderar dos cálculos'}">${x.ignorado ? ICON.eyeOff : ICON.eye}</button>`;
+  const ignTag = (x) => (x.ignorado ? '<span class="ign">Desconsiderado</span>' : '');
   const emptyLi = (msg) => `<li class="empty" style="justify-content:center">${msg}</li>`;
   const taskLi = (t, today) => `<li class="task${t.feito ? ' done' : ''}">
       <label>
@@ -1269,7 +1281,8 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     const delta = prev.faturamento ? Math.round(((f.faturamento - prev.faturamento) / prev.faturamento) * 100) : null;
     $('#fnFatFoot').textContent = delta === null ? plural(f.recebidos.length, 'recebimento', 'recebimentos') : `${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta)}% vs. mês anterior`;
     $('#fnDesp').textContent = money(f.totalDesp);
-    $('#fnDespFoot').textContent = plural(f.despesas.length, 'lançamento', 'lançamentos');
+    const despIgn = state.despesas.filter((d) => d.ignorado && monthKey(d.data) === mk).length;
+    $('#fnDespFoot').textContent = plural(f.despesas.length, 'lançamento', 'lançamentos') + (despIgn ? ` · ${plural(despIgn, 'desconsiderado', 'desconsiderados')}` : '');
     const lucro = $('#fnLucro');
     lucro.textContent = money(f.lucro);
     lucro.className = 'kpi-v ' + (f.lucro >= 0 ? 'pos' : 'neg');
@@ -1287,46 +1300,52 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       </div>`).join('') : '<div class="empty">Sem despesas neste mês</div>';
 
     // Recebimentos (pendentes | recebidos no mês)
-    const pend = [...m.pendentes].sort((a, b) => a.dataPrevista.localeCompare(b.dataPrevista));
-    $('#recebTabs').innerHTML = [['pendentes', 'Pendentes', pend.length], ['recebidos', 'Recebidos no mês', f.recebidos.length]].map(([k, l, n]) =>
+    const pend = state.recebimentos.filter((r) => !r.recebido).sort((a, b) => a.dataPrevista.localeCompare(b.dataPrevista));
+    const recAll = state.recebimentos.filter((r) => r.recebido && monthKey(r.dataRecebido) === mk);
+    $('#recebTabs').innerHTML = [['pendentes', 'Pendentes', pend.length], ['recebidos', 'Recebidos no mês', recAll.length]].map(([k, l, n]) =>
       `<button type="button" class="chip${ui.recebView === k ? ' active' : ''}" data-receb-view="${k}">${l}<span class="n">${n}</span></button>`).join('');
     if (ui.recebView === 'pendentes') {
       $('#recebList').innerHTML = pend.length ? pend.map((r) => {
-        const late = daysUntil(r.dataPrevista) < 0;
-        return `<li class="has-actions">
+        const late = !r.ignorado && daysUntil(r.dataPrevista) < 0;
+        return `<li class="has-actions${r.ignorado ? ' ignored' : ''}">
           <div class="grow">
             <div class="title">${esc(r.cliente)}</div>
-            <div class="meta${late ? ' late' : ''}"><span class="num">${money(r.valor)}</span><span>· ${fmtDate(r.dataPrevista)}</span>${late ? '<span class="alert">Atrasado</span>' : ''}</div>
+            <div class="meta${late ? ' late' : ''}"><span class="num">${money(r.valor)}</span><span>· ${fmtDate(r.dataPrevista)}</span>${late ? '<span class="alert">Atrasado</span>' : ''}${ignTag(r)}</div>
           </div>
           <div class="li-actions row-actions">
             <button class="btn btn-sm" type="button" data-act="receive" data-id="${r.id}" title="Marcar como recebido">Marcar recebido</button>
+            ${ignBtn(r, 'receb')}
             <button class="icon-btn" type="button" data-act="edit-receb" data-id="${r.id}" aria-label="Editar recebimento">${ICON.edit}</button>
             <button class="icon-btn del" type="button" data-act="del-receb" data-id="${r.id}" aria-label="Excluir recebimento">${ICON.del}</button>
           </div>
         </li>`;
       }).join('') : emptyLi('Nada pendente');
     } else {
-      const rec = [...f.recebidos].sort((a, b) => b.dataRecebido.localeCompare(a.dataRecebido));
-      $('#recebList').innerHTML = rec.length ? rec.map((r) => `<li>
+      const rec = [...recAll].sort((a, b) => b.dataRecebido.localeCompare(a.dataRecebido));
+      $('#recebList').innerHTML = rec.length ? rec.map((r) => `<li class="has-actions${r.ignorado ? ' ignored' : ''}">
           <div class="grow">
             <div class="title">${esc(r.cliente)}</div>
-            <div class="meta"><span>Recebido em ${fmtDate(r.dataRecebido)}</span></div>
+            <div class="meta"><span>Recebido em ${fmtDate(r.dataRecebido)}</span>${ignTag(r)}</div>
           </div>
-          <span class="num" style="color:var(--accent)">${money(r.valor)}</span>
-          <button class="btn btn-sm" type="button" data-act="unreceive" data-id="${r.id}" title="Voltar para pendentes">Desfazer</button>
+          <div class="li-actions row-actions" style="align-items:center">
+            <span class="num" style="color:${r.ignorado ? 'inherit' : 'var(--accent)'};margin-right:6px">${money(r.valor)}</span>
+            <button class="btn btn-sm" type="button" data-act="unreceive" data-id="${r.id}" title="Voltar para pendentes">Desfazer</button>
+            ${ignBtn(r, 'receb')}
+          </div>
         </li>`).join('') : emptyLi(`Nenhum recebimento em ${monthLabel(mk)}`);
     }
 
     // Despesas do mês selecionado
-    const desp = [...f.despesas].sort((a, b) => b.data.localeCompare(a.data));
+    const desp = state.despesas.filter((d) => monthKey(d.data) === mk).sort((a, b) => b.data.localeCompare(a.data));
     $('#despTotal').textContent = money(f.totalDesp);
-    $('#despList').innerHTML = desp.length ? desp.map((d) => `<li class="has-actions">
+    $('#despList').innerHTML = desp.length ? desp.map((d) => `<li class="has-actions${d.ignorado ? ' ignored' : ''}">
         <div class="grow">
           <div class="title">${esc(d.descricao)}</div>
-          <div class="meta"><span class="cat">${esc(d.categoria)}</span><span>${fmtDate(d.data)}</span></div>
+          <div class="meta"><span class="cat">${esc(d.categoria)}</span><span>${fmtDate(d.data)}</span>${ignTag(d)}</div>
         </div>
         <div class="li-actions row-actions" style="align-items:center">
           <span class="num" style="margin-right:6px">${money(d.valor)}</span>
+          ${ignBtn(d, 'desp')}
           <button class="icon-btn" type="button" data-act="edit-desp" data-id="${d.id}" aria-label="Editar despesa">${ICON.edit}</button>
           <button class="icon-btn del" type="button" data-act="del-desp" data-id="${d.id}" aria-label="Excluir despesa">${ICON.del}</button>
         </div>
@@ -1604,9 +1623,10 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     const body =
       clientField(r.cliente) +
       field('valor', 'Valor (R$)', moneyInput('valor', r.valor)) +
-      field('dataPrevista', 'Data prevista', `<input name="dataPrevista" type="date" required value="${esc(r.dataPrevista)}">`);
+      field('dataPrevista', 'Data prevista', `<input name="dataPrevista" type="date" required value="${esc(r.dataPrevista)}">`) +
+      `<label class="check full"><input type="checkbox" name="ignorado" ${r.ignorado ? 'checked' : ''}><span>Desconsiderar dos cálculos<small>Fica salvo na lista, mas não entra em totais, lucro e gráficos.</small></span></label>`;
     openDialog(isNew ? 'Novo recebimento' : 'Editar recebimento', body, (fd) => {
-      const data = { cliente: canonicalClient(fd.cliente), valor: num(fd.valor), dataPrevista: fd.dataPrevista };
+      const data = { cliente: canonicalClient(fd.cliente), valor: num(fd.valor), dataPrevista: fd.dataPrevista, ignorado: !!fd.ignorado };
       if (isNew) state.recebimentos.push({ id: uid(), recebido: false, dataRecebido: null, ...data });
       else Object.assign(state.recebimentos.find((x) => x.id === r.id), data);
       commit();
@@ -1621,9 +1641,10 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       field('descricao', 'Descrição', `<input name="descricao" required maxlength="80" value="${esc(d.descricao)}">`, true) +
       field('categoria', 'Categoria', `<select name="categoria">${CATEGORIAS.map((c) => `<option${d.categoria === c ? ' selected' : ''}>${c}</option>`).join('')}</select>`) +
       field('valor', 'Valor (R$)', moneyInput('valor', d.valor)) +
-      field('data', 'Data', `<input name="data" type="date" required value="${esc(d.data)}">`);
+      field('data', 'Data', `<input name="data" type="date" required value="${esc(d.data)}">`) +
+      `<label class="check full"><input type="checkbox" name="ignorado" ${d.ignorado ? 'checked' : ''}><span>Desconsiderar dos cálculos<small>Fica salvo na lista, mas não entra em totais, lucro e gráficos.</small></span></label>`;
     openDialog(isNew ? 'Nova despesa' : 'Editar despesa', body, (fd) => {
-      const data = { descricao: fd.descricao.trim(), categoria: fd.categoria, valor: num(fd.valor), data: fd.data };
+      const data = { descricao: fd.descricao.trim(), categoria: fd.categoria, valor: num(fd.valor), data: fd.data, ignorado: !!fd.ignorado };
       if (isNew) state.despesas.push({ id: uid(), ...data });
       else Object.assign(state.despesas.find((x) => x.id === d.id), data);
       commit();
@@ -1696,6 +1717,11 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       case 'unreceive': {
         const r = byId(state.recebimentos, id);
         if (r) { r.recebido = false; r.dataRecebido = null; commit(); toast('Recebimento voltou para pendentes'); }
+        break;
+      }
+      case 'toggle-ignore': {
+        const x = byId(btn.dataset.kind === 'desp' ? state.despesas : state.recebimentos, id);
+        if (x) { x.ignorado = !x.ignorado; commit(); toast(x.ignorado ? 'Desconsiderado dos cálculos' : 'Voltou a contar nos cálculos'); }
         break;
       }
       case 'edit-receb': recebForm(byId(state.recebimentos, id)); break;
@@ -1782,6 +1808,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   function cleanItem(key, x) {
     const o = { ...x, id: x.id ? String(x.id) : uid() };
     if ('valor' in o) o.valor = num(o.valor);
+    if (key === 'recebimentos' || key === 'despesas') o.ignorado = !!o.ignorado;
     if (key === 'projetos') { o.progresso = Math.max(0, Math.min(100, Number(o.progresso) || 0)); if (!STATUS[o.status]) o.status = 'orcamento'; o.cliente = canonicalClient(o.cliente); }
     if (key === 'recebimentos') { o.recebido = !!o.recebido; o.dataRecebido = o.recebido ? (o.dataRecebido || o.dataPrevista || todayISO()) : null; o.cliente = canonicalClient(o.cliente); }
     if (key === 'despesas') o.categoria = fixCategoria(o.categoria);
