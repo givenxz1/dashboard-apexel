@@ -308,6 +308,10 @@ input::placeholder, textarea::placeholder { color: var(--text-3); }
 .task .txt { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .task.done .txt { text-decoration: line-through; color: var(--text-3); }
 .task .tag { font-size: 9.5px; height: 20px; padding: 0 6px; }
+button.badge { background: transparent; cursor: pointer; transition: background .15s; }
+button.badge:hover { background: rgba(244, 244, 239, .08); }
+.task.done .tag { opacity: .7; }
+.check-list { display: grid; gap: 10px; }
 .task-form { display: flex; gap: 8px; margin-top: 14px; }
 .task-form input { flex: 1; min-width: 0; }
 .task-form select { width: auto; }
@@ -581,6 +585,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     <div class="side-foot">
       <p class="side-label">Seus dados</p>
       <button class="side-btn" type="button" id="btnImport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>Importar lançamentos</button>
+      <button class="side-btn" type="button" id="btnPdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>Exportar PDF</button>
       <button class="side-btn" type="button" id="btnExport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg>Exportar backup</button>
       <button class="side-btn" type="button" id="btnReset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Carregar exemplo</button>
       <button class="side-btn danger" type="button" id="btnWipe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>Zerar tudo</button>
@@ -1141,7 +1146,8 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         <input type="checkbox" data-act="toggle-task" data-id="${t.id}" ${t.feito ? 'checked' : ''}>
         <span class="txt">${esc(t.texto)}${t.data < today ? ' <span class="alert">De ' + fmtDate(t.data).slice(0, 5) + '</span>' : ''}</span>
       </label>
-      <span class="badge tag tag-${t.tag}">${t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho'}</span>
+      <button class="badge tag tag-${t.tag}" type="button" data-act="toggle-tag" data-id="${t.id}" title="Trocar para ${t.tag === 'pessoal' ? 'Trabalho' : 'Pessoal'}" aria-label="Tipo ${t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho'}. Trocar para ${t.tag === 'pessoal' ? 'Trabalho' : 'Pessoal'}">${t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho'}</button>
+      <button class="icon-btn" type="button" data-act="edit-task" data-id="${t.id}" aria-label="Editar tarefa">${ICON.edit}</button>
       <button class="icon-btn del" type="button" data-act="del-task" data-id="${t.id}" aria-label="Excluir tarefa">${ICON.del}</button>
     </li>`;
 
@@ -1669,6 +1675,20 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     });
   }
 
+  function taskForm(t) {
+    if (!t) return;
+    const body =
+      field('texto', 'Tarefa', `<input name="texto" required maxlength="120" value="${esc(t.texto)}">`, true) +
+      field('tag', 'Tipo', `<select name="tag"><option value="trabalho"${t.tag !== 'pessoal' ? ' selected' : ''}>Trabalho</option><option value="pessoal"${t.tag === 'pessoal' ? ' selected' : ''}>Pessoal</option></select>`) +
+      field('data', 'Data', `<input name="data" type="date" required value="${esc(t.data)}">`) +
+      `<label class="check full"><input type="checkbox" name="feito" ${t.feito ? 'checked' : ''}><span>Concluída</span></label>`;
+    openDialog('Editar tarefa', body, (fd) => {
+      Object.assign(t, { texto: fd.texto.trim(), tag: fd.tag === 'pessoal' ? 'pessoal' : 'trabalho', data: fd.data, feito: !!fd.feito });
+      commit();
+      toast('Tarefa atualizada');
+    });
+  }
+
   function nameForm() {
     openDialog('Seu nome', field('nome', 'Como devemos te chamar?', `<input name="nome" required maxlength="30" value="${esc(state.nome)}">`, true), (fd) => {
       state.nome = fd.nome.trim() || 'Dev';
@@ -1731,6 +1751,12 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       case 'edit-meet': meetForm(byId(state.reunioes, id)); break;
       case 'del-meet': askConfirm('Excluir reunião', 'Esta ação não pode ser desfeita.', 'Excluir', () => { remove('reunioes', id); commit(); toast('Reunião excluída'); }); break;
       case 'del-task': remove('tarefas', id); commit(); break;
+      case 'toggle-tag': {
+        const t = byId(state.tarefas, id);
+        if (t) { t.tag = t.tag === 'pessoal' ? 'trabalho' : 'pessoal'; commit(); toast(`Tarefa agora é ${t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho'}`); }
+        break;
+      }
+      case 'edit-task': taskForm(byId(state.tarefas, id)); break;
     }
   });
 
@@ -1745,6 +1771,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     if (c === 'menu') {
       openDialog('Seus dados', `<div class="menu-list full">
           <button class="btn" type="button" data-cmd="import">Importar lançamentos</button>
+          <button class="btn" type="button" data-cmd="pdf">Exportar PDF</button>
           <button class="btn" type="button" data-cmd="export">Exportar backup</button>
           <button class="btn" type="button" data-cmd="sample">Carregar exemplo</button>
           <button class="btn btn-danger" type="button" data-cmd="wipe">Zerar tudo</button>
@@ -1753,7 +1780,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       $('#dlgCancel').hidden = true;
       return;
     }
-    const target = { import: '#btnImport', export: '#btnExport', sample: '#btnReset', wipe: '#btnWipe' }[c];
+    const target = { import: '#btnImport', export: '#btnExport', pdf: '#btnPdf', sample: '#btnReset', wipe: '#btnWipe' }[c];
     if (target) { if (dlg.open) closeDialog(); $(target).click(); return; }
     if (c === 'new-project') projectForm();
   }
@@ -1784,7 +1811,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
        <textarea id="exportText" class="full" readonly rows="10" aria-label="Backup em JSON">${esc(json)}</textarea>
        <div class="full" style="display:flex;gap:8px;flex-wrap:wrap">
          <button class="btn" type="button" id="btnCopyJson">Copiar JSON</button>
-         <button class="btn" type="button" id="btnDownloadJson">↓ Baixar arquivo</button>
+         <button class="btn" type="button" id="btnDownloadJson">Baixar arquivo .json</button>
        </div>`,
       () => {}, 'Fechar');
     $('#dlgCancel').hidden = true;
@@ -1793,16 +1820,228 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       try { await navigator.clipboard.writeText(ta.value); toast('JSON copiado'); }
       catch (err) { ta.focus(); ta.select(); toast('Selecionado: use Ctrl+C para copiar'); }
     });
-    $('#btnDownloadJson').addEventListener('click', () => {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
-      a.download = `apexel-backup-${todayISO()}.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    });
+    $('#btnDownloadJson').addEventListener('click', () => saveFile(new Blob([json], { type: 'application/json' }), `apexel-backup-${todayISO()}.json`));
   });
+  /* ================= Salvar arquivos (arquivo local ou link publicado) ================= */
+  async function saveFile(blob, filename) {
+    const host = window.claude && typeof window.claude.use === 'function';
+    if (host) {
+      let dl = null;
+      try { dl = await window.claude.use('downloads'); } catch (e) { dl = null; }
+      if (!dl) { toast('Download indisponível nesta visualização'); return false; }
+      try { await dl.save({ filename, data: blob }); toast(`Arquivo salvo: ${filename}`); return true; }
+      catch (e) {
+        const code = e && e.code;
+        toast(code === 'declined' ? 'Download cancelado' : code === 'rate_limited' ? 'Aguarde um instante e tente de novo' : 'Não foi possível salvar o arquivo');
+        return false;
+      }
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    toast(`Arquivo gerado: ${filename}`);
+    return true;
+  }
+
+  /* ================= Exportar PDF ================= */
+  const loadScript = (src) => new Promise((resolve, reject) => {
+    const el = document.createElement('script');
+    el.src = src;
+    el.onload = resolve;
+    el.onerror = () => reject(new Error(src));
+    document.head.appendChild(el);
+  });
+  let pdfLib = null;
+  function loadPdf() {
+    if (!pdfLib) {
+      pdfLib = (async () => {
+        if (!(window.jspdf && window.jspdf.jsPDF)) await loadScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js');
+        if (!window.jspdf.jsPDF.API.autoTable) await loadScript('https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js');
+        return window.jspdf.jsPDF;
+      })().catch((e) => { pdfLib = null; throw e; });
+    }
+    return pdfLib;
+  }
+  // As fontes padrão do PDF só cobrem Latin-1: troca o que ficaria quebrado
+  const pdfText = (v) => String(v ?? '').replace(/[—–]/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/…/g, '...').replace(/[^\x00-\xFF]/g, '');
+  const PDF_SECTIONS = { resumo: 'Resumo', projetos: 'Projetos', financeiro: 'Financeiro', agenda: 'Agenda' };
+  const STATUS_ORDER = { andamento: 0, revisao: 1, orcamento: 2, concluido: 3 };
+
+  async function buildPdf(sections, title) {
+    const JsPDF = await loadPdf();
+    const doc = new JsPDF({ unit: 'pt', format: 'a4' });
+    const W = doc.internal.pageSize.getWidth();
+    const H = doc.internal.pageSize.getHeight();
+    const M = 40;
+    const NAVY = [11, 17, 32], NEON = [157, 255, 45], INK = [22, 24, 30], MUTED = [112, 116, 124], SOFT = [246, 246, 242], LINE = [226, 227, 222];
+    const now = new Date();
+
+    // Cabeçalho
+    doc.setFillColor(...NAVY); doc.rect(0, 0, W, 92, 'F');
+    doc.setFillColor(...NEON); doc.rect(M, 30, 7, 7, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text('APEXEL', M + 14, 37);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(170, 175, 182); doc.text('Studio', M + 80, 37);
+    doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(21); doc.text(pdfText(title), M, 70);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(170, 175, 182);
+    doc.text(pdfText(`${state.nome || 'Dev'} - gerado em ${fmtDate(todayISO())} às ${pad(now.getHours())}:${pad(now.getMinutes())}`), W - M, 70, { align: 'right' });
+    let y = 122;
+
+    const ensure = (need) => { if (y + need > H - 60) { doc.addPage(); y = 50; } };
+    const heading = (txt, big) => {
+      ensure(big ? 70 : 50);
+      doc.setTextColor(...INK); doc.setFont('helvetica', 'bold'); doc.setFontSize(big ? 15 : 11.5);
+      doc.text(pdfText(txt), M, y);
+      if (big) { doc.setFillColor(...NEON); doc.rect(M, y + 6, 26, 2.5, 'F'); y += 24; } else y += 12;
+    };
+    const note = (txt) => { ensure(24); doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...MUTED); doc.text(pdfText(txt), M, y + 4); y += 20; };
+    const table = (head, body, opts = {}) => {
+      if (!body.length) { note(opts.empty || 'Nenhum registro.'); return; }
+      doc.autoTable({
+        startY: y, margin: { left: M, right: M, top: 50, bottom: 50 }, theme: 'striped',
+        head: [head.map(pdfText)], body: body.map((r) => r.map(pdfText)),
+        foot: opts.foot ? [opts.foot.map(pdfText)] : undefined, showFoot: 'lastPage',
+        styles: { font: 'helvetica', fontSize: 8.8, cellPadding: { top: 5, bottom: 5, left: 6, right: 6 }, textColor: INK, lineColor: LINE, overflow: 'linebreak' },
+        headStyles: { fillColor: NAVY, textColor: [255, 255, 255], fontStyle: 'bold' },
+        footStyles: { fillColor: [236, 240, 228], textColor: INK, fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: SOFT },
+        columnStyles: opts.columnStyles || {},
+        didParseCell: (d) => {
+          if (opts.columnStyles && opts.columnStyles[d.column.index] && opts.columnStyles[d.column.index].halign) d.cell.styles.halign = opts.columnStyles[d.column.index].halign;
+          if (d.section === 'body' && opts.muted && opts.muted(d.row.index)) { d.cell.styles.textColor = [150, 153, 160]; d.cell.styles.fontStyle = 'italic'; }
+        },
+      });
+      y = doc.lastAutoTable.finalY + 22;
+    };
+    const right = (...cols) => Object.fromEntries(cols.map((c) => [c, { halign: 'right' }]));
+
+    const m = metrics();
+    const sections_ = {
+      resumo() {
+        heading('Resumo', true);
+        const late = state.projetos.filter((p) => p.status !== 'concluido' && p.prazo && daysUntil(p.prazo) < 0).length;
+        const kpis = [
+          ['Clientes ativos', String(m.clientes)], ['Projetos em andamento', String(m.andamento)],
+          ['Concluídos no mês', String(m.concluidosMes)], ['Entregas atrasadas', String(late)],
+          ['Receita do mês', money(m.faturamento)], ['Despesas do mês', money(m.despesas)],
+          ['Lucro do mês', money(m.lucro)], ['A receber', money(m.aReceber)],
+        ];
+        const cw = (W - 2 * M - 3 * 10) / 4, ch = 50;
+        ensure(ch * 2 + 30);
+        kpis.forEach(([label, value], i) => {
+          const cx = M + (i % 4) * (cw + 10), cy = y + Math.floor(i / 4) * (ch + 10);
+          doc.setFillColor(...SOFT); doc.setDrawColor(...LINE); doc.roundedRect(cx, cy, cw, ch, 5, 5, 'FD');
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...MUTED); doc.text(pdfText(label), cx + 10, cy + 17);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(...INK); doc.text(pdfText(value), cx + 10, cy + 37);
+        });
+        y += ch * 2 + 30;
+        heading('Faturamento e despesas por mês');
+        const months = [...new Set(state.recebimentos.filter((r) => r.recebido && !r.ignorado).map((r) => monthKey(r.dataRecebido))
+          .concat(state.despesas.filter((d) => !d.ignorado).map((d) => monthKey(d.data))))].filter(Boolean).sort();
+        let tf = 0, td = 0;
+        const rows = months.map((k) => { const f = monthFinance(k); tf += f.faturamento; td += f.totalDesp; return [monthLabel(k).replace(/^./, (c) => c.toUpperCase()), money(f.faturamento), money(f.totalDesp), money(f.lucro)]; });
+        table(['Mês', 'Faturamento', 'Despesas', 'Lucro'], rows, { foot: ['Total', money(tf), money(td), money(tf - td)], columnStyles: right(1, 2, 3), empty: 'Sem movimentação financeira.' });
+        note('Lançamentos desconsiderados ficam fora de todos os totais.');
+      },
+      projetos() {
+        heading('Projetos', true);
+        const list = [...state.projetos].sort((a, b) => (STATUS_ORDER[a.status] - STATUS_ORDER[b.status]) || String(a.prazo).localeCompare(String(b.prazo)));
+        const rows = list.map((p) => { const dl = deadlineInfo(p); return [p.cliente, p.nome, STATUS[p.status] || p.status, fmtDate(p.prazo) + (dl ? ` (${dl.text.toLowerCase()})` : ''), `${Math.round(Number(p.progresso) || 0)}%`, money(p.valor)]; });
+        table(['Cliente', 'Projeto', 'Status', 'Prazo', 'Progresso', 'Valor'], rows, {
+          foot: [`${plural(list.length, 'projeto', 'projetos')}`, '', '', '', '', money(sum(list))],
+          columnStyles: { ...right(4, 5), 3: { cellWidth: 110 } }, empty: 'Nenhum projeto cadastrado.',
+        });
+      },
+      financeiro() {
+        heading('Financeiro', true);
+        heading('Recebimentos');
+        const rec = [...state.recebimentos].sort((a, b) => String(b.dataRecebido || b.dataPrevista).localeCompare(String(a.dataRecebido || a.dataPrevista)));
+        const sit = (r) => r.recebido ? `Recebido em ${fmtDate(r.dataRecebido)}` : daysUntil(r.dataPrevista) < 0 ? 'Atrasado' : 'Pendente';
+        const recebido = sum(rec.filter((r) => r.recebido && !r.ignorado));
+        const pendente = sum(rec.filter((r) => !r.recebido && !r.ignorado));
+        table(['Cliente', 'Valor', 'Previsto', 'Situação', 'Nos cálculos'], rec.map((r) => [r.cliente, money(r.valor), fmtDate(r.dataPrevista), sit(r), r.ignorado ? 'Não' : 'Sim']), {
+          foot: ['Recebido / pendente', money(recebido), '', money(pendente), ''], columnStyles: right(1), muted: (i) => rec[i].ignorado, empty: 'Nenhum recebimento cadastrado.',
+        });
+        heading('Despesas');
+        const desp = [...state.despesas].sort((a, b) => String(b.data).localeCompare(String(a.data)));
+        table(['Data', 'Descrição', 'Categoria', 'Valor', 'Nos cálculos'], desp.map((d) => [fmtDate(d.data), d.descricao, d.categoria, money(d.valor), d.ignorado ? 'Não' : 'Sim']), {
+          foot: ['Total', '', '', money(sum(desp.filter((d) => !d.ignorado))), ''], columnStyles: right(3), muted: (i) => desp[i].ignorado, empty: 'Nenhuma despesa cadastrada.',
+        });
+        heading('Despesas por categoria');
+        const valid = state.despesas.filter((d) => !d.ignorado);
+        const total = sum(valid);
+        const cats = CATEGORIAS.map((c) => [c, sum(valid.filter((d) => d.categoria === c))]).sort((a, b) => b[1] - a[1]);
+        table(['Categoria', 'Total', '% do total'], total ? cats.map(([c, v]) => [c, money(v), `${Math.round((v / total) * 100)}%`]) : [], { foot: ['Total', money(total), '100%'], columnStyles: right(1, 2), empty: 'Sem despesas nos cálculos.' });
+      },
+      agenda() {
+        heading('Agenda', true);
+        heading('Reuniões');
+        const meets = [...state.reunioes].sort((a, b) => (a.data + a.hora).localeCompare(b.data + b.hora));
+        table(['Data', 'Hora', 'Cliente', 'Assunto'], meets.map((r) => [fmtDate(r.data), r.hora || '', r.cliente || '', r.assunto]), { columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: 45 } }, empty: 'Nenhuma reunião cadastrada.' });
+        heading('Tarefas');
+        const tasks = [...state.tarefas].sort((a, b) => String(b.data).localeCompare(String(a.data)) || Number(a.feito) - Number(b.feito));
+        table(['Data', 'Tarefa', 'Tipo', 'Status'], tasks.map((t) => [fmtDate(t.data), t.texto, t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho', t.feito ? 'Feita' : 'Pendente']), {
+          columnStyles: { 0: { cellWidth: 70 }, 2: { cellWidth: 65 }, 3: { cellWidth: 60 } }, muted: (i) => tasks[i].feito, empty: 'Nenhuma tarefa cadastrada.',
+        });
+      },
+    };
+    sections.forEach((k, i) => { if (i > 0 && y > 122) { y += 6; } sections_[k](); });
+
+    // Rodapé com paginação
+    const pages = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pages; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(...LINE); doc.line(M, H - 34, W - M, H - 34);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...MUTED);
+      doc.text(pdfText(`Apexel Studio - ${title}`), M, H - 20);
+      doc.text(`Página ${i} de ${pages}`, W - M, H - 20, { align: 'right' });
+    }
+    return doc.output('blob');
+  }
+
+  $('#btnPdf').addEventListener('click', () => {
+    openDialog('Exportar PDF', `
+      <fieldset class="field full" style="border:0;padding:0;margin:0">
+        <legend class="label" style="margin-bottom:10px">O que incluir</legend>
+        <div class="check-list">
+          ${Object.entries(PDF_SECTIONS).map(([k, l]) => `<label class="check"><input type="checkbox" name="sec" value="${k}" checked><span>${l}<small>${{ resumo: 'Indicadores e faturamento x despesas por mês', projetos: 'Todos os projetos com status, prazo e valor', financeiro: 'Recebimentos, despesas e totais por categoria', agenda: 'Reuniões e tarefas' }[k]}</small></span></label>`).join('')}
+        </div>
+      </fieldset>
+      <fieldset class="field full" style="border:0;padding:0;margin:0;gap:8px">
+        <legend class="label" style="margin-bottom:10px">Formato</legend>
+        <label class="radio"><input type="radio" name="modo" value="junto" checked> Tudo em um PDF</label>
+        <label class="radio"><input type="radio" name="modo" value="separado"> Um PDF para cada seção</label>
+      </fieldset>
+      <p class="full import-err" id="pdfErr" hidden></p>`,
+    (fd) => {
+      const secs = [...document.querySelectorAll('#dlgBody input[name=sec]:checked')].map((i) => i.value);
+      if (!secs.length) { const e = $('#pdfErr'); e.textContent = 'Escolha pelo menos uma seção.'; e.hidden = false; return false; }
+      exportPdf(secs, fd.modo === 'separado');
+    }, 'Gerar PDF');
+  });
+  async function exportPdf(secs, separate) {
+    toast('Gerando PDF…');
+    const date = todayISO();
+    try {
+      if (separate) {
+        for (const k of secs) {
+          const blob = await buildPdf([k], PDF_SECTIONS[k]);
+          await saveFile(blob, `apexel-${k}-${date}.pdf`);
+        }
+      } else {
+        const all = secs.length === Object.keys(PDF_SECTIONS).length;
+        const title = all ? 'Relatório completo' : secs.map((k) => PDF_SECTIONS[k]).join(' + ');
+        const blob = await buildPdf(secs, title);
+        await saveFile(blob, `apexel-${all ? 'relatorio-completo' : secs.join('-')}-${date}.pdf`);
+      }
+    } catch (e) {
+      toast('Não consegui gerar o PDF. Verifique a conexão e tente de novo.');
+    }
+  }
+
   // Importar: colar JSON ou escolher arquivo; somar aos dados atuais ou substituir tudo
   const COLLECTIONS = { projetos: 'projeto', recebimentos: 'recebimento', despesas: 'despesa', reunioes: 'reunião', tarefas: 'tarefa' };
   function cleanItem(key, x) {
