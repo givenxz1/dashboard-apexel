@@ -313,71 +313,79 @@ button.badge:hover { background: rgba(244, 244, 239, .08); }
 .task.done .tag { opacity: .7; }
 .check-list { display: grid; gap: 10px; }
 /* Sistema M */
-.sm-grid { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .92fr) minmax(0, 1fr); gap: 20px; align-items: start; }
-.sm-grid::before { content: ""; position: absolute; left: 12%; right: 12%; top: 46px; border-top: 1px dashed rgba(244, 244, 239, .22); z-index: 0; }
-.sm-pillar { position: relative; z-index: 1; display: grid; gap: 10px; align-content: start; border-top-width: 3px; }
-.sm-est { border-top-color: var(--info); }
-.sm-cre { border-top-color: var(--accent); }
-.sm-lab { border-top-color: var(--amber); margin-top: 28px; }
-.sm-tag { display: flex; justify-content: space-between; gap: 8px; font-family: var(--font-mono); font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: .06em; }
-.sm-pillar h2 { margin: 0; font-family: var(--font-display); font-size: 24px; font-weight: 600; letter-spacing: -.02em; line-height: 1.1; }
-.sm-role { margin: 0; color: var(--text-2); font-size: 13.5px; }
-.sm-q { margin: 4px 0 0; padding: 10px 12px; border-left: 2px solid var(--text-3); background: rgba(244, 244, 239, .03); border-radius: 0 6px 6px 0; font-size: 13.5px; color: var(--text); }
-.sm-est .sm-q { border-left-color: var(--info); }
-.sm-cre .sm-q { border-left-color: var(--accent); }
-.sm-lab .sm-q { border-left-color: var(--amber); }
-.sm-q small { display: block; font-size: 11px; color: var(--text-3); margin-bottom: 2px; text-transform: uppercase; letter-spacing: .06em; font-family: var(--font-mono); }
-.sm-stats { display: grid; gap: 8px; padding: 12px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.sm-stat { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--text-2); }
-.sm-stat .num { color: var(--text); }
-.sm-answers { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.sm-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.sm-card { display: grid; gap: 18px; align-content: start; box-shadow: inset 0 2px 0 var(--sm-c, var(--border)); }
+.sm-est { --sm-c: var(--info); }
+.sm-cre { --sm-c: var(--accent); }
+.sm-lab { --sm-c: var(--amber); }
+.sm-h { display: grid; gap: 4px; }
+.sm-h h2 { margin: 0; font-family: var(--font-display); font-size: 24px; font-weight: 600; letter-spacing: -.02em; line-height: 1.1; }
+.sm-h-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.sm-kicker { font-size: 12px; color: var(--text-3); }
+.sm-body { display: grid; gap: 18px; }
+.sm-sec { display: grid; gap: 10px; }
+.sm-sec-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; color: var(--text-2); }
+.sm-rows { display: grid; }
+.sm-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.sm-row:first-child { border-top: 0; padding-top: 0; }
+.sm-row .l { color: var(--text-2); }
+.sm-row .v { font-family: var(--font-mono); font-size: 13.5px; text-align: right; white-space: nowrap; }
+.sm-fonte { display: grid; gap: 6px; padding: 10px 0; border-top: 1px solid var(--line); }
+.sm-fonte:first-child { border-top: 0; padding-top: 0; }
+.sm-fonte .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.sm-fonte .nm { font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sm-fonte .val { display: flex; align-items: center; gap: 2px; font-family: var(--font-mono); font-size: 13.5px; white-space: nowrap; }
+.sm-fonte .sub { font-size: 12px; color: var(--text-3); }
+.sm-fonte .bar { height: 4px; }
+.sm-fonte .bar > span { background: var(--info); }
+.sm-inline { display: flex; gap: 8px; }
+.sm-inline input { flex: 1; min-width: 0; }
+.sm-inline .btn { height: 40px; flex: none; }
+.sm-ask { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--line); }
+.sm-ask p { margin: 0; font-size: 14px; }
+.sm-ask-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sm-answers { display: flex; gap: 6px; flex-wrap: wrap; }
 .sm-answers .chip.sel-sim { background: var(--accent); border-color: var(--accent); color: var(--bg); }
 .sm-answers .chip.sel-parcial { background: var(--amber); border-color: var(--amber); color: var(--bg); }
 .sm-answers .chip.sel-nao { background: var(--danger); border-color: var(--danger); color: var(--bg); }
-.sm-dots { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--text-3); }
-.sm-dots i { width: 10px; height: 10px; border-radius: 3px; background: var(--border); display: inline-block; }
+.sm-dots { display: flex; gap: 4px; align-items: center; }
+.sm-dots i { width: 9px; height: 9px; border-radius: 3px; background: var(--border); display: inline-block; }
 .sm-dots i.sim { background: var(--accent); }
 .sm-dots i.parcial { background: var(--amber); }
 .sm-dots i.nao { background: var(--danger); }
 .sm-warn { margin: 0; padding: 10px 12px; border-radius: 8px; background: var(--danger-soft); color: var(--danger); font-size: 13px; }
-.sm-area { font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
-.sm-kv { display: grid; gap: 2px; font-size: 13px; }
-.sm-kv span { color: var(--text-3); font-size: 12px; }
-.sm-timeline { display: grid; gap: 6px; }
-.sm-timeline .bar { height: 8px; }
-.sm-timeline .row { display: flex; justify-content: space-between; gap: 4px 10px; flex-wrap: wrap; font-size: 12px; color: var(--text-2); }
-.sm-timeline .row span { white-space: nowrap; }
-.sm-left { margin: 0; font-size: 13px; color: var(--text-2); }
-.sm-left b { color: var(--text); font-weight: 500; }
 .sm-due { margin: 0; padding: 10px 12px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); font-size: 13px; }
-.sm-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-.sm-lab-form { display: flex; gap: 6px; }
-.sm-lab-form input { flex: 1; min-width: 0; }
-.sm-lab-form .btn { height: 40px; }
-.sm-lab .list > li { flex-wrap: wrap; }
-.sm-lab .list .grow { flex: 1 1 60%; }
-.cand { font-size: 11px; font-weight: 500; color: var(--bg); background: var(--amber); padding: 1px 7px; border-radius: 5px; white-space: nowrap; }
-.sm-flow { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 18px 22px; }
-.sm-step { font-size: 14px; flex: 1 1 180px; }
-.sm-step b { font-weight: 500; }
-.sm-arrow { color: var(--text-3); font-size: 18px; }
-.sm-doc summary { display: flex; justify-content: space-between; align-items: center; cursor: pointer; list-style: none; font-weight: 600; font-size: 15px; }
-.sm-doc summary::-webkit-details-marker { display: none; }
-.sm-doc[open] summary .aside { visibility: hidden; }
-.sm-doc-body { margin-top: 16px; max-width: 72ch; color: var(--text-2); font-size: 14.5px; line-height: 1.65; }
-.sm-doc-body h3 { margin: 26px 0 8px; color: var(--text); font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -.01em; }
-.sm-doc-body ul { padding-left: 20px; margin: 8px 0 12px; }
-.sm-doc-body li { margin: 4px 0; }
-.sm-doc-body .sm-q { color: var(--text); }
-.sm-table td:first-child { color: var(--text); font-weight: 500; }
-.sm-table td, .sm-table th { font-size: 13px; }
-.sm-table td:last-child, .sm-table th:last-child { text-align: left; }
+.sm-area { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.sm-area b { font-family: var(--font-display); font-size: 21px; font-weight: 600; letter-spacing: -.01em; }
+.sm-pill { font-family: var(--font-mono); font-size: 11.5px; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.sm-def { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 10px 14px; margin: 0; font-size: 14px; }
+.sm-def dt { color: var(--text-3); font-size: 13px; }
+.sm-def dd { margin: 0; }
+.sm-time { display: grid; gap: 6px; }
+.sm-time .bar { height: 6px; }
+.sm-time p { margin: 0; font-size: 12.5px; color: var(--text-2); }
+.sm-time b { color: var(--text); font-weight: 500; }
+.sm-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.sm-empty { margin: 0; color: var(--text-2); font-size: 14px; max-width: 48ch; }
+.sm-note { margin: 0; font-size: 12.5px; color: var(--text-3); }
+.sm-lab-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; }
+.sm-lab-list > li { flex-wrap: wrap; }
+.sm-lab-list > li:nth-child(2) { border-top: 0; }
+.sm-lab-list .grow { flex: 1 1 55%; }
+.cand { font-size: 11px; font-weight: 500; color: var(--bg); background: var(--amber); padding: 1px 7px; border-radius: 5px; white-space: nowrap; margin-left: 6px; vertical-align: 1px; }
+.sm-more summary { cursor: pointer; font-size: 13px; color: var(--text-2); list-style: none; }
+.sm-more summary::-webkit-details-marker { display: none; }
+.sm-more summary::before { content: "+ "; }
+.sm-more[open] summary::before { content: "− "; }
+.sm-more .list { margin-top: 6px; }
 @media (max-width: 1000px) {
-  .sm-grid { grid-template-columns: minmax(0, 1fr); }
-  .sm-grid::before { display: none; }
-  .sm-lab { margin-top: 0; order: 3; }
-  .sm-cre { order: 2; }
-  .sm-arrow { display: none; }
+  .sm-grid, .sm-lab-list { grid-template-columns: minmax(0, 1fr); }
+  .sm-lab-list > li:nth-child(2) { border-top: 1px solid var(--line); }
+}
+@media (max-width: 820px) {
+  .sm-inline { width: 100%; }
+  .sm-def { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .sm-def dd { margin-bottom: 10px; }
 }
 .fee-preview { margin: 0; font-size: 13px; color: var(--text-2); }
 .fee-preview b { color: var(--text); font-family: var(--font-mono); font-weight: 500; }
@@ -857,97 +865,28 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   <!-- ============ SISTEMA M ============ -->
   <section class="view" data-view="sistema" aria-label="Sistema M" hidden>
     <div class="vh">
-      <div><h1>Sistema M</h1><p>Um método para quem tem muitos interesses: cada um no lugar certo, separado por função, não por importância.</p></div>
+      <div><h1>Sistema M</h1><p>Seus interesses separados por função: a base que paga as contas, um aprofundamento por vez e espaço livre para explorar.</p></div>
     </div>
-
     <div class="sm-grid">
-      <section class="card sm-pillar sm-est" aria-labelledby="smEstT">
-        <div class="sm-tag"><span>Pilar 1</span><span>Contínuo</span></div>
-        <h2 id="smEstT">Estabilidade</h2>
-        <p class="sm-role">Pagar as contas e sustentar a base financeira e emocional.</p>
+      <section class="card sm-card sm-est" aria-labelledby="smEstT">
+        <div class="sm-h"><span class="sm-kicker">Pilar 1 · contínuo</span><h2 id="smEstT">Estabilidade</h2></div>
         <div id="smEst"></div>
       </section>
-      <section class="card sm-pillar sm-lab" aria-labelledby="smLabT">
-        <div class="sm-tag"><span>A ponte</span><span>Livre</span></div>
-        <h2 id="smLabT">Laboratório de Curiosidade</h2>
-        <p class="sm-role">Explorar interesses novos sem cobrança de resultado.</p>
-        <div id="smLab"></div>
-      </section>
-      <section class="card sm-pillar sm-cre" aria-labelledby="smCreT">
-        <div class="sm-tag"><span>Pilar 2</span><span>3 a 6 meses</span></div>
-        <h2 id="smCreT">Crescimento</h2>
-        <p class="sm-role">Aprofundar seriamente em uma área escolhida. Um só de cada vez.</p>
+      <section class="card sm-card sm-cre" aria-labelledby="smCreT">
+        <div class="sm-h"><span class="sm-kicker">Pilar 2 · 3 a 6 meses</span><h2 id="smCreT">Crescimento</h2></div>
         <div id="smCre"></div>
       </section>
     </div>
-
-    <section class="card sm-flow" aria-label="Como as três partes se conectam">
-      <div class="sm-step"><b>A estabilidade financia o tempo.</b></div>
-      <span class="sm-arrow" aria-hidden="true">→</span>
-      <div class="sm-step"><b>O laboratório gera as opções.</b></div>
-      <span class="sm-arrow" aria-hidden="true">→</span>
-      <div class="sm-step"><b>O crescimento transforma uma delas em competência real.</b></div>
-      <span class="sm-arrow" aria-hidden="true">↺</span>
-      <div class="sm-step muted">Com o tempo, uma competência madura pode virar o novo pilar de estabilidade, e o ciclo recomeça.</div>
-    </section>
-
-    <div class="grid-2">
-      <section class="card">
-        <div class="card-h"><h2>Erros comuns</h2><span class="aside" id="smErrCount"></span></div>
-        <ul class="list" id="smErros"></ul>
-      </section>
-      <section class="card">
-        <div class="card-h"><h2>Ciclos anteriores</h2></div>
-        <ul class="list" id="smHist"></ul>
-      </section>
-    </div>
-
-    <details class="card sm-doc">
-      <summary><span>O método completo</span><span class="aside">ler</span></summary>
-      <div class="sm-doc-body">
-        <p>Ter muitos interesses não é o problema. O problema é tratar todos eles com o mesmo peso ao mesmo tempo: tudo vira urgente, nada avança, e a sensação é de estar sempre começando. O Sistema M resolve isso separando os interesses por função, e não por importância.</p>
-        <p>A estrutura tem dois pilares principais ligados por uma ponte de exploração. Cada parte tem um papel diferente, um nível de compromisso diferente e uma forma diferente de medir se está funcionando.</p>
-        <div class="table-wrap"><table class="sm-table">
-          <thead><tr><th>Componente</th><th>Para que serve</th><th>Compromisso</th></tr></thead>
-          <tbody>
-            <tr><td>Pilar de Estabilidade</td><td>Pagar as contas e sustentar a base financeira e emocional</td><td>Contínuo</td></tr>
-            <tr><td>Pilar de Crescimento</td><td>Aprofundar seriamente em uma área escolhida</td><td>3 a 6 meses</td></tr>
-            <tr><td>Laboratório de Curiosidade</td><td>Explorar interesses novos sem cobrança de resultado</td><td>Livre</td></tr>
-          </tbody>
-        </table></div>
-        <h3>1. Pilar de Estabilidade</h3>
-        <p>É o trabalho que paga suas contas. Ele garante segurança financeira e, tão importante quanto, segurança emocional, porque é difícil explorar qualquer coisa com liberdade quando a conta do mês está em aberto.</p>
-        <p>Este pilar não precisa ser a sua paixão. Ele precisa ser confiável. A função dele é comprar tempo e tranquilidade para que os outros dois existam.</p>
-        <ul>
-          <li>Deve ser previsível: renda constante, exigências claras.</li>
-          <li>Não precisa consumir toda a sua identidade: é a base, não o teto.</li>
-          <li>Sinal de alerta: quando ele passa a drenar toda a sua energia, os outros dois pilares param de funcionar.</li>
-        </ul>
-        <p class="sm-q">Pergunta-chave: Isso cobre minhas contas e me deixa com energia sobrando no fim do dia?</p>
-        <h3>2. Pilar de Crescimento</h3>
-        <p>É a área em que você decide se aprofundar seriamente, com um prazo definido de 3 a 6 meses. Um só de cada vez.</p>
-        <p>O prazo é o que faz esse pilar funcionar. Ele é longo o bastante para você sair do nível superficial e curto o bastante para não parecer uma sentença permanente, o que reduz o medo de escolher errado. Ao fim do período, você avalia: aprofunda mais, transforma em fonte de renda ou encerra e escolhe outra coisa.</p>
-        <ul>
-          <li>Escolha uma única área por ciclo.</li>
-          <li>Defina no começo o que significaria "ter avançado" ao fim dos meses.</li>
-          <li>Reserve um horário fixo na semana: crescimento não sobrevive de tempo que sobra.</li>
-          <li>No fim do ciclo, decida conscientemente: continuar, converter ou encerrar.</li>
-        </ul>
-        <p class="sm-q">Pergunta-chave: Se eu dedicar os próximos meses a isso, eu saio nitidamente melhor do que entrei?</p>
-        <h3>3. Laboratório de Curiosidade (a ponte)</h3>
-        <p>É o espaço para explorar novos interesses livremente, sem a pressão de ter que se tornar especialista. Aqui você lê, testa, assiste, faz um projeto pequeno e abandona sem culpa.</p>
-        <p>O laboratório é a ponte porque é dele que sai o próximo Pilar de Crescimento. Sem esse espaço, a escolha do próximo ciclo vira aposta às cegas; com ele, você já experimentou o assunto antes de investir meses nele.</p>
-        <ul>
-          <li>Não exige constância, meta nem resultado.</li>
-          <li>Abandonar um interesse aqui é sucesso, não fracasso: é informação.</li>
-          <li>Quando algo do laboratório continuar te puxando por semanas, é candidato ao próximo ciclo de crescimento.</li>
-        </ul>
-        <p class="sm-q">Pergunta-chave: Estou explorando isso porque me interessa, ou já estou cobrando resultado de algo que deveria ser livre?</p>
-        <h3>Como as três partes se conectam</h3>
-        <p>A estabilidade financia o tempo. O laboratório gera as opções. O crescimento transforma uma dessas opções em competência real e, com o tempo, uma competência amadurecida pode virar o novo pilar de estabilidade, liberando o ciclo para recomeçar.</p>
-        <p>O ponto do sistema não é reduzir seus interesses. É dar a cada um deles o lugar certo, para que a curiosidade deixe de competir com a segurança.</p>
+    <section class="card sm-card sm-lab" aria-labelledby="smLabT">
+      <div class="sm-h sm-h-row">
+        <div><span class="sm-kicker">A ponte · livre</span><h2 id="smLabT">Laboratório de Curiosidade</h2></div>
+        <form class="sm-inline" id="smLabForm" autocomplete="off">
+          <input type="text" id="smLabNome" maxlength="60" placeholder="Algo que te deu curiosidade" aria-label="Novo interesse" required>
+          <button class="btn" type="submit">Adicionar</button>
+        </form>
       </div>
-    </details>
+      <div id="smLab"></div>
+    </section>
   </section>
 
    </div>
@@ -1110,7 +1049,12 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       { id: uid(), tipo: 'despesa', descricao: 'Tesouro Selic', categoria: 'Investimentos', valor: 500, dia: 8, desde: allMonths[0], ativo: true, gerados: allMonths },
     ];
     const saldo = { valor: 9800, data: inMonth(1, 28) };
+    const fWeb = { id: uid(), nome: 'Web design', estimativa: 6000 };
+    const fInfo = { id: uid(), nome: 'Infoprodutos', estimativa: 1200 };
+    recebimentos.forEach((rr) => { rr.fonteId = fWeb.id; });
+    recebimentos.push({ id: uid(), cliente: 'Hotmart', valor: 780, metodo: 'nenhum', dataPrevista: inMonth(0, 10), recebido: true, dataRecebido: inMonth(0, 10), fonteId: fInfo.id });
     const sistemaM = {
+      fontes: [fWeb, fInfo],
       checks: [addDays(-21), addDays(-14), addDays(-7), addDays(0)].map((dd, i) => ({ data: dd, v: ['sim', 'parcial', 'sim', 'sim'][i] })),
       ciclo: { id: uid(), area: 'Motion design com After Effects', meta: 'Entregar 3 animações de interface no portfólio e cobrar por um projeto de motion', inicio: addDays(-62), meses: 4, horario: 'Terças e quintas, 19h às 21h' },
       ciclos: [{ id: uid(), area: 'Next.js e React Server Components', meta: 'Refazer o site da Apexel em Next.js', inicio: addDays(-190), meses: 3, fim: addDays(-95), decisao: 'converter', nota: 'Virou serviço: sites em Next.js' }],
@@ -1144,6 +1088,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     o.checks = Array.isArray(o.checks) ? o.checks.filter((c) => c && /^\d{4}-\d{2}-\d{2}$/.test(c.data) && ['sim', 'parcial', 'nao'].includes(c.v)) : [];
     o.ciclo = o.ciclo && typeof o.ciclo === 'object' && o.ciclo.area ? o.ciclo : null;
     o.ciclos = Array.isArray(o.ciclos) ? o.ciclos : [];
+    o.fontes = Array.isArray(o.fontes) ? o.fontes.filter((f) => f && f.nome).map((f) => ({ id: f.id || uid(), nome: String(f.nome), estimativa: Number(f.estimativa) || 0 })) : [];
     o.lab = Array.isArray(o.lab) ? o.lab.filter((x) => x && x.nome).map((x) => ({ toques: [], status: 'ativo', ...x, toques: Array.isArray(x.toques) ? x.toques : [] })) : [];
     return o;
   }
@@ -1220,7 +1165,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         const [yy, mo] = mk.split('-').map(Number);
         const date = `${mk}-${pad(Math.min(f.dia || 1, new Date(yy, mo, 0).getDate()))}`;
         if (f.tipo === 'despesa') state.despesas.push({ id: uid(), descricao: f.descricao, categoria: f.categoria, valor: f.valor, data: date, fixoId: f.id });
-        else state.recebimentos.push({ id: uid(), cliente: f.cliente, valor: f.valor, metodo: f.metodo || 'nenhum', dataPrevista: date, recebido: false, dataRecebido: null, fixoId: f.id });
+        else state.recebimentos.push({ id: uid(), cliente: f.cliente, valor: f.valor, metodo: f.metodo || 'nenhum', fonteId: f.fonteId || '', dataPrevista: date, recebido: false, dataRecebido: null, fixoId: f.id });
         n++;
       }
     });
@@ -1417,6 +1362,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   const meetTitle = (r) => (r.cliente ? `${r.cliente} · ` : '') + r.assunto;
   // Desconsiderar: o lançamento fica na lista, mas sai de todos os cálculos
   const ignBtn = (x, kind) => `<button class="icon-btn${x.ignorado ? ' on' : ''}" type="button" data-act="toggle-ignore" data-kind="${kind}" data-id="${x.id}" aria-pressed="${!!x.ignorado}" aria-label="${x.ignorado ? 'Voltar a considerar nos cálculos' : 'Desconsiderar dos cálculos'}" title="${x.ignorado ? 'Voltar a considerar nos cálculos' : 'Desconsiderar dos cálculos'}">${x.ignorado ? ICON.eyeOff : ICON.eye}</button>`;
+  const fonteNome = (r) => { const f = r.fonteId && state.sistemaM.fontes.find((x) => x.id === r.fonteId); return f ? f.nome : ''; };
   const ignTag = (x) => (x.ignorado ? '<span class="ign">Desconsiderado</span>' : '');
   const emptyLi = (msg) => `<li class="empty" style="justify-content:center">${msg}</li>`;
   const taskLi = (t, today) => `<li class="task${t.feito ? ' done' : ''}">
@@ -1642,7 +1588,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         return `<li class="has-actions${r.ignorado ? ' ignored' : ''}">
           <div class="grow">
             <div class="title">${esc(r.cliente)}</div>
-            <div class="meta${late ? ' late' : ''}"><span class="num">${money(r.valor)}</span><span>· ${fmtDate(r.dataPrevista)}</span>${late ? '<span class="alert">Atrasado</span>' : ''}${taxa(r) ? `<span class="cat">${METODOS[r.metodo].short}</span><span>líquido ${money(liquido(r))}</span>` : ''}${r.fixoId ? '<span class="cat">Fixo</span>' : ''}${ignTag(r)}</div>
+            <div class="meta${late ? ' late' : ''}"><span class="num">${money(r.valor)}</span><span>· ${fmtDate(r.dataPrevista)}</span>${late ? '<span class="alert">Atrasado</span>' : ''}${taxa(r) ? `<span class="cat">${METODOS[r.metodo].short}</span><span>líquido ${money(liquido(r))}</span>` : ''}${fonteNome(r) ? `<span class="cat">${esc(fonteNome(r))}</span>` : ''}${r.fixoId ? '<span class="cat">Fixo</span>' : ''}${ignTag(r)}</div>
           </div>
           <div class="li-actions row-actions">
             <button class="btn btn-sm" type="button" data-act="receive" data-id="${r.id}" title="Marcar como recebido">Marcar recebido</button>
@@ -1657,7 +1603,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       $('#recebList').innerHTML = rec.length ? rec.map((r) => `<li class="has-actions${r.ignorado ? ' ignored' : ''}">
           <div class="grow">
             <div class="title">${esc(r.cliente)}</div>
-            <div class="meta"><span>Recebido em ${fmtDate(r.dataRecebido)}</span>${taxa(r) ? `<span class="cat">${METODOS[r.metodo].short}</span><span>bruto ${money(r.valor)} · taxa ${money(taxa(r))}</span>` : ''}${r.fixoId ? '<span class="cat">Fixo</span>' : ''}${ignTag(r)}</div>
+            <div class="meta"><span>Recebido em ${fmtDate(r.dataRecebido)}</span>${taxa(r) ? `<span class="cat">${METODOS[r.metodo].short}</span><span>bruto ${money(r.valor)} · taxa ${money(taxa(r))}</span>` : ''}${fonteNome(r) ? `<span class="cat">${esc(fonteNome(r))}</span>` : ''}${r.fixoId ? '<span class="cat">Fixo</span>' : ''}${ignTag(r)}</div>
           </div>
           <div class="li-actions row-actions" style="align-items:center">
             <span class="num" style="color:${r.ignorado ? 'inherit' : 'var(--accent)'};margin-right:6px">${money(liquido(r))}</span>
@@ -1774,105 +1720,126 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     const m = metrics();
     const sig = smSignals();
     const today = todayISO();
+    const mk = monthKey(today);
 
-    // Estabilidade
+    // ---- Pilar 1: formas de renda + base
+    const recMes = state.recebimentos.filter((r) => r.recebido && !r.ignorado && monthKey(r.dataRecebido) === mk);
+    const porFonte = sm.fontes.map((f) => ({ f, v: sum(recMes.filter((r) => r.fonteId === f.id)) }));
+    const semFonte = sum(recMes.filter((r) => !sm.fontes.some((f) => f.id === r.fonteId)));
+    const totalMes = sum(recMes) || 1;
     const si = saldoInfo();
-    const fxOn = state.fixos.filter((f) => f.ativo);
-    const fxRes = sum(fxOn.filter((f) => f.tipo === 'recebimento')) - sum(fxOn.filter((f) => f.tipo === 'despesa'));
     const hoje = sm.checks.find((c) => c.data === today);
-    const hist = sm.checks.slice().sort((a, b) => a.data.localeCompare(b.data)).slice(-10);
-    $('#smEst').innerHTML = `
-      <div class="sm-stats">
-        <div class="sm-stat"><span>Lucro do mês</span><span class="num"${m.lucro < 0 ? ' style="color:var(--danger)"' : ''}>${money(m.lucro)}</span></div>
-        <div class="sm-stat"><span>Resultado dos fixos por mês</span><span class="num">${money(fxRes)}</span></div>
-        <div class="sm-stat"><span>Saldo em caixa</span>${si ? `<span class="num">${money(si.atual)}</span>` : '<button class="link-btn" type="button" data-cmd="saldo">Informar →</button>'}</div>
+    const hist = sm.checks.slice().sort((a, b) => a.data.localeCompare(b.data)).slice(-8);
+    $('#smEst').innerHTML = `<div class="sm-body">
+      <div class="sm-sec">
+        <div class="sm-sec-h"><span>Formas de renda</span><span class="mono" style="color:var(--text-3)">este mês</span></div>
+        <div>${porFonte.map(({ f, v }) => `<div class="sm-fonte">
+            <div class="top"><span class="nm">${esc(f.nome)}</span>
+              <span class="val">${money(v)}
+                <button class="icon-btn" type="button" data-act="sm-fonte-edit" data-id="${f.id}" aria-label="Editar ${esc(f.nome)}">${ICON.edit}</button>
+                <button class="icon-btn del" type="button" data-act="sm-fonte-del" data-id="${f.id}" aria-label="Excluir ${esc(f.nome)}">${ICON.del}</button>
+              </span></div>
+            <div class="bar"><span style="width:${Math.round((v / totalMes) * 100)}%"></span></div>
+            ${f.estimativa ? `<span class="sub">${Math.round((v / f.estimativa) * 100)}% do esperado (${money(f.estimativa)} por mês)</span>` : ''}
+          </div>`).join('')}
+          ${semFonte ? `<div class="sm-fonte"><div class="top"><span class="nm" style="color:var(--text-2)">Sem forma de renda definida</span><span class="val">${money(semFonte)}</span></div></div>` : ''}
+          ${!sm.fontes.length ? '<p class="sm-empty">Cadastre de onde vem seu dinheiro, como web design, infoprodutos ou aulas. Depois, ao registrar um recebimento, escolha a forma de renda.</p>' : ''}
+        </div>
+        <form class="sm-inline" id="smFonteForm" autocomplete="off">
+          <input type="text" id="smFonteNome" maxlength="40" placeholder="Nova forma de renda" aria-label="Nova forma de renda" required>
+          <button class="btn" type="submit">Adicionar</button>
+        </form>
       </div>
-      <div class="sm-q"><small>Pergunta-chave</small>Isso cobre minhas contas e me deixa com energia sobrando no fim do dia?
-        <div class="sm-answers">${Object.entries(SM_ANS).map(([k, l]) => `<button type="button" class="chip${hoje && hoje.v === k ? ' sel-' + k : ''}" data-act="sm-check" data-v="${k}" aria-pressed="${!!(hoje && hoje.v === k)}">${l}</button>`).join('')}</div>
+      <div class="sm-rows">
+        <div class="sm-row"><span class="l">Lucro do mês</span><span class="v"${m.lucro < 0 ? ' style="color:var(--danger)"' : ''}>${money(m.lucro)}</span></div>
+        <div class="sm-row"><span class="l">Saldo em caixa</span>${si ? `<span class="v">${money(si.atual)}</span>` : '<button class="link-btn" type="button" data-cmd="saldo">Informar →</button>'}</div>
       </div>
-      <div class="sm-dots" aria-label="Suas últimas respostas">${hist.length ? hist.map((c) => `<i class="${c.v}" title="${fmtDate(c.data)}: ${SM_ANS[c.v]}"></i>`).join('') + `<span style="margin-left:4px">${hoje ? 'respondido hoje' : 'últimas respostas'}</span>` : '<span>Responda de vez em quando para acompanhar como a base está.</span>'}</div>
-      ${sig.cansaco ? '<p class="sm-warn">Sinal de alerta: a base está drenando sua energia. Quando isso acontece, os outros dois pilares param de funcionar.</p>' : ''}
-      ${sig.negativo ? '<p class="sm-warn">O mês está no negativo. Sem base, todo o resto vira ansiedade disfarçada de ambição.</p>' : ''}`;
+      <div class="sm-ask">
+        <p>Isso cobre minhas contas e me deixa com energia sobrando no fim do dia?</p>
+        <div class="sm-ask-row">
+          <div class="sm-answers">${Object.entries(SM_ANS).map(([k, l]) => `<button type="button" class="chip${hoje && hoje.v === k ? ' sel-' + k : ''}" data-act="sm-check" data-v="${k}" aria-pressed="${!!(hoje && hoje.v === k)}">${l}</button>`).join('')}</div>
+          ${hist.length ? `<span class="sm-dots" aria-label="Últimas respostas">${hist.map((c) => `<i class="${c.v}" title="${fmtDate(c.data)}: ${SM_ANS[c.v]}"></i>`).join('')}</span>` : ''}
+        </div>
+      </div>
+      ${sig.cansaco ? '<p class="sm-warn">Sinal de alerta: a base está drenando sua energia. Quando isso acontece, os outros pilares param de funcionar.</p>' : ''}
+      ${sig.negativo ? '<p class="sm-warn">O mês está fechando no negativo. Cuide da base antes de investir tempo e dinheiro em outras frentes.</p>' : ''}
+    </div>`;
+    $('#smFonteForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const nome = $('#smFonteNome').value.trim();
+      if (!nome) return;
+      sm.fontes.push({ id: uid(), nome, estimativa: 0 });
+      commit();
+      toast('Forma de renda adicionada');
+    });
 
-    // Crescimento
+    // ---- Pilar 2: ciclo de crescimento
     const c = sm.ciclo, ci = sig.ci;
-    $('#smCre').innerHTML = c ? `
-      <div class="sm-area">${esc(c.area)}</div>
-      ${c.meta ? `<div class="sm-kv"><span>Ter avançado significa</span>${esc(c.meta)}</div>` : ''}
-      ${c.horario ? `<div class="sm-kv"><span>Horário fixo na semana</span>${esc(c.horario)}</div>` : ''}
-      <div class="sm-timeline">
+    const hc = sm.ciclos.slice().sort((a, b) => String(b.fim).localeCompare(String(a.fim)));
+    const histHtml = hc.length ? `<details class="sm-more"><summary>Ciclos anteriores (${hc.length})</summary><ul class="list">${hc.map((h) => `<li>
+        <div class="grow"><div class="title">${esc(h.area)}</div><div class="meta"><span class="cat">${SM_DEC[h.decisao] || 'Encerrado'}</span><span>${fmtDate(h.inicio)} a ${fmtDate(h.fim)}</span>${h.nota ? `<span>${esc(h.nota)}</span>` : ''}</div></div>
+        <button class="icon-btn del" type="button" data-act="sm-del-hist" data-id="${h.id}" aria-label="Excluir do histórico">${ICON.del}</button>
+      </li>`).join('')}</ul></details>` : '';
+    $('#smCre').innerHTML = c ? `<div class="sm-body">
+      <div class="sm-area"><b>${esc(c.area)}</b><span class="sm-pill">mês ${ci.mes} de ${c.meses}</span></div>
+      <dl class="sm-def">
+        ${c.meta ? `<dt>Meta</dt><dd>${esc(c.meta)}</dd>` : ''}
+        ${c.horario ? `<dt>Horário</dt><dd>${esc(c.horario)}</dd>` : ''}
+        <dt>Período</dt><dd>${fmtDate(c.inicio)} a ${fmtDate(ci.fim)}</dd>
+      </dl>
+      <div class="sm-time">
         <div class="bar"><span style="width:${ci.pct}%"></span></div>
-        <div class="row"><span>Mês ${ci.mes} de ${c.meses} · início ${fmtDate(c.inicio)}</span><span>Avaliação ${fmtDate(ci.fim)}</span></div>
+        <p>${ci.vencido ? '<b>O prazo acabou.</b> Hora de avaliar.' : `Faltam <b>${plural(ci.faltam, 'dia', 'dias')}</b> para a avaliação.`}</p>
       </div>
-      ${ci.vencido ? '<p class="sm-due">O prazo acabou. Hora de avaliar: continuar, converter ou encerrar.</p>' : `<p class="sm-left">Faltam <b>${plural(ci.faltam, 'dia', 'dias')}</b> para a avaliação.</p>`}
+      ${ci.vencido ? '<p class="sm-due">Decida conscientemente: continuar, converter em renda ou encerrar.</p>' : ''}
       <div class="sm-actions">
         <button class="btn btn-sm${ci.vencido ? ' btn-primary' : ''}" type="button" data-act="sm-avaliar">${ci.vencido ? 'Avaliar ciclo' : 'Avaliar agora'}</button>
         <button class="btn btn-sm" type="button" data-act="sm-edit-ciclo">Editar</button>
       </div>
-      <div class="sm-q"><small>Pergunta-chave</small>Se eu dedicar os próximos meses a isso, eu saio nitidamente melhor do que entrei?</div>` : `
-      <p class="saldo-empty" style="margin:0">Nenhum ciclo ativo. Escolha uma única área, defina o que seria "ter avançado" e um horário fixo na semana.</p>
+      ${histHtml}
+    </div>` : `<div class="sm-body">
+      <p class="sm-empty">Nenhum ciclo ativo. Escolha uma única área, defina a meta e reserve um horário fixo na semana.</p>
       <div class="sm-actions"><button class="btn btn-primary btn-sm" type="button" data-act="sm-novo-ciclo">Começar um ciclo</button></div>
-      <div class="sm-q"><small>Pergunta-chave</small>Se eu dedicar os próximos meses a isso, eu saio nitidamente melhor do que entrei?</div>`;
+      ${histHtml}
+    </div>`;
 
-    // Laboratório
+    // ---- Laboratório
     const ativos = sm.lab.filter((x) => x.status === 'ativo').sort((a, b) => labSemanas(b) - labSemanas(a) || String(b.toques.slice(-1)[0] || b.criado).localeCompare(String(a.toques.slice(-1)[0] || a.criado)));
     const explorados = sm.lab.filter((x) => x.status !== 'ativo');
     $('#smLab').innerHTML = `
-      <form class="sm-lab-form" id="smLabForm" autocomplete="off">
-        <input type="text" id="smLabNome" maxlength="60" placeholder="Algo que te deu curiosidade" aria-label="Novo interesse" required>
-        <button class="btn btn-sm" type="submit">Adicionar</button>
-      </form>
-      <ul class="list">${ativos.length ? ativos.map((x) => {
+      ${ativos.length ? `<ul class="list sm-lab-list">${ativos.map((x) => {
         const sem = labSemanas(x), ult = x.toques.slice().sort().slice(-1)[0];
         const tocadoHoje = x.toques.includes(today);
         return `<li>
           <div class="grow">
-            <div class="title">${esc(x.nome)} ${sem >= 3 ? '<span class="cand">Candidato</span>' : ''}</div>
-            <div class="meta"><span>${sem ? `te puxou em ${plural(sem, 'semana', 'semanas')}` : 'ainda não mexeu'}</span>${ult ? `<span>· último ${fmtDate(ult).slice(0, 5)}</span>` : ''}</div>
+            <div class="title">${esc(x.nome)}${sem >= 3 ? '<span class="cand">Candidato</span>' : ''}</div>
+            <div class="meta"><span>${sem ? `te puxou em ${plural(sem, 'semana', 'semanas')}` : 'ainda não mexeu'}${ult ? ` · último ${fmtDate(ult).slice(0, 5)}` : ''}</span></div>
           </div>
           <div class="row-actions">
             <button class="btn btn-sm" type="button" data-act="sm-toque" data-id="${x.id}"${tocadoHoje ? ' disabled' : ''}>${tocadoHoje ? 'Mexeu hoje' : 'Mexi hoje'}</button>
             ${sem >= 3 ? `<button class="btn btn-sm btn-primary" type="button" data-act="sm-promover" data-id="${x.id}">Levar para crescimento</button>` : ''}
-            <button class="icon-btn" type="button" data-act="sm-abandonar" data-id="${x.id}" aria-label="Abandonar ${esc(x.nome)}" title="Abandonar (é informação, não fracasso)">${ICON.del}</button>
+            <button class="icon-btn" type="button" data-act="sm-abandonar" data-id="${x.id}" aria-label="Abandonar ${esc(x.nome)}" title="Abandonar">${ICON.del}</button>
           </div>
         </li>`;
-      }).join('') : emptyLi('Nada no laboratório. Anote aqui o que te der curiosidade, sem compromisso.')}</ul>
-      ${explorados.length ? `<details class="sm-explored"><summary class="link-btn">Já explorados (${explorados.length})</summary><ul class="list">${explorados.map((x) => `<li>
+      }).join('')}</ul>` : '<p class="sm-empty">Anote aqui o que te der curiosidade. Sem meta, sem prazo.</p>'}
+      <p class="sm-note" style="margin-top:12px">O que continuar te puxando por 3 semanas vira candidato ao próximo ciclo. Abandonar também é informação.</p>
+      ${explorados.length ? `<details class="sm-more" style="margin-top:8px"><summary>Já explorados (${explorados.length})</summary><ul class="list">${explorados.map((x) => `<li>
           <div class="grow"><div class="title">${esc(x.nome)}</div><div class="meta"><span>${x.status === 'promovido' ? 'Virou ciclo de crescimento' : 'Abandonado'}${x.encerrado ? ' em ' + fmtDate(x.encerrado) : ''}</span></div></div>
           <button class="btn btn-sm" type="button" data-act="sm-reabrir" data-id="${x.id}">Reabrir</button>
           <button class="icon-btn del" type="button" data-act="sm-del-lab" data-id="${x.id}" aria-label="Excluir">${ICON.del}</button>
-        </li>`).join('')}</ul></details>` : ''}
-      <div class="sm-q"><small>Pergunta-chave</small>Estou explorando isso porque me interessa, ou já estou cobrando resultado de algo que deveria ser livre?</div>`;
-    $('#smLabForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const nome = $('#smLabNome').value.trim();
-      if (!nome) return;
-      sm.lab.push({ id: uid(), nome, criado: today, toques: [], status: 'ativo' });
+        </li>`).join('')}</ul></details>` : ''}`;
+  }
+
+  function fonteForm(f) {
+    const body =
+      field('nome', 'Nome', `<input name="nome" required maxlength="40" value="${esc(f.nome)}">`, true) +
+      field('estimativa', 'Quanto espera por mês (opcional)', `<input name="estimativa" type="text" inputmode="decimal" placeholder="0,00" value="${f.estimativa ? String(Number(f.estimativa).toFixed(2)).replace('.', ',') : ''}">`, true);
+    openDialog('Forma de renda', body, (fd) => {
+      f.nome = fd.nome.trim() || f.nome;
+      f.estimativa = num(fd.estimativa);
       commit();
-      toast('Adicionado ao laboratório');
+      toast('Forma de renda atualizada');
     });
-
-    // Erros comuns (com o que o dashboard consegue detectar)
-    const erros = [
-      { t: 'Tratar tudo como Pilar de Crescimento', d: 'Vários aprofundamentos simultâneos e nenhum concluído.', ok: 'Aqui só existe um ciclo por vez.', on: false },
-      { t: 'Cobrar produtividade do laboratório', d: 'A exploração morre quando precisa virar projeto.', ok: 'O laboratório não tem metas nem prazos.', on: false },
-      { t: 'Deixar o ciclo de crescimento sem prazo', d: 'Sem data de avaliação, ele se arrasta ou some.', ok: sig.avaliar ? `A avaliação era em ${fmtDate(sig.ci.fim)} e ainda não aconteceu.` : 'Todo ciclo tem data de avaliação.', on: sig.avaliar },
-      { t: 'Negligenciar a estabilidade', d: 'Sem base, todo o resto vira ansiedade disfarçada de ambição.', ok: sig.negativo ? 'O mês está fechando no negativo.' : sig.cansaco ? 'Suas últimas respostas dizem que a base está drenando sua energia.' : 'A base está de pé.', on: sig.negativo || sig.cansaco },
-    ];
-    const nOn = erros.filter((e) => e.on).length;
-    $('#smErrCount').textContent = nOn ? plural(nOn, 'alerta agora', 'alertas agora') : 'nenhum alerta';
-    $('#smErros').innerHTML = erros.map((e) => `<li style="align-items:flex-start">
-        <span class="attn-dot" style="margin-top:7px${e.on ? '' : ';background:var(--accent)'}"></span>
-        <div class="grow"><div class="title" style="white-space:normal">${e.t}</div><div class="meta" style="display:block">${e.d} <span style="color:${e.on ? 'var(--danger)' : 'var(--text-3)'}">${e.ok}</span></div></div>
-      </li>`).join('');
-
-    // Ciclos anteriores
-    const hc = sm.ciclos.slice().sort((a, b) => String(b.fim).localeCompare(String(a.fim)));
-    $('#smHist').innerHTML = hc.length ? hc.map((h) => `<li>
-        <div class="grow"><div class="title">${esc(h.area)}</div>
-          <div class="meta"><span class="cat">${SM_DEC[h.decisao] || 'Encerrado'}</span><span>${fmtDate(h.inicio)} a ${fmtDate(h.fim)}</span>${h.nota ? `<span>· ${esc(h.nota)}</span>` : ''}</div></div>
-        <button class="icon-btn del" type="button" data-act="sm-del-hist" data-id="${h.id}" aria-label="Excluir do histórico">${ICON.del}</button>
-      </li>`).join('') : emptyLi('Os ciclos avaliados aparecem aqui, com a decisão que você tomou.');
   }
 
   function cicloForm(c, onSaved) {
@@ -2131,16 +2098,17 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     const body =
       clientField(r.cliente) +
       field('valor', 'Valor (R$)', moneyInput('valor', r.valor)) +
+(state.sistemaM.fontes.length ? field('fonte', 'Forma de renda', `<select name="fonte"><option value="">Não definida</option>${state.sistemaM.fontes.map((f) => `<option value="${f.id}"${r.fonteId === f.id ? ' selected' : ''}>${esc(f.nome)}</option>`).join('')}</select>`, true) : '') +
       field('metodo', 'Forma de pagamento', `<select name="metodo" id="fMetodo">${Object.entries(METODOS).map(([k, mm]) => `<option value="${k}"${(r.metodo || 'nenhum') === k ? ' selected' : ''}>${mm.label}</option>`).join('')}</select>`, true) +
       `<p class="full fee-preview" id="feePreview"></p>` +
       field('dataPrevista', 'Data prevista', `<input name="dataPrevista" type="date" required value="${esc(r.dataPrevista)}">`) +
       `${isNew ? '<label class="check full"><input type="checkbox" name="repetir"><span>Repetir todo mês<small>Vira um lançamento fixo, criado sozinho nos próximos meses.</small></span></label>' : ''}` +
       `<label class="check full"><input type="checkbox" name="ignorado" ${r.ignorado ? 'checked' : ''}><span>Desconsiderar dos cálculos<small>Fica salvo na lista, mas não entra em totais, lucro e gráficos.</small></span></label>`;
     openDialog(isNew ? 'Novo recebimento' : 'Editar recebimento', body, (fd) => {
-      const data = { cliente: canonicalClient(fd.cliente), valor: num(fd.valor), metodo: METODOS[fd.metodo] ? fd.metodo : 'nenhum', dataPrevista: fd.dataPrevista, ignorado: !!fd.ignorado };
+      const data = { cliente: canonicalClient(fd.cliente), valor: num(fd.valor), metodo: METODOS[fd.metodo] ? fd.metodo : 'nenhum', fonteId: fd.fonte || (r.fonteId && !state.sistemaM.fontes.length ? r.fonteId : ''), dataPrevista: fd.dataPrevista, ignorado: !!fd.ignorado };
       if (isNew) {
         const entry = { id: uid(), recebido: false, dataRecebido: null, ...data };
-        if (fd.repetir) entry.fixoId = criarFixoDe('recebimento', { cliente: data.cliente, valor: data.valor, metodo: data.metodo }, data.dataPrevista);
+        if (fd.repetir) entry.fixoId = criarFixoDe('recebimento', { cliente: data.cliente, valor: data.valor, metodo: data.metodo, fonteId: data.fonteId }, data.dataPrevista);
         state.recebimentos.push(entry);
         gerarFixos();
       } else Object.assign(state.recebimentos.find((x) => x.id === r.id), data);
@@ -2203,6 +2171,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       ? field('descricao', 'Descrição', `<input name="descricao" required maxlength="80" placeholder="Ex.: Aluguel, Figma, academia" value="${esc(fx.descricao)}">`, true) +
         field('categoria', 'Categoria', `<select name="categoria">${CATEGORIAS.map((c) => `<option${fx.categoria === c ? ' selected' : ''}>${c}</option>`).join('')}</select>`)
       : clientField(fx.cliente) +
+        (state.sistemaM.fontes.length ? field('fonte', 'Forma de renda', `<select name="fonte"><option value="">Não definida</option>${state.sistemaM.fontes.map((f) => `<option value="${f.id}"${fx.fonteId === f.id ? ' selected' : ''}>${esc(f.nome)}</option>`).join('')}</select>`, true) : '') +
         field('metodo', 'Forma de pagamento', `<select name="metodo" id="fMetodo">${Object.entries(METODOS).map(([k, mm]) => `<option value="${k}"${(fx.metodo || 'nenhum') === k ? ' selected' : ''}>${mm.label}</option>`).join('')}</select>`, true) +
         `<p class="full fee-preview" id="feePreview"></p>`) +
       field('valor', 'Valor por mês (R$)', moneyInput('valor', fx.valor)) +
@@ -2211,7 +2180,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       `<p class="full muted" style="margin:0;font-size:12.5px">${isNew ? 'Cada mês, a partir de "Começar em", é lançado sozinho no dia escolhido. Meses anteriores a hoje são lançados na hora.' : 'As mudanças valem para os próximos lançamentos. Os que já foram criados não mudam.'}</p>`;
     const label = tipo === 'despesa' ? 'despesa fixa' : 'recebimento fixo';
     openDialog(isNew ? `Nova ${label}`.replace('Nova recebimento', 'Novo recebimento') : `Editar ${label}`, body, (fd) => {
-      const data = tipo === 'despesa' ? { descricao: fd.descricao.trim(), categoria: fd.categoria } : { cliente: canonicalClient(fd.cliente), metodo: METODOS[fd.metodo] ? fd.metodo : 'nenhum' };
+      const data = tipo === 'despesa' ? { descricao: fd.descricao.trim(), categoria: fd.categoria } : { cliente: canonicalClient(fd.cliente), metodo: METODOS[fd.metodo] ? fd.metodo : 'nenhum', fonteId: fd.fonte || '' };
       Object.assign(data, {
         valor: num(fd.valor),
         dia: Math.max(1, Math.min(31, parseInt(fd.dia, 10) || 1)),
@@ -2354,6 +2323,12 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         break;
       }
       case 'sm-novo-ciclo': cicloForm(); break;
+      case 'sm-fonte-edit': { const f = byId(state.sistemaM.fontes, id); if (f) fonteForm(f); break; }
+      case 'sm-fonte-del': {
+        const f = byId(state.sistemaM.fontes, id);
+        if (f) askConfirm('Excluir forma de renda', `"${esc(f.nome)}" sai da lista. Os recebimentos continuam, só ficam sem forma de renda.`, 'Excluir', () => { state.sistemaM.fontes = state.sistemaM.fontes.filter((x) => x.id !== id); commit(); });
+        break;
+      }
       case 'sm-edit-ciclo': cicloForm(state.sistemaM.ciclo); break;
       case 'sm-avaliar': avaliarCiclo(); break;
       case 'sm-toque': {
@@ -2428,6 +2403,15 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   $('#btnAddDesp').addEventListener('click', () => despForm());
   $('#btnAddMeet').addEventListener('click', () => meetForm());
   $('#userName').addEventListener('click', nameForm);
+  $('#smLabForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nome = $('#smLabNome').value.trim();
+    if (!nome) return;
+    state.sistemaM.lab.push({ id: uid(), nome, criado: todayISO(), toques: [], status: 'ativo' });
+    $('#smLabNome').value = '';
+    commit();
+    toast('Adicionado ao laboratório');
+  });
   $('#projSearch').addEventListener('input', (e) => { ui.q = e.target.value; renderProjects(); });
   $('#projSort').addEventListener('change', (e) => { ui.sort = e.target.value; renderProjects(); });
   $('#finPrev').addEventListener('click', () => { ui.finMonth = shiftMonth(ui.finMonth, -1); renderFinance(); });
