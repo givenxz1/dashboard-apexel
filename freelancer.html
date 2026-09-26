@@ -803,7 +803,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     revisao: 'Revisão',
     concluido: 'Concluído',
   };
-  const CATEGORIAS = ['Ferramentas', 'Impostos', 'Pessoal', 'Outros'];
+  const CATEGORIAS = ['Comida', 'Investimentos', 'Ferramentas', 'Lazer', 'Pessoal', 'Despesas'];
 
   const ICON = {
     edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
@@ -866,13 +866,16 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     var6.forEach((m) => {
       d('Figma + Adobe', 'Ferramentas', 289.9, inMonth(m, 5));
       d('Hospedagem e domínios', 'Ferramentas', 120 + m * 7, inMonth(m, 10));
-      d('DAS Simples Nacional', 'Impostos', [610, 540, 720, 480, 590, 450][m], inMonth(m, 20));
+      d('DAS Simples Nacional', 'Despesas', [610, 540, 720, 480, 590, 450][m], inMonth(m, 20));
       d('Coworking', 'Pessoal', 450, inMonth(m, 2));
+      d('Mercado', 'Comida', [680, 640, 710, 590, 655, 620][m], inMonth(m, 6));
+      d('Tesouro Selic', 'Investimentos', 500, inMonth(m, 8));
     });
     d('Curso de Next.js', 'Pessoal', 297, inMonth(0, 3));
-    d('Monitor ultrawide', 'Outros', 1890, inMonth(2, 14));
-    d('Contador', 'Outros', 250, inMonth(1, 15));
-    d('Contador', 'Outros', 250, inMonth(4, 15));
+    d('Cinema e jantar', 'Lazer', 185, inMonth(0, 12));
+    d('Monitor ultrawide', 'Ferramentas', 1890, inMonth(2, 14));
+    d('Contador', 'Despesas', 250, inMonth(1, 15));
+    d('Contador', 'Despesas', 250, inMonth(4, 15));
 
     const reunioes = [
       { id: uid(), data: todayISO(), hora: '14:30', cliente: 'Pulse Fitness', assunto: 'Kickoff sprint 2' },
@@ -898,10 +901,23 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   let state;
   const ui = { tab: 'visao', statusFilter: 'todos', taskFilter: 'todas', q: '', sort: 'prazo', finMonth: monthKey(todayISO()), recebView: 'pendentes' };
 
+  // Aceita variações ("comida", "Alimentação", "invest.") e categorias antigas (Impostos/Outros → Despesas)
+  function fixCategoria(c) {
+    const k = String(c || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    const hit = CATEGORIAS.find((x) => x.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === k);
+    if (hit) return hit;
+    if (/^(aliment|restaur|mercado|ifood|lanche)/.test(k)) return 'Comida';
+    if (/^invest/.test(k)) return 'Investimentos';
+    if (/^(ferrament|software|assinatura)/.test(k)) return 'Ferramentas';
+    if (/^(lazer|diversao|entretenimento)/.test(k)) return 'Lazer';
+    if (/^pessoa/.test(k)) return 'Pessoal';
+    return 'Despesas';
+  }
   function normalize(data) {
     const base = { version: 1, nome: 'Dev', projetos: [], recebimentos: [], despesas: [], reunioes: [], tarefas: [] };
     const out = Object.assign(base, data || {});
     ['projetos', 'recebimentos', 'despesas', 'reunioes', 'tarefas'].forEach((k) => { if (!Array.isArray(out[k])) out[k] = []; });
+    out.despesas.forEach((d) => { d.categoria = fixCategoria(d.categoria); });
     return out;
   }
   function load() {
@@ -1768,7 +1784,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     if ('valor' in o) o.valor = num(o.valor);
     if (key === 'projetos') { o.progresso = Math.max(0, Math.min(100, Number(o.progresso) || 0)); if (!STATUS[o.status]) o.status = 'orcamento'; o.cliente = canonicalClient(o.cliente); }
     if (key === 'recebimentos') { o.recebido = !!o.recebido; o.dataRecebido = o.recebido ? (o.dataRecebido || o.dataPrevista || todayISO()) : null; o.cliente = canonicalClient(o.cliente); }
-    if (key === 'despesas' && !CATEGORIAS.includes(o.categoria)) o.categoria = 'Outros';
+    if (key === 'despesas') o.categoria = fixCategoria(o.categoria);
     if (key === 'tarefas') { o.feito = !!o.feito; if (o.tag !== 'pessoal') o.tag = 'trabalho'; }
     return o;
   }
