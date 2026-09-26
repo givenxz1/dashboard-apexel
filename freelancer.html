@@ -312,6 +312,19 @@ button.badge { background: transparent; cursor: pointer; transition: background 
 button.badge:hover { background: rgba(244, 244, 239, .08); }
 .task.done .tag { opacity: .7; }
 .check-list { display: grid; gap: 10px; }
+/* Saldo em caixa */
+.saldo { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+.saldo-main, .saldo-side { display: grid; gap: 6px; min-width: 0; }
+.saldo-side { justify-items: end; text-align: right; }
+.saldo-v { font-family: var(--font-display); font-weight: 600; font-size: clamp(32px, 4vw, 44px); letter-spacing: -.03em; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.saldo-v.neg { color: var(--danger); }
+.saldo-p { font-family: var(--font-display); font-weight: 600; font-size: 22px; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.saldo-empty { color: var(--text-2); max-width: 48ch; font-size: 14px; }
+.fixo-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.card-note { margin: -6px 0 6px; font-size: 13px; color: var(--text-2); }
+.cash-saldo { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13px; color: var(--text-2); }
+.cash-saldo .num { color: var(--text); font-size: 14px; }
+@media (max-width: 820px) { .saldo-side { justify-items: start; text-align: left; } }
 .task-form { display: flex; gap: 8px; margin-top: 14px; }
 .task-form input { flex: 1; min-width: 0; }
 .task-form select { width: auto; }
@@ -555,6 +568,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   .list > li.has-actions { flex-wrap: wrap; }
   .list > li.has-actions .grow { flex: 1 1 100%; }
   .list > li.has-actions .li-actions { margin-left: auto; }
+  .list > li.has-actions.fx .grow { flex: 1 1 calc(100% - 64px); }
 
   dialog { width: 100%; max-width: 100%; margin: auto 0 0; max-height: 92dvh; border-radius: 18px 18px 0 0; border-bottom: 0; }
   .dlg-body { grid-template-columns: minmax(0, 1fr); padding: 12px 18px 18px; }
@@ -695,6 +709,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         <button class="btn btn-primary" type="button" id="btnAddReceb">Novo recebimento</button>
       </div>
     </div>
+    <section class="card saldo" id="saldoCard" aria-label="Saldo em caixa"></section>
     <div class="kpis k4">
       <div class="kpi"><span class="kpi-l">Faturamento</span><span class="kpi-v pos" id="fnFat">R$ 0,00</span><span class="kpi-f" id="fnFatFoot"></span></div>
       <div class="kpi"><span class="kpi-l">Despesas</span><span class="kpi-v" id="fnDesp">R$ 0,00</span><span class="kpi-f" id="fnDespFoot"></span></div>
@@ -721,6 +736,18 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         <ul class="list" id="despList"></ul>
       </section>
     </div>
+    <section class="card">
+      <div class="card-h">
+        <h2>Lançamentos fixos</h2>
+        <div class="fixo-actions">
+          <button class="btn btn-sm" type="button" data-cmd="fixo-desp">Nova despesa fixa</button>
+          <button class="btn btn-sm" type="button" data-cmd="fixo-receb">Novo recebimento fixo</button>
+        </div>
+      </div>
+      <p class="card-note">Despesas e ganhos que se repetem todo mês. O dashboard lança cada um sozinho no dia escolhido.</p>
+      <ul class="list" id="fixoList"></ul>
+      <div class="table-foot" id="fixoFoot"></div>
+    </section>
   </section>
 
   <!-- ============ AGENDA ============ -->
@@ -820,6 +847,8 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   const ICON = {
     eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
     eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-2.2 3.2"/><path d="M6.6 6.6A17.4 17.4 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m2 2 20 20"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5v14M15 5v14"/></svg>',
+    play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5l12 7-12 7z"/></svg>',
     edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
     del: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>',
   };
@@ -908,7 +937,13 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       t('Ligar para a mãe', 'pessoal', true),
     ];
 
-    return { version: 1, nome: 'Dev', projetos, recebimentos, despesas, reunioes, tarefas };
+    const allMonths = [5, 4, 3, 2, 1, 0].map((mm) => inMonth(mm, 1).slice(0, 7));
+    const fixos = [
+      { id: uid(), tipo: 'despesa', descricao: 'Coworking', categoria: 'Pessoal', valor: 450, dia: 2, desde: allMonths[0], ativo: true, gerados: allMonths },
+      { id: uid(), tipo: 'despesa', descricao: 'Tesouro Selic', categoria: 'Investimentos', valor: 500, dia: 8, desde: allMonths[0], ativo: true, gerados: allMonths },
+    ];
+    const saldo = { valor: 9800, data: inMonth(1, 28) };
+    return { version: 1, nome: 'Dev', projetos, recebimentos, despesas, reunioes, tarefas, fixos, saldo };
   }
 
   /* ================= Estado ================= */
@@ -928,9 +963,10 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     return 'Despesas';
   }
   function normalize(data) {
-    const base = { version: 1, nome: 'Dev', projetos: [], recebimentos: [], despesas: [], reunioes: [], tarefas: [] };
+    const base = { version: 1, nome: 'Dev', projetos: [], recebimentos: [], despesas: [], reunioes: [], tarefas: [], fixos: [], saldo: null };
     const out = Object.assign(base, data || {});
-    ['projetos', 'recebimentos', 'despesas', 'reunioes', 'tarefas'].forEach((k) => { if (!Array.isArray(out[k])) out[k] = []; });
+    ['projetos', 'recebimentos', 'despesas', 'reunioes', 'tarefas', 'fixos'].forEach((k) => { if (!Array.isArray(out[k])) out[k] = []; });
+    if (!out.saldo || typeof out.saldo !== 'object' || !/^\d{4}-\d{2}-\d{2}$/.test(out.saldo.data)) out.saldo = null;
     out.despesas.forEach((d) => { d.categoria = fixCategoria(d.categoria); });
     return out;
   }
@@ -967,6 +1003,40 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     const faturamento = sum(recebidos);
     const totalDesp = sum(despesas);
     return { recebidos, despesas, faturamento, totalDesp, lucro: faturamento - totalDesp };
+  }
+
+  /* ---------- Lançamentos fixos: gera os meses que faltam ---------- */
+  function gerarFixos() {
+    const cur = monthKey(todayISO());
+    let n = 0;
+    state.fixos.forEach((f) => {
+      if (!f.ativo || !/^\d{4}-\d{2}$/.test(f.desde || '')) return;
+      if (!Array.isArray(f.gerados)) f.gerados = [];
+      for (let mk = f.desde, guard = 0; mk <= cur && guard < 240; mk = shiftMonth(mk, 1), guard++) {
+        if (f.gerados.includes(mk)) continue;
+        f.gerados.push(mk);
+        const [yy, mo] = mk.split('-').map(Number);
+        const date = `${mk}-${pad(Math.min(f.dia || 1, new Date(yy, mo, 0).getDate()))}`;
+        if (f.tipo === 'despesa') state.despesas.push({ id: uid(), descricao: f.descricao, categoria: f.categoria, valor: f.valor, data: date, fixoId: f.id });
+        else state.recebimentos.push({ id: uid(), cliente: f.cliente, valor: f.valor, dataPrevista: date, recebido: false, dataRecebido: null, fixoId: f.id });
+        n++;
+      }
+    });
+    return n;
+  }
+
+  /* ---------- Saldo em caixa: valor informado + entradas − saídas desde então ---------- */
+  function saldoInfo() {
+    if (!state.saldo) return null;
+    const base = state.saldo.data;
+    const today = todayISO();
+    const endMonth = `${monthKey(today)}-31`;
+    const ent = sum(state.recebimentos.filter((r) => r.recebido && !r.ignorado && r.dataRecebido > base && r.dataRecebido <= today));
+    const sai = sum(state.despesas.filter((d) => !d.ignorado && d.data > base && d.data <= today));
+    const atual = Number(state.saldo.valor) + ent - sai;
+    const aEntrar = sum(state.recebimentos.filter((r) => !r.recebido && !r.ignorado && r.dataPrevista <= endMonth));
+    const aSair = sum(state.despesas.filter((d) => !d.ignorado && d.data > today && d.data > base && d.data <= endMonth));
+    return { atual, ent, sai, aEntrar, aSair, previsto: atual + aEntrar - aSair };
   }
 
   function metrics() {
@@ -1100,7 +1170,9 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     renderRuler(meets);
   }
 
-  function renderRuler(meets) {
+  function renderRuler(allMeets) {
+    const meets = allMeets.filter((r) => r.hora);
+    const untimed = allMeets.filter((r) => !r.hora);
     const now = new Date();
     const nowH = now.getHours() + now.getMinutes() / 60;
     let start = 7, end = 21;
@@ -1133,7 +1205,8 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     });
     const h = meets.length ? rows.length * 24 : 20;
     $('#heroRuler').innerHTML = `<div class="ruler-track">${track}</div>
-      <div class="ruler-labels" style="height:${h}px">${labels.join('') || '<span class="r-free">Nenhuma reunião marcada para hoje.</span>'}</div>`;
+      <div class="ruler-labels" style="height:${h}px">${labels.join('') || `<span class="r-free">${untimed.length ? 'Nenhuma reunião com horário hoje.' : 'Nenhuma reunião marcada para hoje.'}</span>`}</div>
+      ${untimed.length ? `<p class="r-free" style="margin:8px 0 0">Sem horário: ${untimed.map((r) => esc(meetTitle(r))).join(' · ')}</p>` : ''}`;
   }
 
   const meetTitle = (r) => (r.cliente ? `${r.cliente} · ` : '') + r.assunto;
@@ -1221,7 +1294,10 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     $('#ovCash').innerHTML = `
       <div class="cash-row"><span class="label">Entradas</span><div class="bar"><span style="width:${(m.faturamento / max) * 100}%"></span></div><span class="num">${money(m.faturamento)}</span></div>
       <div class="cash-row"><span class="label">Saídas</span><div class="bar neutral"><span style="width:${(m.despesas / max) * 100}%"></span></div><span class="num">${money(m.despesas)}</span></div>
-      <div class="cash-total"><span class="label">Lucro · margem ${margem}%</span><span class="v" style="color:${m.lucro >= 0 ? 'var(--accent)' : 'var(--danger)'}">${money(m.lucro)}</span></div>`;
+      <div class="cash-total"><span class="label">Lucro · margem ${margem}%</span><span class="v" style="color:${m.lucro >= 0 ? 'var(--accent)' : 'var(--danger)'}">${money(m.lucro)}</span></div>
+      ${(() => { const si = saldoInfo(); return si
+        ? `<div class="cash-saldo"><span>Saldo em caixa</span><span class="num"${si.atual < 0 ? ' style="color:var(--danger)"' : ''}>${money(si.atual)}</span></div>`
+        : '<button class="link-btn" type="button" data-cmd="saldo" style="justify-self:start">Informar saldo em caixa →</button>'; })()}`;
     const prox = [...m.pendentes].sort((a, b) => a.dataPrevista.localeCompare(b.dataPrevista)).slice(0, 3);
     $('#ovReceb').innerHTML = prox.length ? prox.map((r) => {
       const late = daysUntil(r.dataPrevista) < 0;
@@ -1297,6 +1373,47 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     $('#fnReceberFoot').textContent = m.atrasados.length ? `${m.atrasados.length} atrasado${m.atrasados.length > 1 ? 's' : ''} · ${money(sum(m.atrasados))}` : plural(m.pendentes.length, 'pendente', 'pendentes');
     $('#fnReceberFoot').style.color = m.atrasados.length ? 'var(--danger)' : '';
 
+    // Saldo em caixa
+    const si = saldoInfo();
+    $('#saldoCard').innerHTML = si ? `
+      <div class="saldo-main">
+        <span class="kpi-l">Saldo em caixa</span>
+        <span class="saldo-v${si.atual < 0 ? ' neg' : ''}">${money(si.atual)}</span>
+        <span class="kpi-f">Informado ${money(state.saldo.valor)} em ${fmtDate(state.saldo.data)} · +${money(si.ent)} recebido · −${money(si.sai)} gasto desde então</span>
+      </div>
+      <div class="saldo-side">
+        <span class="kpi-l">Previsto no fim do mês</span>
+        <span class="saldo-p">${money(si.previsto)}</span>
+        <span class="kpi-f">+${money(si.aEntrar)} a receber · −${money(si.aSair)} a pagar</span>
+        <button class="btn btn-sm" type="button" data-cmd="saldo" style="margin-top:4px">Atualizar saldo</button>
+      </div>` : `
+      <div class="saldo-main">
+        <span class="kpi-l">Saldo em caixa</span>
+        <span class="saldo-empty">Informe quanto você tem guardado hoje. Depois disso, o saldo se atualiza com tudo o que você receber e gastar.</span>
+      </div>
+      <div class="saldo-side"><button class="btn btn-primary" type="button" data-cmd="saldo">Informar saldo</button></div>`;
+
+    // Lançamentos fixos
+    const fixos = [...state.fixos].sort((a, b) => (a.tipo === b.tipo ? 0 : a.tipo === 'recebimento' ? -1 : 1) || (a.dia - b.dia));
+    $('#fixoList').innerHTML = fixos.length ? fixos.map((fx) => `<li class="has-actions fx${fx.ativo ? '' : ' ignored'}">
+        <div class="when"><b>${pad(fx.dia)}</b><span>dia</span></div>
+        <div class="grow">
+          <div class="title">${esc(fx.tipo === 'despesa' ? fx.descricao : fx.cliente)}</div>
+          <div class="meta"><span class="cat">${fx.tipo === 'despesa' ? 'Despesa · ' + esc(fx.categoria) : 'Recebimento'}</span><span>desde ${monthLabel(fx.desde)}</span>${fx.ativo ? '' : '<span class="ign">Pausado</span>'}</div>
+        </div>
+        <div class="li-actions row-actions" style="align-items:center">
+          <span class="num" style="margin-right:6px${fx.tipo === 'recebimento' && fx.ativo ? ';color:var(--accent)' : ''}">${fx.tipo === 'despesa' ? '−' : '+'} ${money(fx.valor)}</span>
+          <button class="icon-btn${fx.ativo ? '' : ' on'}" type="button" data-act="toggle-fixo" data-id="${fx.id}" aria-label="${fx.ativo ? 'Pausar' : 'Retomar'} lançamento fixo" title="${fx.ativo ? 'Pausar' : 'Retomar'}">${fx.ativo ? ICON.pause : ICON.play}</button>
+          <button class="icon-btn" type="button" data-act="edit-fixo" data-id="${fx.id}" aria-label="Editar lançamento fixo">${ICON.edit}</button>
+          <button class="icon-btn del" type="button" data-act="del-fixo" data-id="${fx.id}" aria-label="Excluir lançamento fixo">${ICON.del}</button>
+        </div>
+      </li>`).join('') : emptyLi('Nenhum lançamento fixo. Crie um acima ou marque "Repetir todo mês" ao adicionar uma despesa ou recebimento.');
+    const fxOn = state.fixos.filter((fx) => fx.ativo);
+    const fxIn = sum(fxOn.filter((fx) => fx.tipo === 'recebimento'));
+    const fxOut = sum(fxOn.filter((fx) => fx.tipo === 'despesa'));
+    $('#fixoFoot').innerHTML = `<span>Por mês: entradas <b>${money(fxIn)}</b> · saídas <b>${money(fxOut)}</b></span><span>Resultado fixo <b>${money(fxIn - fxOut)}</b></span>`;
+    $('#fixoFoot').hidden = !fxOn.length;
+
     // Categorias
     const byCat = CATEGORIAS.map((c) => ({ c, v: sum(f.despesas.filter((d) => d.categoria === c)) })).sort((a, b) => b.v - a.v);
     const top = byCat[0] ? byCat[0].v : 0;
@@ -1316,7 +1433,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         return `<li class="has-actions${r.ignorado ? ' ignored' : ''}">
           <div class="grow">
             <div class="title">${esc(r.cliente)}</div>
-            <div class="meta${late ? ' late' : ''}"><span class="num">${money(r.valor)}</span><span>· ${fmtDate(r.dataPrevista)}</span>${late ? '<span class="alert">Atrasado</span>' : ''}${ignTag(r)}</div>
+            <div class="meta${late ? ' late' : ''}"><span class="num">${money(r.valor)}</span><span>· ${fmtDate(r.dataPrevista)}</span>${late ? '<span class="alert">Atrasado</span>' : ''}${r.fixoId ? '<span class="cat">Fixo</span>' : ''}${ignTag(r)}</div>
           </div>
           <div class="li-actions row-actions">
             <button class="btn btn-sm" type="button" data-act="receive" data-id="${r.id}" title="Marcar como recebido">Marcar recebido</button>
@@ -1331,7 +1448,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       $('#recebList').innerHTML = rec.length ? rec.map((r) => `<li class="has-actions${r.ignorado ? ' ignored' : ''}">
           <div class="grow">
             <div class="title">${esc(r.cliente)}</div>
-            <div class="meta"><span>Recebido em ${fmtDate(r.dataRecebido)}</span>${ignTag(r)}</div>
+            <div class="meta"><span>Recebido em ${fmtDate(r.dataRecebido)}</span>${r.fixoId ? '<span class="cat">Fixo</span>' : ''}${ignTag(r)}</div>
           </div>
           <div class="li-actions row-actions" style="align-items:center">
             <span class="num" style="color:${r.ignorado ? 'inherit' : 'var(--accent)'};margin-right:6px">${money(r.valor)}</span>
@@ -1347,7 +1464,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     $('#despList').innerHTML = desp.length ? desp.map((d) => `<li class="has-actions${d.ignorado ? ' ignored' : ''}">
         <div class="grow">
           <div class="title">${esc(d.descricao)}</div>
-          <div class="meta"><span class="cat">${esc(d.categoria)}</span><span>${fmtDate(d.data)}</span>${ignTag(d)}</div>
+          <div class="meta"><span class="cat">${esc(d.categoria)}</span><span>${fmtDate(d.data)}</span>${d.fixoId ? '<span class="cat">Fixo</span>' : ''}${ignTag(d)}</div>
         </div>
         <div class="li-actions row-actions" style="align-items:center">
           <span class="num" style="margin-right:6px">${money(d.valor)}</span>
@@ -1433,7 +1550,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       const d = parse(ds);
       const meets = state.reunioes.filter((r) => r.data === ds).sort((a, b) => a.hora.localeCompare(b.hora));
       const dues = openProj.filter((p) => p.prazo === ds || (i === 0 && p.prazo < ds));
-      const evs = meets.map((r) => `<div class="ev meet"><small>${esc(r.hora)}</small>${esc(meetTitle(r))}</div>`)
+      const evs = meets.map((r) => `<div class="ev meet"><small>${esc(r.hora || 'Sem horário')}</small>${esc(meetTitle(r))}</div>`)
         .concat(dues.map((p) => `<div class="ev ${p.prazo < ds ? 'late' : 'due'}"><small>${p.prazo < ds ? 'Vencido ' + fmtDate(p.prazo).slice(0, 5) : 'Entrega'}</small>${esc(p.nome)}</div>`));
       return `<div class="day${i === 0 ? ' today' : ''}">
         <div class="day-h"><b>${pad(d.getDate())}</b><span>${i === 0 ? 'HOJE' : WEEKDAYS[d.getDay()]}</span></div>
@@ -1449,7 +1566,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         ${whenBox(r.data)}
         <div class="grow">
           <div class="title">${esc(meetTitle(r))}</div>
-          <div class="meta"><span>${fmtDate(r.data)}</span><span>· ${esc(r.hora || '—')}</span></div>
+          <div class="meta"><span>${fmtDate(r.data)}</span><span>· ${esc(r.hora || 'Sem horário')}</span></div>
         </div>
         <button class="icon-btn" type="button" data-act="edit-meet" data-id="${r.id}" aria-label="Editar reunião">${ICON.edit}</button>
         <button class="icon-btn del" type="button" data-act="del-meet" data-id="${r.id}" aria-label="Excluir reunião">${ICON.del}</button>
@@ -1630,11 +1747,16 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       clientField(r.cliente) +
       field('valor', 'Valor (R$)', moneyInput('valor', r.valor)) +
       field('dataPrevista', 'Data prevista', `<input name="dataPrevista" type="date" required value="${esc(r.dataPrevista)}">`) +
+      `${isNew ? '<label class="check full"><input type="checkbox" name="repetir"><span>Repetir todo mês<small>Vira um lançamento fixo, criado sozinho nos próximos meses.</small></span></label>' : ''}` +
       `<label class="check full"><input type="checkbox" name="ignorado" ${r.ignorado ? 'checked' : ''}><span>Desconsiderar dos cálculos<small>Fica salvo na lista, mas não entra em totais, lucro e gráficos.</small></span></label>`;
     openDialog(isNew ? 'Novo recebimento' : 'Editar recebimento', body, (fd) => {
       const data = { cliente: canonicalClient(fd.cliente), valor: num(fd.valor), dataPrevista: fd.dataPrevista, ignorado: !!fd.ignorado };
-      if (isNew) state.recebimentos.push({ id: uid(), recebido: false, dataRecebido: null, ...data });
-      else Object.assign(state.recebimentos.find((x) => x.id === r.id), data);
+      if (isNew) {
+        const entry = { id: uid(), recebido: false, dataRecebido: null, ...data };
+        if (fd.repetir) entry.fixoId = criarFixoDe('recebimento', { cliente: data.cliente, valor: data.valor }, data.dataPrevista);
+        state.recebimentos.push(entry);
+        gerarFixos();
+      } else Object.assign(state.recebimentos.find((x) => x.id === r.id), data);
       commit();
       toast(isNew ? 'Recebimento adicionado' : 'Recebimento atualizado');
     });
@@ -1648,30 +1770,92 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       field('categoria', 'Categoria', `<select name="categoria">${CATEGORIAS.map((c) => `<option${d.categoria === c ? ' selected' : ''}>${c}</option>`).join('')}</select>`) +
       field('valor', 'Valor (R$)', moneyInput('valor', d.valor)) +
       field('data', 'Data', `<input name="data" type="date" required value="${esc(d.data)}">`) +
+      `${isNew ? '<label class="check full"><input type="checkbox" name="repetir"><span>Repetir todo mês<small>Vira um lançamento fixo, criado sozinho nos próximos meses.</small></span></label>' : ''}` +
       `<label class="check full"><input type="checkbox" name="ignorado" ${d.ignorado ? 'checked' : ''}><span>Desconsiderar dos cálculos<small>Fica salvo na lista, mas não entra em totais, lucro e gráficos.</small></span></label>`;
     openDialog(isNew ? 'Nova despesa' : 'Editar despesa', body, (fd) => {
       const data = { descricao: fd.descricao.trim(), categoria: fd.categoria, valor: num(fd.valor), data: fd.data, ignorado: !!fd.ignorado };
-      if (isNew) state.despesas.push({ id: uid(), ...data });
-      else Object.assign(state.despesas.find((x) => x.id === d.id), data);
+      if (isNew) {
+        const entry = { id: uid(), ...data };
+        if (fd.repetir) entry.fixoId = criarFixoDe('despesa', { descricao: data.descricao, categoria: data.categoria, valor: data.valor }, data.data);
+        state.despesas.push(entry);
+        gerarFixos();
+      } else Object.assign(state.despesas.find((x) => x.id === d.id), data);
       commit();
       toast(isNew ? 'Despesa adicionada' : 'Despesa atualizada');
     });
   }
 
+  // Cria um lançamento fixo a partir de um lançamento novo (o mês dele já conta como gerado)
+  function criarFixoDe(tipo, campos, dateStr) {
+    const mk = monthKey(dateStr);
+    const fx = { id: uid(), tipo, ...campos, dia: Number(String(dateStr).slice(8, 10)) || 1, desde: mk, ativo: true, gerados: [mk] };
+    state.fixos.push(fx);
+    return fx.id;
+  }
+
+  function fixoForm(fx, tipo) {
+    const isNew = !fx;
+    tipo = fx ? fx.tipo : tipo;
+    fx = fx || { tipo, descricao: '', categoria: 'Ferramentas', cliente: '', valor: null, dia: new Date().getDate(), desde: monthKey(todayISO()), ativo: true };
+    const body = (tipo === 'despesa'
+      ? field('descricao', 'Descrição', `<input name="descricao" required maxlength="80" placeholder="Ex.: Aluguel, Figma, academia" value="${esc(fx.descricao)}">`, true) +
+        field('categoria', 'Categoria', `<select name="categoria">${CATEGORIAS.map((c) => `<option${fx.categoria === c ? ' selected' : ''}>${c}</option>`).join('')}</select>`)
+      : clientField(fx.cliente)) +
+      field('valor', 'Valor por mês (R$)', moneyInput('valor', fx.valor)) +
+      field('dia', 'Dia do mês', `<input name="dia" type="number" inputmode="numeric" min="1" max="31" required value="${Number(fx.dia) || 1}">`) +
+      field('desde', 'Começar em', `<input name="desde" type="month" required value="${esc(fx.desde)}">`) +
+      `<p class="full muted" style="margin:0;font-size:12.5px">${isNew ? 'Cada mês, a partir de "Começar em", é lançado sozinho no dia escolhido. Meses anteriores a hoje são lançados na hora.' : 'As mudanças valem para os próximos lançamentos. Os que já foram criados não mudam.'}</p>`;
+    const label = tipo === 'despesa' ? 'despesa fixa' : 'recebimento fixo';
+    openDialog(isNew ? `Nova ${label}`.replace('Nova recebimento', 'Novo recebimento') : `Editar ${label}`, body, (fd) => {
+      const data = tipo === 'despesa' ? { descricao: fd.descricao.trim(), categoria: fd.categoria } : { cliente: canonicalClient(fd.cliente) };
+      Object.assign(data, {
+        valor: num(fd.valor),
+        dia: Math.max(1, Math.min(31, parseInt(fd.dia, 10) || 1)),
+        desde: /^\d{4}-\d{2}$/.test(fd.desde || '') ? fd.desde : monthKey(todayISO()),
+      });
+      if (isNew) state.fixos.push({ id: uid(), tipo, ativo: true, gerados: [], ...data });
+      else Object.assign(fx, data);
+      const n = gerarFixos();
+      commit();
+      toast(isNew ? (n ? `Lançamento fixo salvo · ${plural(n, 'lançamento criado', 'lançamentos criados')}` : 'Lançamento fixo salvo') : 'Lançamento fixo atualizado');
+    });
+  }
+
+  function saldoForm() {
+    const cur = state.saldo || { valor: null, data: todayISO() };
+    const si = saldoInfo();
+    const body =
+      `<p class="full muted" style="margin:0;font-size:13px">Quanto você tem guardado (conta, reserva, dinheiro) no fim do dia escolhido. A partir desse dia, o saldo soma o que você receber e desconta o que gastar.</p>` +
+      field('valor', 'Saldo (R$)', `<input name="valor" type="text" inputmode="decimal" placeholder="0,00" required value="${si ? String(si.atual.toFixed(2)).replace('.', ',') : ''}">`) +
+      field('data', 'Em', `<input name="data" type="date" required value="${esc(state.saldo ? todayISO() : cur.data)}">`);
+    openDialog(state.saldo ? 'Atualizar saldo' : 'Informar saldo', body, (fd) => {
+      state.saldo = { valor: num(fd.valor), data: /^\d{4}-\d{2}-\d{2}$/.test(fd.data) ? fd.data : todayISO() };
+      commit();
+      toast('Saldo atualizado');
+    });
+  }
+
   function meetForm(m) {
     const isNew = !m;
-    m = m || { data: todayISO(), hora: '10:00', assunto: '', cliente: '' };
+    m = m || { data: todayISO(), hora: '', assunto: '', cliente: '' };
     const body =
       clientField(m.cliente || '', false, 'Cliente (opcional)') +
       field('assunto', 'Assunto', `<input name="assunto" required maxlength="80" placeholder="Ex.: Revisão do layout" value="${esc(m.assunto)}">`, true) +
       field('data', 'Data', `<input name="data" type="date" required value="${esc(m.data)}">`) +
-      field('hora', 'Hora', `<input name="hora" type="time" required value="${esc(m.hora)}">`);
+      field('hora', 'Hora', `<input name="hora" id="fHora" type="time" value="${esc(m.hora || '')}"${m.hora ? ' required' : ' disabled'}>`) +
+      `<label class="check full"><input type="checkbox" name="semHora" id="fSemHora"${m.hora ? '' : ' checked'}><span>Sem horário definido</span></label>`;
     openDialog(isNew ? 'Nova reunião' : 'Editar reunião', body, (fd) => {
-      const data = { cliente: canonicalClient(fd.cliente), assunto: fd.assunto.trim(), data: fd.data, hora: fd.hora };
+      const data = { cliente: canonicalClient(fd.cliente), assunto: fd.assunto.trim(), data: fd.data, hora: fd.semHora ? '' : (fd.hora || '') };
       if (isNew) state.reunioes.push({ id: uid(), ...data });
       else Object.assign(state.reunioes.find((x) => x.id === m.id), data);
       commit();
       toast(isNew ? 'Reunião agendada' : 'Reunião atualizada');
+    });
+    const semHora = $('#fSemHora'), hora = $('#fHora');
+    semHora.addEventListener('change', () => {
+      hora.disabled = semHora.checked;
+      hora.required = !semHora.checked;
+      if (!semHora.checked) { if (!hora.value) hora.value = '10:00'; hora.focus(); }
     });
   }
 
@@ -1744,6 +1928,18 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         if (x) { x.ignorado = !x.ignorado; commit(); toast(x.ignorado ? 'Desconsiderado dos cálculos' : 'Voltou a contar nos cálculos'); }
         break;
       }
+      case 'toggle-fixo': {
+        const fx = byId(state.fixos, id);
+        if (fx) {
+          fx.ativo = !fx.ativo;
+          if (fx.ativo) { const cur = monthKey(todayISO()); if (fx.desde < cur) fx.desde = cur; gerarFixos(); }
+          commit();
+          toast(fx.ativo ? 'Lançamento fixo retomado' : 'Lançamento fixo pausado');
+        }
+        break;
+      }
+      case 'edit-fixo': fixoForm(byId(state.fixos, id)); break;
+      case 'del-fixo': askConfirm('Excluir lançamento fixo', 'Os lançamentos já criados continuam na lista. Só os próximos meses deixam de ser gerados.', 'Excluir', () => { remove('fixos', id); commit(); toast('Lançamento fixo excluído'); }); break;
       case 'edit-receb': recebForm(byId(state.recebimentos, id)); break;
       case 'del-receb': askConfirm('Excluir recebimento', 'Esta ação não pode ser desfeita.', 'Excluir', () => { remove('recebimentos', id); commit(); toast('Recebimento excluído'); }); break;
       case 'edit-desp': despForm(byId(state.despesas, id)); break;
@@ -1783,6 +1979,9 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     const target = { import: '#btnImport', export: '#btnExport', pdf: '#btnPdf', sample: '#btnReset', wipe: '#btnWipe' }[c];
     if (target) { if (dlg.open) closeDialog(); $(target).click(); return; }
     if (c === 'new-project') projectForm();
+    if (c === 'saldo') saldoForm();
+    if (c === 'fixo-desp') fixoForm(null, 'despesa');
+    if (c === 'fixo-receb') fixoForm(null, 'recebimento');
   }
   $('#btnAddProject').addEventListener('click', () => projectForm());
   $('#btnAddReceb').addEventListener('click', () => recebForm());
@@ -1925,7 +2124,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         const late = state.projetos.filter((p) => p.status !== 'concluido' && p.prazo && daysUntil(p.prazo) < 0).length;
         const kpis = [
           ['Clientes ativos', String(m.clientes)], ['Projetos em andamento', String(m.andamento)],
-          ['Concluídos no mês', String(m.concluidosMes)], ['Entregas atrasadas', String(late)],
+          ['Concluídos no mês', String(m.concluidosMes)], saldoInfo() ? ['Saldo em caixa', money(saldoInfo().atual)] : ['Entregas atrasadas', String(late)],
           ['Receita do mês', money(m.faturamento)], ['Despesas do mês', money(m.despesas)],
           ['Lucro do mês', money(m.lucro)], ['A receber', money(m.aReceber)],
         ];
@@ -1970,6 +2169,11 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         table(['Data', 'Descrição', 'Categoria', 'Valor', 'Nos cálculos'], desp.map((d) => [fmtDate(d.data), d.descricao, d.categoria, money(d.valor), d.ignorado ? 'Não' : 'Sim']), {
           foot: ['Total', '', '', money(sum(desp.filter((d) => !d.ignorado))), ''], columnStyles: right(3), muted: (i) => desp[i].ignorado, empty: 'Nenhuma despesa cadastrada.',
         });
+        heading('Lançamentos fixos');
+        const fxs = [...state.fixos].sort((a, b) => a.tipo.localeCompare(b.tipo) || a.dia - b.dia);
+        table(['Tipo', 'Descrição / cliente', 'Categoria', 'Dia', 'Desde', 'Valor', 'Situação'], fxs.map((fx) => [fx.tipo === 'despesa' ? 'Despesa' : 'Recebimento', fx.tipo === 'despesa' ? fx.descricao : fx.cliente, fx.tipo === 'despesa' ? fx.categoria : '-', String(fx.dia), monthLabel(fx.desde), money(fx.valor), fx.ativo ? 'Ativo' : 'Pausado']), {
+          columnStyles: right(3, 5), muted: (i) => !fxs[i].ativo, empty: 'Nenhum lançamento fixo.',
+        });
         heading('Despesas por categoria');
         const valid = state.despesas.filter((d) => !d.ignorado);
         const total = sum(valid);
@@ -1980,7 +2184,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         heading('Agenda', true);
         heading('Reuniões');
         const meets = [...state.reunioes].sort((a, b) => (a.data + a.hora).localeCompare(b.data + b.hora));
-        table(['Data', 'Hora', 'Cliente', 'Assunto'], meets.map((r) => [fmtDate(r.data), r.hora || '', r.cliente || '', r.assunto]), { columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: 45 } }, empty: 'Nenhuma reunião cadastrada.' });
+        table(['Data', 'Hora', 'Cliente', 'Assunto'], meets.map((r) => [fmtDate(r.data), r.hora || 'Sem horário', r.cliente || '', r.assunto]), { columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: 70 } }, empty: 'Nenhuma reunião cadastrada.' });
         heading('Tarefas');
         const tasks = [...state.tarefas].sort((a, b) => String(b.data).localeCompare(String(a.data)) || Number(a.feito) - Number(b.feito));
         table(['Data', 'Tarefa', 'Tipo', 'Status'], tasks.map((t) => [fmtDate(t.data), t.texto, t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho', t.feito ? 'Feita' : 'Pendente']), {
@@ -2043,7 +2247,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   }
 
   // Importar: colar JSON ou escolher arquivo; somar aos dados atuais ou substituir tudo
-  const COLLECTIONS = { projetos: 'projeto', recebimentos: 'recebimento', despesas: 'despesa', reunioes: 'reunião', tarefas: 'tarefa' };
+  const COLLECTIONS = { projetos: 'projeto', recebimentos: 'recebimento', despesas: 'despesa', reunioes: 'reunião', tarefas: 'tarefa', fixos: 'lançamento fixo' };
   function cleanItem(key, x) {
     const o = { ...x, id: x.id ? String(x.id) : uid() };
     if ('valor' in o) o.valor = num(o.valor);
@@ -2052,6 +2256,15 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     if (key === 'recebimentos') { o.recebido = !!o.recebido; o.dataRecebido = o.recebido ? (o.dataRecebido || o.dataPrevista || todayISO()) : null; o.cliente = canonicalClient(o.cliente); }
     if (key === 'despesas') o.categoria = fixCategoria(o.categoria);
     if (key === 'tarefas') { o.feito = !!o.feito; if (o.tag !== 'pessoal') o.tag = 'trabalho'; }
+    if (key === 'reunioes') o.hora = /^\d{2}:\d{2}$/.test(o.hora || '') ? o.hora : '';
+    if (key === 'fixos') {
+      o.tipo = o.tipo === 'recebimento' ? 'recebimento' : 'despesa';
+      o.dia = Math.max(1, Math.min(31, parseInt(o.dia, 10) || 1));
+      o.desde = /^\d{4}-\d{2}$/.test(o.desde || '') ? o.desde : monthKey(todayISO());
+      o.ativo = o.ativo !== false;
+      o.gerados = Array.isArray(o.gerados) ? o.gerados : [];
+      if (o.tipo === 'despesa') o.categoria = fixCategoria(o.categoria); else o.cliente = canonicalClient(o.cliente);
+    }
     return o;
   }
   $('#btnImport').addEventListener('click', () => {
@@ -2080,6 +2293,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       if (fd.modo === 'substituir') {
         state = normalize({ nome: data.nome || state.nome });
       }
+      if (data.saldo && typeof data.saldo === 'object' && (fd.modo === 'substituir' || !state.saldo)) state.saldo = normalize({ saldo: data.saldo }).saldo;
       const added = [];
       keys.forEach((k) => {
         const have = new Set(state[k].map((x) => x.id));
@@ -2087,6 +2301,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         state[k].push(...fresh);
         if (fresh.length) added.push(`${fresh.length} ${COLLECTIONS[k]}${fresh.length > 1 ? (k === 'reunioes' ? 'ões' : 's') : ''}`.replace('reuniãoões', 'reuniões'));
       });
+      gerarFixos();
       commit();
       toast(added.length ? `Importado: ${added.join(', ')}` : 'Nada novo para importar');
     }, 'Importar');
@@ -2102,7 +2317,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   });
   $('#btnReset').addEventListener('click', () => {
     askConfirm('Carregar exemplo', 'Todos os dados atuais serão substituídos pelos dados de exemplo.', 'Carregar', () => {
-      state = sampleData();
+      state = normalize(sampleData());
       commit();
       toast('Dados de exemplo restaurados');
     });
@@ -2128,11 +2343,12 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   // Atualiza saudação/data e alertas quando o dia vira
   let lastDay = todayISO();
   setInterval(() => {
-    if (todayISO() !== lastDay) { lastDay = todayISO(); render(); } else renderHeader();
+    if (todayISO() !== lastDay) { lastDay = todayISO(); if (gerarFixos()) save(); render(); } else renderHeader();
   }, 60000);
 
   /* ================= Init ================= */
   state = load();
+  if (gerarFixos()) save();
   let savedTab = null;
   try { savedTab = localStorage.getItem(STORAGE_KEY + '.tab'); } catch (e) {}
   ui.tab = tabFromHash() || (TABS.includes(savedTab) ? savedTab : 'visao');
