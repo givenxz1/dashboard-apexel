@@ -312,6 +312,26 @@ button.badge { background: transparent; cursor: pointer; transition: background 
 button.badge:hover { background: rgba(244, 244, 239, .08); }
 .task.done .tag { opacity: .7; }
 .check-list { display: grid; gap: 10px; }
+/* Sobre */
+.prose { margin: 0 0 12px; color: var(--text-2); font-size: 14px; line-height: 1.6; max-width: 62ch; }
+.about-list > li { display: grid; gap: 2px; align-items: start; }
+.about-list b { font-weight: 600; font-size: 14px; }
+.about-list span { color: var(--text-2); font-size: 13px; }
+.fee-table { border: 1px solid var(--border); border-radius: var(--r-sm); overflow: hidden; }
+.fee-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-top: 1px solid var(--border); font-size: 13.5px; }
+.fee-row:first-child { border-top: 0; }
+.fee-row b { font-weight: 500; white-space: nowrap; }
+.fee-row .free { color: var(--accent); }
+.sim { display: grid; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.sim-out { display: grid; gap: 6px; }
+.sim-row { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--text-2); }
+.sim-row b { color: var(--text); font-weight: 500; font-family: var(--font-mono); font-size: 13px; }
+.about-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--r-sm); overflow: hidden; }
+.about-stats div { background: var(--surface); padding: 10px 12px; display: grid; gap: 2px; }
+.about-stats b { font-family: var(--font-display); font-size: 20px; font-weight: 600; }
+.about-stats span { font-size: 12px; color: var(--text-3); }
+.fee-preview { margin: 0; font-size: 13px; color: var(--text-2); }
+.fee-preview b { color: var(--text); font-family: var(--font-mono); font-weight: 500; }
 /* Saldo em caixa */
 .saldo { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
 .saldo-main, .saldo-side { display: grid; gap: 6px; min-width: 0; }
@@ -511,7 +531,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   .topbar .brand { padding: 0; }
   .topbar .brand .word { font-size: 18px; }
   .bottomnav {
-    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
     padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
     background: rgba(11, 17, 32, .96); backdrop-filter: blur(12px); border-top: 1px solid var(--border);
@@ -595,6 +615,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       <a class="nav-i" href="#projetos" data-tab="projetos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg><span>Projetos</span><em data-count="projetos"></em></a>
       <a class="nav-i" href="#financeiro" data-tab="financeiro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg><span>Financeiro</span><em data-count="financeiro"></em></a>
       <a class="nav-i" href="#agenda" data-tab="agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span>Agenda</span><em data-count="agenda"></em></a>
+      <a class="nav-i" href="#sobre" data-tab="sobre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg><span>Sobre</span></a>
     </nav>
     <div class="side-foot">
       <p class="side-label">Seus dados</p>
@@ -784,6 +805,61 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     </div>
   </section>
 
+  <!-- ============ SOBRE ============ -->
+  <section class="view" data-view="sobre" aria-label="Sobre" hidden>
+    <div class="vh">
+      <div><h1>Sobre o dashboard</h1><p>Como o painel funciona, de onde vêm os números e onde ficam seus dados.</p></div>
+    </div>
+    <div class="grid-2">
+      <section class="card">
+        <div class="card-h"><h2>O que é</h2><span class="aside mono">versão 2026.09</span></div>
+        <p class="prose">Um painel pessoal da Apexel Studio para quem trabalha como freelancer: projetos, dinheiro e agenda num lugar só, misturando trabalho e vida pessoal do jeito que ela é.</p>
+        <ul class="list about-list">
+          <li><b>Visão geral</b><span>O resumo do dia, os números do mês e o que precisa de atenção. Os cards levam direto para a aba certa.</span></li>
+          <li><b>Projetos</b><span>Pipeline por status, prazos com alerta, progresso e valor de cada entrega.</span></li>
+          <li><b>Financeiro</b><span>Saldo em caixa, faturamento, despesas por categoria, recebimentos, lançamentos fixos e gráfico de 6 meses.</span></li>
+          <li><b>Agenda</b><span>Os próximos 7 dias, reuniões (com ou sem horário) e o checklist de hoje, com tarefas de trabalho e pessoais.</span></li>
+        </ul>
+      </section>
+      <section class="card">
+        <div class="card-h"><h2>Taxas de recebimento</h2><span class="aside">descontadas sozinhas</span></div>
+        <p class="prose">Ao cadastrar um recebimento, escolha a forma de pagamento. A taxa é calculada e o valor líquido é o que entra no faturamento, no saldo e no "a receber".</p>
+        <div class="fee-table">
+          <div class="fee-row"><span>PIX · vendas até R$ 100,00</span><b class="num">R$ 0,85 por venda</b></div>
+          <div class="fee-row"><span>PIX · vendas acima de R$ 100,00</span><b class="num">R$ 0,85 + 2,50%</b></div>
+          <div class="fee-row"><span>Cartão de crédito</span><b class="num">R$ 1,49 + 5,60%</b></div>
+          <div class="fee-row"><span>Link de pagamento, checkout e assinaturas</span><b class="num free">Grátis</b></div>
+        </div>
+        <p class="card-note" style="margin:10px 0 0">No link de pagamento você só paga a taxa da venda (PIX ou cartão).</p>
+        <div class="sim">
+          <label class="field"><span class="label">Simular uma venda de</span><input id="simValor" type="text" inputmode="decimal" placeholder="0,00" value="250,00"></label>
+          <div id="simOut" class="sim-out"></div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-h"><h2>Como os números são calculados</h2></div>
+        <ul class="list about-list">
+          <li><b>Faturamento</b><span>Soma dos recebimentos marcados como recebidos no mês, já sem as taxas.</span></li>
+          <li><b>Lucro estimado</b><span>Faturamento menos despesas do mês. Investimentos contam como saída.</span></li>
+          <li><b>A receber</b><span>Recebimentos ainda pendentes, pelo valor líquido.</span></li>
+          <li><b>Saldo em caixa</b><span>O valor que você informou, mais o que recebeu e menos o que gastou desde aquela data.</span></li>
+          <li><b>Desconsiderados</b><span>Ficam nas listas, mas fora de todos os totais, gráficos e do PDF.</span></li>
+          <li><b>Lançamentos fixos</b><span>Criados sozinhos todo mês no dia escolhido. Pausar para os próximos meses sem apagar os já lançados.</span></li>
+        </ul>
+      </section>
+      <section class="card">
+        <div class="card-h"><h2>Seus dados</h2></div>
+        <p class="prose">Tudo fica salvo só neste navegador, neste aparelho. Nada é enviado para servidores. Se limpar os dados do navegador ou trocar de aparelho, use um backup.</p>
+        <div class="about-stats" id="aboutStats"></div>
+        <div class="fixo-actions" style="margin-top:14px">
+          <button class="btn btn-sm" type="button" data-cmd="export">Exportar backup</button>
+          <button class="btn btn-sm" type="button" data-cmd="import">Importar lançamentos</button>
+          <button class="btn btn-sm" type="button" data-cmd="pdf">Exportar PDF</button>
+        </div>
+      </section>
+    </div>
+  </section>
+
    </div>
   </main>
 
@@ -793,6 +869,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     <a class="nav-i" href="#projetos" data-tab="projetos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg><span>Projetos</span><em data-count="projetos"></em></a>
     <a class="nav-i" href="#financeiro" data-tab="financeiro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg><span>Financeiro</span><em data-count="financeiro"></em></a>
     <a class="nav-i" href="#agenda" data-tab="agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span>Agenda</span><em data-count="agenda"></em></a>
+    <a class="nav-i" href="#sobre" data-tab="sobre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg><span>Sobre</span></a>
   </nav>
 </div>
 
@@ -992,7 +1069,23 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   function commit() { save(); render(); }
 
   /* ================= Cálculos ================= */
-  const sum = (arr) => arr.reduce((a, x) => a + (Number(x.valor) || 0), 0);
+  // Formas de pagamento e taxas (recebimentos): o valor líquido é o que entra nos cálculos
+  const METODOS = {
+    nenhum: { label: 'Sem taxa', short: '' },
+    pix: { label: 'PIX · R$ 0,85 (+2,50% acima de R$ 100)', short: 'PIX' },
+    cartao: { label: 'Cartão de crédito · R$ 1,49 + 5,60%', short: 'Cartão' },
+  };
+  const cents = (v) => Math.round(v * 100) / 100;
+  function taxaDe(valor, metodo) {
+    const v = Number(valor) || 0;
+    if (!v) return 0;
+    if (metodo === 'pix') return cents(v <= 100 ? 0.85 : 0.85 + v * 0.025);
+    if (metodo === 'cartao') return cents(1.49 + v * 0.056);
+    return 0;
+  }
+  const taxa = (x) => (x && x.metodo ? taxaDe(x.valor, x.metodo) : 0);
+  const liquido = (x) => (Number(x.valor) || 0) - taxa(x);
+  const sum = (arr) => arr.reduce((a, x) => a + liquido(x), 0);
   const shiftMonth = (mk, n) => { const [y, m] = mk.split('-').map(Number); const d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`; };
   const monthLabel = (mk) => { const [y, m] = mk.split('-').map(Number); return `${MONTHS[m - 1]} ${y}`; };
   const plural = (n, s, p) => `${n} ${n === 1 ? s : p}`;
@@ -1018,7 +1111,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         const [yy, mo] = mk.split('-').map(Number);
         const date = `${mk}-${pad(Math.min(f.dia || 1, new Date(yy, mo, 0).getDate()))}`;
         if (f.tipo === 'despesa') state.despesas.push({ id: uid(), descricao: f.descricao, categoria: f.categoria, valor: f.valor, data: date, fixoId: f.id });
-        else state.recebimentos.push({ id: uid(), cliente: f.cliente, valor: f.valor, dataPrevista: date, recebido: false, dataRecebido: null, fixoId: f.id });
+        else state.recebimentos.push({ id: uid(), cliente: f.cliente, valor: f.valor, metodo: f.metodo || 'nenhum', dataPrevista: date, recebido: false, dataRecebido: null, fixoId: f.id });
         n++;
       }
     });
@@ -1087,7 +1180,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   };
 
   /* ================= Navegação ================= */
-  const TABS = ['visao', 'projetos', 'financeiro', 'agenda'];
+  const TABS = ['visao', 'projetos', 'financeiro', 'agenda', 'sobre'];
   function tabFromHash() {
     const h = location.hash.replace('#', '');
     return TABS.includes(h) ? h : null;
@@ -1117,7 +1210,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     renderView();
   }
   function renderView() {
-    ({ visao: renderOverview, projetos: renderProjects, financeiro: renderFinance, agenda: renderAgenda })[ui.tab]();
+    ({ visao: renderOverview, projetos: renderProjects, financeiro: renderFinance, agenda: renderAgenda, sobre: renderSobre })[ui.tab]();
   }
 
   function renderHeader() {
@@ -1301,7 +1394,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     const prox = [...m.pendentes].sort((a, b) => a.dataPrevista.localeCompare(b.dataPrevista)).slice(0, 3);
     $('#ovReceb').innerHTML = prox.length ? prox.map((r) => {
       const late = daysUntil(r.dataPrevista) < 0;
-      return `<li><div class="grow"><div class="title">${esc(r.cliente)}</div><div class="meta${late ? ' late' : ''}">${fmtDate(r.dataPrevista)}${late ? ' <span class="alert">Atrasado</span>' : ''}</div></div><span class="num">${money(r.valor)}</span></li>`;
+      return `<li><div class="grow"><div class="title">${esc(r.cliente)}</div><div class="meta${late ? ' late' : ''}">${fmtDate(r.dataPrevista)}${late ? ' <span class="alert">Atrasado</span>' : ''}</div></div><span class="num">${money(liquido(r))}</span></li>`;
     }).join('') : '<li class="ok-state">Nada a receber.</li>';
   }
 
@@ -1361,7 +1454,8 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     $('#finNext').disabled = mk >= monthKey(todayISO());
     $('#fnFat').textContent = money(f.faturamento);
     const delta = prev.faturamento ? Math.round(((f.faturamento - prev.faturamento) / prev.faturamento) * 100) : null;
-    $('#fnFatFoot').textContent = delta === null ? plural(f.recebidos.length, 'recebimento', 'recebimentos') : `${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta)}% vs. mês anterior`;
+    const taxasMes = f.recebidos.reduce((a, r) => a + taxa(r), 0);
+    $('#fnFatFoot').textContent = (delta === null ? plural(f.recebidos.length, 'recebimento', 'recebimentos') : `${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta)}% vs. mês anterior`) + (taxasMes ? ` · ${money(taxasMes)} em taxas` : '');
     $('#fnDesp').textContent = money(f.totalDesp);
     const despIgn = state.despesas.filter((d) => d.ignorado && monthKey(d.data) === mk).length;
     $('#fnDespFoot').textContent = plural(f.despesas.length, 'lançamento', 'lançamentos') + (despIgn ? ` · ${plural(despIgn, 'desconsiderado', 'desconsiderados')}` : '');
@@ -1399,7 +1493,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         <div class="when"><b>${pad(fx.dia)}</b><span>dia</span></div>
         <div class="grow">
           <div class="title">${esc(fx.tipo === 'despesa' ? fx.descricao : fx.cliente)}</div>
-          <div class="meta"><span class="cat">${fx.tipo === 'despesa' ? 'Despesa · ' + esc(fx.categoria) : 'Recebimento'}</span><span>desde ${monthLabel(fx.desde)}</span>${fx.ativo ? '' : '<span class="ign">Pausado</span>'}</div>
+          <div class="meta"><span class="cat">${fx.tipo === 'despesa' ? 'Despesa · ' + esc(fx.categoria) : 'Recebimento' + (taxa(fx) ? ' · ' + METODOS[fx.metodo].short : '')}</span><span>desde ${monthLabel(fx.desde)}</span>${fx.ativo ? '' : '<span class="ign">Pausado</span>'}</div>
         </div>
         <div class="li-actions row-actions" style="align-items:center">
           <span class="num" style="margin-right:6px${fx.tipo === 'recebimento' && fx.ativo ? ';color:var(--accent)' : ''}">${fx.tipo === 'despesa' ? '−' : '+'} ${money(fx.valor)}</span>
@@ -1433,7 +1527,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         return `<li class="has-actions${r.ignorado ? ' ignored' : ''}">
           <div class="grow">
             <div class="title">${esc(r.cliente)}</div>
-            <div class="meta${late ? ' late' : ''}"><span class="num">${money(r.valor)}</span><span>· ${fmtDate(r.dataPrevista)}</span>${late ? '<span class="alert">Atrasado</span>' : ''}${r.fixoId ? '<span class="cat">Fixo</span>' : ''}${ignTag(r)}</div>
+            <div class="meta${late ? ' late' : ''}"><span class="num">${money(r.valor)}</span><span>· ${fmtDate(r.dataPrevista)}</span>${late ? '<span class="alert">Atrasado</span>' : ''}${taxa(r) ? `<span class="cat">${METODOS[r.metodo].short}</span><span>líquido ${money(liquido(r))}</span>` : ''}${r.fixoId ? '<span class="cat">Fixo</span>' : ''}${ignTag(r)}</div>
           </div>
           <div class="li-actions row-actions">
             <button class="btn btn-sm" type="button" data-act="receive" data-id="${r.id}" title="Marcar como recebido">Marcar recebido</button>
@@ -1448,10 +1542,10 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       $('#recebList').innerHTML = rec.length ? rec.map((r) => `<li class="has-actions${r.ignorado ? ' ignored' : ''}">
           <div class="grow">
             <div class="title">${esc(r.cliente)}</div>
-            <div class="meta"><span>Recebido em ${fmtDate(r.dataRecebido)}</span>${r.fixoId ? '<span class="cat">Fixo</span>' : ''}${ignTag(r)}</div>
+            <div class="meta"><span>Recebido em ${fmtDate(r.dataRecebido)}</span>${taxa(r) ? `<span class="cat">${METODOS[r.metodo].short}</span><span>bruto ${money(r.valor)} · taxa ${money(taxa(r))}</span>` : ''}${r.fixoId ? '<span class="cat">Fixo</span>' : ''}${ignTag(r)}</div>
           </div>
           <div class="li-actions row-actions" style="align-items:center">
-            <span class="num" style="color:${r.ignorado ? 'inherit' : 'var(--accent)'};margin-right:6px">${money(r.valor)}</span>
+            <span class="num" style="color:${r.ignorado ? 'inherit' : 'var(--accent)'};margin-right:6px">${money(liquido(r))}</span>
             <button class="btn btn-sm" type="button" data-act="unreceive" data-id="${r.id}" title="Voltar para pendentes">Desfazer</button>
             ${ignBtn(r, 'receb')}
           </div>
@@ -1530,6 +1624,23 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         },
       },
     });
+  }
+
+  /* ---------- Sobre ---------- */
+  function renderSimulador() {
+    const v = num($('#simValor').value);
+    const row = (l, t) => `<div class="sim-row"><span>${l}</span><b>${v ? `taxa ${money(t)} · recebe ${money(v - t)}` : '-'}</b></div>`;
+    $('#simOut').innerHTML = row('PIX', taxaDe(v, 'pix')) + row('Cartão de crédito', taxaDe(v, 'cartao')) +
+      `<div class="sim-row"><span>Link de pagamento</span><b>${v ? 'sem taxa extra' : '-'}</b></div>`;
+  }
+  function renderSobre() {
+    let bytes = 0;
+    try { bytes = new Blob([localStorage.getItem(STORAGE_KEY) || '']).size; } catch (e) {}
+    const stat = (n, l) => `<div><b>${n}</b><span>${l}</span></div>`;
+    $('#aboutStats').innerHTML =
+      stat(state.projetos.length, 'projetos') + stat(state.recebimentos.length, 'recebimentos') + stat(state.despesas.length, 'despesas') +
+      stat(state.reunioes.length, 'reuniões') + stat(state.tarefas.length, 'tarefas') + stat(bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(1).replace('.', ',')} KB`, 'usados no navegador');
+    renderSimulador();
   }
 
   /* ---------- Agenda ---------- */
@@ -1746,20 +1857,23 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     const body =
       clientField(r.cliente) +
       field('valor', 'Valor (R$)', moneyInput('valor', r.valor)) +
+      field('metodo', 'Forma de pagamento', `<select name="metodo" id="fMetodo">${Object.entries(METODOS).map(([k, mm]) => `<option value="${k}"${(r.metodo || 'nenhum') === k ? ' selected' : ''}>${mm.label}</option>`).join('')}</select>`, true) +
+      `<p class="full fee-preview" id="feePreview"></p>` +
       field('dataPrevista', 'Data prevista', `<input name="dataPrevista" type="date" required value="${esc(r.dataPrevista)}">`) +
       `${isNew ? '<label class="check full"><input type="checkbox" name="repetir"><span>Repetir todo mês<small>Vira um lançamento fixo, criado sozinho nos próximos meses.</small></span></label>' : ''}` +
       `<label class="check full"><input type="checkbox" name="ignorado" ${r.ignorado ? 'checked' : ''}><span>Desconsiderar dos cálculos<small>Fica salvo na lista, mas não entra em totais, lucro e gráficos.</small></span></label>`;
     openDialog(isNew ? 'Novo recebimento' : 'Editar recebimento', body, (fd) => {
-      const data = { cliente: canonicalClient(fd.cliente), valor: num(fd.valor), dataPrevista: fd.dataPrevista, ignorado: !!fd.ignorado };
+      const data = { cliente: canonicalClient(fd.cliente), valor: num(fd.valor), metodo: METODOS[fd.metodo] ? fd.metodo : 'nenhum', dataPrevista: fd.dataPrevista, ignorado: !!fd.ignorado };
       if (isNew) {
         const entry = { id: uid(), recebido: false, dataRecebido: null, ...data };
-        if (fd.repetir) entry.fixoId = criarFixoDe('recebimento', { cliente: data.cliente, valor: data.valor }, data.dataPrevista);
+        if (fd.repetir) entry.fixoId = criarFixoDe('recebimento', { cliente: data.cliente, valor: data.valor, metodo: data.metodo }, data.dataPrevista);
         state.recebimentos.push(entry);
         gerarFixos();
       } else Object.assign(state.recebimentos.find((x) => x.id === r.id), data);
       commit();
       toast(isNew ? 'Recebimento adicionado' : 'Recebimento atualizado');
     });
+    bindFeePreview();
   }
 
   function despForm(d) {
@@ -1785,6 +1899,20 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     });
   }
 
+  // Mostra a taxa e o líquido enquanto o valor e a forma de pagamento mudam
+  function bindFeePreview() {
+    const sel = $('#fMetodo'), out = $('#feePreview'), val = document.querySelector('#dlgBody input[name=valor]');
+    if (!sel || !out || !val) return;
+    const draw = () => {
+      const v = num(val.value), t = taxaDe(v, sel.value);
+      out.innerHTML = sel.value === 'nenhum' || !v ? '' : `Taxa <b>${money(t)}</b> · você recebe <b>${money(v - t)}</b>`;
+      out.hidden = !out.innerHTML;
+    };
+    sel.addEventListener('change', draw);
+    val.addEventListener('input', draw);
+    draw();
+  }
+
   // Cria um lançamento fixo a partir de um lançamento novo (o mês dele já conta como gerado)
   function criarFixoDe(tipo, campos, dateStr) {
     const mk = monthKey(dateStr);
@@ -1800,14 +1928,16 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     const body = (tipo === 'despesa'
       ? field('descricao', 'Descrição', `<input name="descricao" required maxlength="80" placeholder="Ex.: Aluguel, Figma, academia" value="${esc(fx.descricao)}">`, true) +
         field('categoria', 'Categoria', `<select name="categoria">${CATEGORIAS.map((c) => `<option${fx.categoria === c ? ' selected' : ''}>${c}</option>`).join('')}</select>`)
-      : clientField(fx.cliente)) +
+      : clientField(fx.cliente) +
+        field('metodo', 'Forma de pagamento', `<select name="metodo" id="fMetodo">${Object.entries(METODOS).map(([k, mm]) => `<option value="${k}"${(fx.metodo || 'nenhum') === k ? ' selected' : ''}>${mm.label}</option>`).join('')}</select>`, true) +
+        `<p class="full fee-preview" id="feePreview"></p>`) +
       field('valor', 'Valor por mês (R$)', moneyInput('valor', fx.valor)) +
       field('dia', 'Dia do mês', `<input name="dia" type="number" inputmode="numeric" min="1" max="31" required value="${Number(fx.dia) || 1}">`) +
       field('desde', 'Começar em', `<input name="desde" type="month" required value="${esc(fx.desde)}">`) +
       `<p class="full muted" style="margin:0;font-size:12.5px">${isNew ? 'Cada mês, a partir de "Começar em", é lançado sozinho no dia escolhido. Meses anteriores a hoje são lançados na hora.' : 'As mudanças valem para os próximos lançamentos. Os que já foram criados não mudam.'}</p>`;
     const label = tipo === 'despesa' ? 'despesa fixa' : 'recebimento fixo';
     openDialog(isNew ? `Nova ${label}`.replace('Nova recebimento', 'Novo recebimento') : `Editar ${label}`, body, (fd) => {
-      const data = tipo === 'despesa' ? { descricao: fd.descricao.trim(), categoria: fd.categoria } : { cliente: canonicalClient(fd.cliente) };
+      const data = tipo === 'despesa' ? { descricao: fd.descricao.trim(), categoria: fd.categoria } : { cliente: canonicalClient(fd.cliente), metodo: METODOS[fd.metodo] ? fd.metodo : 'nenhum' };
       Object.assign(data, {
         valor: num(fd.valor),
         dia: Math.max(1, Math.min(31, parseInt(fd.dia, 10) || 1)),
@@ -1819,6 +1949,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       commit();
       toast(isNew ? (n ? `Lançamento fixo salvo · ${plural(n, 'lançamento criado', 'lançamentos criados')}` : 'Lançamento fixo salvo') : 'Lançamento fixo atualizado');
     });
+    bindFeePreview();
   }
 
   function saldoForm() {
@@ -1915,7 +2046,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       }
       case 'receive': {
         const r = byId(state.recebimentos, id);
-        if (r) { r.recebido = true; r.dataRecebido = todayISO(); commit(); toast(`${money(r.valor)} recebido de ${r.cliente}`); }
+        if (r) { r.recebido = true; r.dataRecebido = todayISO(); commit(); toast(`${money(liquido(r))} recebido de ${r.cliente}`); }
         break;
       }
       case 'unreceive': {
@@ -1988,6 +2119,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   $('#btnAddDesp').addEventListener('click', () => despForm());
   $('#btnAddMeet').addEventListener('click', () => meetForm());
   $('#userName').addEventListener('click', nameForm);
+  $('#simValor').addEventListener('input', renderSimulador);
   $('#projSearch').addEventListener('input', (e) => { ui.q = e.target.value; renderProjects(); });
   $('#projSort').addEventListener('change', (e) => { ui.sort = e.target.value; renderProjects(); });
   $('#finPrev').addEventListener('click', () => { ui.finMonth = shiftMonth(ui.finMonth, -1); renderFinance(); });
@@ -2161,8 +2293,8 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         const sit = (r) => r.recebido ? `Recebido em ${fmtDate(r.dataRecebido)}` : daysUntil(r.dataPrevista) < 0 ? 'Atrasado' : 'Pendente';
         const recebido = sum(rec.filter((r) => r.recebido && !r.ignorado));
         const pendente = sum(rec.filter((r) => !r.recebido && !r.ignorado));
-        table(['Cliente', 'Valor', 'Previsto', 'Situação', 'Nos cálculos'], rec.map((r) => [r.cliente, money(r.valor), fmtDate(r.dataPrevista), sit(r), r.ignorado ? 'Não' : 'Sim']), {
-          foot: ['Recebido / pendente', money(recebido), '', money(pendente), ''], columnStyles: right(1), muted: (i) => rec[i].ignorado, empty: 'Nenhum recebimento cadastrado.',
+        table(['Cliente', 'Valor', 'Taxa', 'Líquido', 'Previsto', 'Situação', 'Nos cálculos'], rec.map((r) => [r.cliente, money(r.valor), taxa(r) ? `${money(taxa(r))} (${METODOS[r.metodo].short})` : '-', money(liquido(r)), fmtDate(r.dataPrevista), sit(r), r.ignorado ? 'Não' : 'Sim']), {
+          foot: ['Líquido recebido / pendente', '', '', money(recebido), '', money(pendente), ''], columnStyles: right(1, 2, 3), muted: (i) => rec[i].ignorado, empty: 'Nenhum recebimento cadastrado.',
         });
         heading('Despesas');
         const desp = [...state.despesas].sort((a, b) => String(b.data).localeCompare(String(a.data)));
@@ -2253,6 +2385,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     if ('valor' in o) o.valor = num(o.valor);
     if (key === 'recebimentos' || key === 'despesas') o.ignorado = !!o.ignorado;
     if (key === 'projetos') { o.progresso = Math.max(0, Math.min(100, Number(o.progresso) || 0)); if (!STATUS[o.status]) o.status = 'orcamento'; o.cliente = canonicalClient(o.cliente); }
+    if (key === 'recebimentos' || key === 'fixos') o.metodo = METODOS[o.metodo] ? o.metodo : 'nenhum';
     if (key === 'recebimentos') { o.recebido = !!o.recebido; o.dataRecebido = o.recebido ? (o.dataRecebido || o.dataPrevista || todayISO()) : null; o.cliente = canonicalClient(o.cliente); }
     if (key === 'despesas') o.categoria = fixCategoria(o.categoria);
     if (key === 'tarefas') { o.feito = !!o.feito; if (o.tag !== 'pessoal') o.tag = 'trabalho'; }
