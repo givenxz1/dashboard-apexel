@@ -415,6 +415,22 @@ button.badge:hover { background: rgba(244, 244, 239, .08); }
 .task-form input { flex: 1; min-width: 0; }
 .task-form select { width: auto; }
 .task-form .btn { height: 40px; width: 40px; padding: 0; font-size: 18px; }
+.day-pick { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: -4px 0 12px; padding-bottom: 2px; }
+.day-pick::-webkit-scrollbar { display: none; }
+.dp { flex: none; display: grid; justify-items: center; gap: 1px; min-width: 52px; padding: 6px 8px; border: 1px solid var(--border); border-radius: var(--r-sm); background: transparent; color: var(--text-2); cursor: pointer; font: inherit; transition: all .15s; }
+.dp b { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--text); }
+.dp span { font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; }
+.dp i { font-style: normal; font-family: var(--font-mono); font-size: 10px; color: var(--text-3); min-height: 12px; }
+.dp:hover { border-color: rgba(244, 244, 239, .28); }
+.dp.active { background: var(--text); border-color: var(--text); }
+.dp.active b, .dp.active span, .dp.active i { color: var(--bg); }
+.dp-other { position: relative; }
+.dp-other input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.task-opts { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.task-hint { font-size: 12.5px; color: var(--text-3); }
+.day-tasks { font-size: 11.5px; color: var(--text-3); margin-top: auto; }
+.day { cursor: pointer; }
+.day.sel { background: rgba(244, 244, 239, .04); }
 .task-progress { font-family: var(--font-mono); font-size: 12px; font-weight: 400; color: var(--text-3); }
 
 /* Progress */
@@ -806,13 +822,14 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   <!-- ============ AGENDA ============ -->
   <section class="view" data-view="agenda" aria-label="Agenda" hidden>
     <div class="vh">
-      <div><h1>Agenda</h1><p>Os próximos 7 dias, reuniões e o checklist de hoje.</p></div>
+      <div><h1>Agenda</h1><p>Os próximos 7 dias, reuniões e as tarefas de cada dia. Toque em um dia para planejar.</p></div>
       <div class="vh-actions"><button class="btn btn-primary" type="button" id="btnAddMeet">Nova reunião</button></div>
     </div>
     <div class="week" id="weekStrip"></div>
     <div class="ag-grid">
       <section class="card">
-        <div class="card-h"><h2>Tarefas de hoje <span class="task-progress" id="taskProgress"></span></h2><div class="chips" id="taskFilter"></div></div>
+        <div class="card-h"><h2><span id="taskTitle">Tarefas de hoje</span> <span class="task-progress" id="taskProgress"></span></h2><div class="chips" id="taskFilter"></div></div>
+        <div class="day-pick" id="taskDays" role="tablist" aria-label="Escolher o dia das tarefas"></div>
         <div class="bar" style="margin-bottom:6px"><span id="taskBar" style="width:0"></span></div>
         <ul class="list" id="taskList"></ul>
         <form class="task-form" id="taskForm" autocomplete="off">
@@ -823,6 +840,17 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
           </select>
           <button class="btn btn-primary" type="submit" aria-label="Adicionar tarefa">+</button>
         </form>
+        <div class="task-opts">
+          <label class="sort">Repetir
+            <select id="taskRepeat" aria-label="Repetir tarefa">
+              <option value="">Não repetir</option>
+              <option value="diario">Todo dia (4 semanas)</option>
+              <option value="uteis">Dias úteis (4 semanas)</option>
+              <option value="semanal">Toda semana (8 semanas)</option>
+            </select>
+          </label>
+          <span class="task-hint" id="taskHint"></span>
+        </div>
       </section>
       <div class="stack">
         <section class="card">
@@ -1047,7 +1075,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
 
   /* ================= Estado ================= */
   let state;
-  const ui = { tab: 'visao', statusFilter: 'todos', taskFilter: 'todas', q: '', sort: 'prazo', finMonth: monthKey(todayISO()), recebView: 'pendentes' };
+  const ui = { tab: 'visao', statusFilter: 'todos', taskFilter: 'todas', taskDay: todayISO(), q: '', sort: 'prazo', finMonth: monthKey(todayISO()), recebView: 'pendentes' };
 
   // Aceita variações ("comida", "Alimentação", "invest.") e categorias antigas (Impostos/Outros → Despesas)
   function fixCategoria(c) {
@@ -1210,6 +1238,16 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     return null;
   }
 
+  // Tarefas de um dia: hoje também traz o que ficou pendente de dias anteriores
+  const tasksOfDay = (ds) => (ds === todayISO() ? todaysTasks() : state.tarefas.filter((t) => t.data === ds));
+  const dayLabel = (ds) => {
+    const n = daysUntil(ds);
+    if (n === 0) return 'de hoje';
+    if (n === 1) return 'de amanhã';
+    if (n === -1) return 'de ontem';
+    const d = parse(ds);
+    return `de ${['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'][d.getDay()]}, ${fmtDate(ds).slice(0, 5)}`;
+  };
   const todaysTasks = () => {
     const today = todayISO();
     return state.tarefas.filter((t) => t.data === today || (!t.feito && t.data < today));
@@ -1831,9 +1869,10 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       const d = parse(ds);
       const meets = state.reunioes.filter((r) => r.data === ds).sort((a, b) => a.hora.localeCompare(b.hora));
       const evs = meets.map((r) => `<div class="ev meet"><small>${esc(r.hora || 'Sem horário')}</small>${esc(meetTitle(r))}</div>`);
-      return `<div class="day${i === 0 ? ' today' : ''}">
+      const nt = tasksOfDay(ds).filter((t) => !t.feito).length;
+      return `<div class="day${i === 0 ? ' today' : ''}${ds === ui.taskDay ? ' sel' : ''}" data-task-day="${ds}" title="Ver tarefas deste dia">
         <div class="day-h"><b>${pad(d.getDate())}</b><span>${i === 0 ? 'HOJE' : WEEKDAYS[d.getDay()]}</span></div>
-        <div class="day-evs">${evs.join('') || '<span class="day-empty">Livre</span>'}</div>
+        <div class="day-evs">${evs.join('') || (nt ? '' : '<span class="day-empty">Livre</span>')}${nt ? `<span class="day-tasks">${plural(nt, 'tarefa', 'tarefas')}</span>` : ''}</div>
       </div>`;
     }).join('');
 
@@ -1851,8 +1890,20 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         <button class="icon-btn del" type="button" data-act="del-meet" data-id="${r.id}" aria-label="Excluir reunião">${ICON.del}</button>
       </li>`).join('') : emptyLi('Sem reuniões agendadas');
 
-    // Tarefas do dia
-    const todays = todaysTasks();
+    // Tarefas do dia escolhido
+    if (ui.taskDay < today) ui.taskDay = today;
+    const day = ui.taskDay;
+    const todays = tasksOfDay(day);
+    const pick = [];
+    for (let i = 0; i < 7; i++) pick.push(addDays(i));
+    const extra = !pick.includes(day) ? day : null;
+    $('#taskDays').innerHTML = pick.concat(extra ? [extra] : []).map((ds, i) => {
+      const d = parse(ds), n = tasksOfDay(ds).filter((t) => !t.feito).length;
+      return `<button type="button" class="dp${ds === day ? ' active' : ''}" data-task-day="${ds}" role="tab" aria-selected="${ds === day}">
+        <span>${i === 0 ? 'Hoje' : i === 1 && !extra ? 'Amanhã' : WEEKDAYS[d.getDay()]}</span><b>${pad(d.getDate())}</b><i>${n ? n : ''}</i></button>`;
+    }).join('') + `<label class="dp dp-other" title="Escolher outro dia"><span>Outro</span><b>…</b><i></i><input type="date" id="taskDayOther" min="${today}" aria-label="Escolher outro dia" value="${day}"></label>`;
+    $('#taskTitle').textContent = `Tarefas ${dayLabel(day)}`;
+    $('#taskHint').textContent = day === today ? '' : `Novas tarefas entram em ${fmtDate(day)}`;
     const counts = {
       todas: todays.length,
       trabalho: todays.filter((t) => t.tag === 'trabalho').length,
@@ -1868,7 +1919,9 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     $('#taskProgress').textContent = todays.length ? `${done}/${todays.length}` : '';
     $('#taskBar').style.width = todays.length ? `${(done / todays.length) * 100}%` : '0';
     if (ui.taskFilter !== 'todas') $('#taskTag').value = ui.taskFilter;
-    $('#taskList').innerHTML = visible.length ? visible.map((t) => taskLi(t, today)).join('') : emptyLi('Nenhuma tarefa aqui');
+    $('#taskList').innerHTML = visible.length ? visible.map((t) => taskLi(t, today)).join('') : emptyLi(day === today ? 'Nenhuma tarefa aqui' : 'Nada planejado para esse dia ainda');
+    $('#taskDayOther').addEventListener('click', (e) => { try { e.target.showPicker(); } catch (err) { /* navegador sem showPicker */ } });
+    $('#taskDayOther').addEventListener('change', (e) => { if (e.target.value) { ui.taskDay = e.target.value < today ? today : e.target.value; renderAgenda(); } });
   }
 
   /* ================= Dialog / formulários ================= */
@@ -2122,9 +2175,13 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       field('texto', 'Tarefa', `<input name="texto" required maxlength="120" value="${esc(t.texto)}">`, true) +
       field('tag', 'Tipo', `<select name="tag"><option value="trabalho"${t.tag !== 'pessoal' ? ' selected' : ''}>Trabalho</option><option value="pessoal"${t.tag === 'pessoal' ? ' selected' : ''}>Pessoal</option></select>`) +
       field('data', 'Data', `<input name="data" type="date" required value="${esc(t.data)}">`) +
-      `<label class="check full"><input type="checkbox" name="feito" ${t.feito ? 'checked' : ''}><span>Concluída</span></label>`;
+      `<label class="check full"><input type="checkbox" name="feito" ${t.feito ? 'checked' : ''}><span>Concluída</span></label>` +
+      (t.serieId ? `<label class="check full"><input type="checkbox" name="serie"><span>Aplicar texto e tipo às próximas repetições<small>As tarefas desta série a partir de ${fmtDate(t.data)}.</small></span></label>
+        <div class="full"><button class="btn btn-sm btn-danger" type="button" data-act="del-serie" data-id="${t.id}">Excluir esta e as próximas repetições</button></div>` : '');
     openDialog('Editar tarefa', body, (fd) => {
-      Object.assign(t, { texto: fd.texto.trim(), tag: fd.tag === 'pessoal' ? 'pessoal' : 'trabalho', data: fd.data, feito: !!fd.feito });
+      const campos = { texto: fd.texto.trim(), tag: fd.tag === 'pessoal' ? 'pessoal' : 'trabalho' };
+      if (fd.serie && t.serieId) state.tarefas.filter((x) => x.serieId === t.serieId && x.data >= t.data && x.id !== t.id).forEach((x) => Object.assign(x, campos));
+      Object.assign(t, campos, { data: fd.data, feito: !!fd.feito });
       commit();
       toast('Tarefa atualizada');
     });
@@ -2152,6 +2209,8 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       go(nav.dataset.go);
       return;
     }
+    const dayBtn = e.target.closest('[data-task-day]');
+    if (dayBtn) { ui.taskDay = dayBtn.dataset.taskDay; renderAgenda(); return; }
     const tchip = e.target.closest('[data-task-filter]');
     if (tchip) { ui.taskFilter = tchip.dataset.taskFilter; renderAgenda(); return; }
     const rchip = e.target.closest('[data-receb-view]');
@@ -2236,6 +2295,16 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       case 'edit-meet': meetForm(byId(state.reunioes, id)); break;
       case 'del-meet': askConfirm('Excluir reunião', 'Esta ação não pode ser desfeita.', 'Excluir', () => { remove('reunioes', id); commit(); toast('Reunião excluída'); }); break;
       case 'del-task': remove('tarefas', id); commit(); break;
+      case 'del-serie': {
+        const t = byId(state.tarefas, id);
+        if (!t) break;
+        const n = state.tarefas.filter((x) => x.serieId === t.serieId && x.data >= t.data).length;
+        state.tarefas = state.tarefas.filter((x) => !(x.serieId === t.serieId && x.data >= t.data));
+        closeDialog();
+        commit();
+        toast(`${plural(n, 'tarefa excluída', 'tarefas excluídas')}`);
+        break;
+      }
       case 'toggle-tag': {
         const t = byId(state.tarefas, id);
         if (t) { t.tag = t.tag === 'pessoal' ? 'trabalho' : 'pessoal'; commit(); toast(`Tarefa agora é ${t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho'}`); }
@@ -2292,9 +2361,25 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     e.preventDefault();
     const txt = $('#taskText').value.trim();
     if (!txt) return;
-    state.tarefas.push({ id: uid(), texto: txt, tag: $('#taskTag').value, feito: false, data: todayISO() });
+    const base = ui.taskDay || todayISO();
+    const rep = $('#taskRepeat').value;
+    const datas = [base];
+    if (rep) {
+      const limite = rep === 'semanal' ? 56 : 28;
+      for (let i = 1; i < limite; i++) {
+        const d = parse(base); d.setDate(d.getDate() + i);
+        const dow = d.getDay();
+        if (rep === 'diario' || (rep === 'uteis' && dow > 0 && dow < 6) || (rep === 'semanal' && i % 7 === 0)) datas.push(iso(d));
+      }
+      if (rep === 'uteis' && [0, 6].includes(parse(base).getDay())) datas.shift();
+    }
+    const serieId = rep ? uid() : undefined;
+    datas.forEach((ds) => state.tarefas.push({ id: uid(), texto: txt, tag: $('#taskTag').value, feito: false, data: ds, ...(serieId ? { serieId } : {}) }));
     $('#taskText').value = '';
+    $('#taskRepeat').value = '';
     commit();
+    if (rep) toast(`${plural(datas.length, 'tarefa criada', 'tarefas criadas')} até ${fmtDate(datas[datas.length - 1])}`);
+    else if (base !== todayISO()) toast(`Tarefa planejada para ${fmtDate(base)}`);
   });
 
   // Exportar / importar
@@ -2477,7 +2562,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         table(['Data', 'Hora', 'Cliente', 'Assunto'], meets.map((r) => [fmtDate(r.data), r.hora || 'Sem horário', r.cliente || '', r.assunto]), { columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: 70 } }, empty: 'Nenhuma reunião cadastrada.' });
         heading('Tarefas');
         const tasks = [...state.tarefas].sort((a, b) => String(b.data).localeCompare(String(a.data)) || Number(a.feito) - Number(b.feito));
-        table(['Data', 'Tarefa', 'Tipo', 'Status'], tasks.map((t) => [fmtDate(t.data), t.texto, t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho', t.feito ? 'Feita' : 'Pendente']), {
+        table(['Data', 'Tarefa', 'Tipo', 'Status'], tasks.map((t) => [fmtDate(t.data), t.texto, t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho', t.feito ? 'Feita' : t.data > todayISO() ? 'Planejada' : 'Pendente']), {
           columnStyles: { 0: { cellWidth: 70 }, 2: { cellWidth: 65 }, 3: { cellWidth: 60 } }, muted: (i) => tasks[i].feito, empty: 'Nenhuma tarefa cadastrada.',
         });
       },
