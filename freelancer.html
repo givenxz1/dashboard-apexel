@@ -394,6 +394,50 @@ button.badge:hover { background: rgba(244, 244, 239, .08); }
 }
 .fee-preview { margin: 0; font-size: 13px; color: var(--text-2); }
 .fee-preview b { color: var(--text); font-family: var(--font-mono); font-weight: 500; }
+/* Compras */
+.cp-budget-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 20px; }
+.cp-sug { justify-self: start; font-size: 12.5px; text-align: left; }
+.cp-body { display: grid; gap: 20px; }
+.cp-list-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+.cp-list-h h2 { margin: 0; font-family: var(--font-display); font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+.cp-list-h .sub { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+.cp-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 18px; padding: 16px 0; border-top: 1px solid var(--line); }
+.cp-item:first-of-type { border-top: 0; }
+.cp-name { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cp-name a { color: var(--text-3); font-size: 12px; font-weight: 400; }
+.cp-name a:hover { color: var(--accent); }
+.cp-meta { font-size: 12.5px; color: var(--text-2); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 2px; }
+.cp-price { text-align: right; display: grid; gap: 2px; align-content: start; }
+.cp-price b { font-family: var(--font-display); font-size: 22px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cp-price span { font-size: 12px; color: var(--text-3); }
+.cp-plan { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden; }
+.cp-plan > div { background: var(--surface); padding: 10px 12px; display: grid; gap: 2px; min-width: 0; }
+.cp-plan small { font-size: 11.5px; color: var(--text-3); }
+.cp-plan b { font-weight: 500; font-size: 14px; font-family: var(--font-mono); }
+.cp-plan span { font-size: 12px; color: var(--text-2); }
+.cp-rec { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 10px; justify-content: space-between; flex-wrap: wrap; }
+.cp-rec p { margin: 0; font-size: 13.5px; flex: 1 1 280px; }
+.cp-rec p b { font-weight: 600; }
+.cp-tag { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+.cp-tag.agora { background: var(--accent); color: var(--bg); }
+.cp-tag.parcelar { background: rgba(124, 200, 255, .16); color: var(--info); }
+.cp-tag.juntar { background: rgba(255, 181, 71, .16); color: var(--amber); }
+.cp-tag.repensar { background: var(--danger-soft); color: var(--danger); }
+.cp-tag.config { background: rgba(244, 244, 239, .08); color: var(--text-2); }
+.prio { font-size: 11px; padding: 0 7px; border-radius: 5px; border: 1px solid currentColor; }
+.prio.alta { color: var(--danger); }
+.prio.media { color: var(--amber); }
+.prio.baixa { color: var(--gray); }
+.cp-foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 14px; margin-top: 4px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-2); }
+.cp-foot b { color: var(--text); font-weight: 500; font-family: var(--font-mono); }
+.cp-preview { margin: 0; padding: 10px 12px; border-radius: 8px; background: rgba(244, 244, 239, .04); font-size: 13px; color: var(--text-2); }
+.cp-preview b { color: var(--text); font-family: var(--font-mono); font-weight: 500; }
+@media (max-width: 1000px) { .cp-budget-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 820px) {
+  .cp-plan { grid-template-columns: minmax(0, 1fr); }
+  .cp-item { grid-template-columns: minmax(0, 1fr); }
+  .cp-price { text-align: left; }
+}
 /* Valor guardado */
 .saldo { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
 .saldo-main, .saldo-side { display: grid; gap: 6px; min-width: 0; }
@@ -613,7 +657,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   .topbar .brand { padding: 0; }
   .topbar .brand .word { font-size: 18px; }
   .bottomnav {
-    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
     padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
     background: rgba(11, 17, 32, .96); backdrop-filter: blur(12px); border-top: 1px solid var(--border);
@@ -697,6 +741,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       <a class="nav-i" href="#financeiro" data-tab="financeiro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg><span>Financeiro</span><em data-count="financeiro"></em></a>
       <a class="nav-i" href="#agenda" data-tab="agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span>Agenda</span><em data-count="agenda"></em></a>
       <a class="nav-i" href="#sistema" data-tab="sistema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V9"/><path d="M19 21V9"/><path d="M3 21h18"/><path d="M5 9c3.5-4 10.5-4 14 0"/><path d="M12 5.8V3"/></svg><span>Sistema M</span><em data-count="sistema"></em></a>
+      <a class="nav-i" href="#compras" data-tab="compras"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l1 13H5z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span>Compras</span></a>
     </nav>
     <div class="side-foot">
       <p class="side-label">Seus dados</p>
@@ -888,6 +933,38 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     </section>
   </section>
 
+  <!-- ============ COMPRAS ============ -->
+  <section class="view" data-view="compras" aria-label="Compras" hidden>
+    <div class="vh">
+      <div><h1>Compras</h1><p>Suas listas com um plano: quanto tempo juntando, quanto fica a parcela e quando comprar com a sua renda.</p></div>
+      <div class="vh-actions">
+        <button class="btn" type="button" data-act="cp-nova-lista">Nova lista</button>
+        <button class="btn btn-primary" type="button" data-act="cp-novo-item">Novo item</button>
+      </div>
+    </div>
+
+    <section class="card cp-budget" aria-label="Seu orçamento">
+      <div class="card-h"><h2>Seu orçamento</h2><span class="aside" id="cpComprometido"></span></div>
+      <div class="cp-budget-grid">
+        <label class="field"><span class="label">Renda mensal (salário)</span>
+          <input id="cpRenda" type="text" inputmode="decimal" placeholder="0,00">
+          <button class="link-btn cp-sug" type="button" data-act="cp-sug-renda" id="cpSugRenda"></button>
+        </label>
+        <label class="field"><span class="label">Quanto consegue juntar por mês</span>
+          <input id="cpAporte" type="text" inputmode="decimal" placeholder="0,00">
+          <button class="link-btn cp-sug" type="button" data-act="cp-sug-aporte" id="cpSugAporte"></button>
+        </label>
+        <label class="field"><span class="label">Limite para parcelas (% da renda)</span>
+          <input id="cpLimite" type="number" inputmode="numeric" min="0" max="100" step="1" placeholder="15">
+          <span class="cp-sug muted" id="cpLimiteInfo"></span>
+        </label>
+      </div>
+    </section>
+
+    <div class="chips" id="cpListas" role="tablist" aria-label="Listas"></div>
+    <div id="cpBody" class="cp-body"></div>
+  </section>
+
    </div>
   </main>
 
@@ -897,6 +974,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     <a class="nav-i" href="#financeiro" data-tab="financeiro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg><span>Financeiro</span><em data-count="financeiro"></em></a>
     <a class="nav-i" href="#agenda" data-tab="agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span>Agenda</span><em data-count="agenda"></em></a>
     <a class="nav-i" href="#sistema" data-tab="sistema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V9"/><path d="M19 21V9"/><path d="M3 21h18"/><path d="M5 9c3.5-4 10.5-4 14 0"/><path d="M12 5.8V3"/></svg><span>Sistema M</span><em data-count="sistema"></em></a>
+    <a class="nav-i" href="#compras" data-tab="compras"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l1 13H5z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span>Compras</span></a>
   </nav>
 </div>
 
@@ -1070,12 +1148,23 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         { id: uid(), nome: 'Cerâmica', criado: addDays(-80), toques: [addDays(-78), addDays(-70)], status: 'abandonado', encerrado: addDays(-60) },
       ],
     };
-    return { version: 1, nome: 'Dev', projetos: [], recebimentos, despesas, reunioes, tarefas, fixos, guardado, sistemaM };
+    const compras = { renda: 7000, aporte: 1200, limite: 15, listas: [
+      { id: uid(), nome: 'Setup de trabalho', itens: [
+        { id: uid(), nome: 'Monitor 27" 4K', preco: 1899, qtd: 1, prioridade: 'alta', parcelas: 10, juros: 0, guardado: 600, link: '', nota: 'Esperar a Black Friday' },
+        { id: uid(), nome: 'Cadeira ergonômica', preco: 1499, qtd: 1, prioridade: 'media', parcelas: 12, juros: 1.99, guardado: 0 },
+        { id: uid(), nome: 'Teclado mecânico', preco: 459, qtd: 1, prioridade: 'baixa', parcelas: 3, juros: 0, guardado: 459 },
+      ] },
+      { id: uid(), nome: 'Casa', itens: [
+        { id: uid(), nome: 'Air fryer', preco: 499, qtd: 1, prioridade: 'media', parcelas: 5, juros: 0, guardado: 0 },
+        { id: uid(), nome: 'MacBook Pro', preco: 18999, qtd: 1, prioridade: 'baixa', parcelas: 12, juros: 0, guardado: 0 },
+      ] },
+    ] };
+    return { version: 1, nome: 'Dev', projetos: [], recebimentos, despesas, reunioes, tarefas, fixos, guardado, sistemaM, compras };
   }
 
   /* ================= Estado ================= */
   let state;
-  const ui = { tab: 'visao', statusFilter: 'todos', taskFilter: 'todas', taskDay: todayISO(), q: '', sort: 'prazo', finMonth: monthKey(todayISO()), recebView: 'pendentes' };
+  const ui = { cpLista: 'todas', tab: 'visao', statusFilter: 'todos', taskFilter: 'todas', taskDay: todayISO(), q: '', sort: 'prazo', finMonth: monthKey(todayISO()), recebView: 'pendentes' };
 
   // Aceita variações ("comida", "Alimentação", "invest.") e categorias antigas (Impostos/Outros → Despesas)
   function fixCategoria(c) {
@@ -1089,6 +1178,23 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     if (/^pessoa/.test(k)) return 'Pessoal';
     return 'Despesas';
   }
+  const PRIOS = { alta: 'Alta', media: 'Média', baixa: 'Baixa' };
+  function normItem(i) {
+    return {
+      id: i.id || uid(), nome: String(i.nome), preco: Math.max(0, Number(i.preco) || 0), qtd: Math.max(1, parseInt(i.qtd, 10) || 1),
+      prioridade: PRIOS[i.prioridade] ? i.prioridade : 'media', parcelas: Math.max(1, Math.min(48, parseInt(i.parcelas, 10) || 1)),
+      juros: Math.max(0, Number(i.juros) || 0), guardado: Math.max(0, Number(i.guardado) || 0), link: String(i.link || ''), nota: String(i.nota || ''),
+      criado: i.criado || todayISO(), comprado: !!i.comprado, compradoEm: i.compradoEm || null, pago: Number(i.pago) || 0,
+      formaPaga: i.formaPaga === 'parcelado' ? 'parcelado' : 'avista', parcelasPagas: Math.max(1, parseInt(i.parcelasPagas, 10) || 1),
+    };
+  }
+  function normCompras(c) {
+    const o = c && typeof c === 'object' ? c : {};
+    return {
+      renda: Math.max(0, Number(o.renda) || 0), aporte: Math.max(0, Number(o.aporte) || 0), limite: o.limite == null ? 15 : Math.max(0, Math.min(100, Number(o.limite) || 0)),
+      listas: Array.isArray(o.listas) ? o.listas.filter((l) => l && l.nome).map((l) => ({ id: l.id || uid(), nome: String(l.nome), itens: Array.isArray(l.itens) ? l.itens.filter((i) => i && i.nome).map(normItem) : [] })) : [],
+    };
+  }
   function normSM(sm) {
     const o = sm && typeof sm === 'object' ? { ...sm } : {};
     o.checks = Array.isArray(o.checks) ? o.checks.filter((c) => c && /^\d{4}-\d{2}-\d{2}$/.test(c.data) && ['sim', 'parcial', 'nao'].includes(c.v)) : [];
@@ -1101,10 +1207,11 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     return o;
   }
   function normalize(data) {
-    const base = { version: 1, nome: 'Dev', projetos: [], recebimentos: [], despesas: [], reunioes: [], tarefas: [], fixos: [], guardado: null, sistemaM: null };
+    const base = { version: 1, nome: 'Dev', projetos: [], recebimentos: [], despesas: [], reunioes: [], tarefas: [], fixos: [], guardado: null, sistemaM: null, compras: null };
     const out = Object.assign(base, data || {});
     ['projetos', 'recebimentos', 'despesas', 'reunioes', 'tarefas', 'fixos'].forEach((k) => { if (!Array.isArray(out[k])) out[k] = []; });
     out.sistemaM = normSM(out.sistemaM);
+    out.compras = normCompras(out.compras);
     delete out.saldo;
     const gm = out.guardado && Array.isArray(out.guardado.movs) ? out.guardado.movs : [];
     out.guardado = { movs: gm.filter((mv) => mv && /^\d{4}-\d{2}-\d{2}$/.test(mv.data) && Number(mv.valor)).map((mv) => ({ id: mv.id || uid(), data: mv.data, valor: Number(mv.valor), nota: String(mv.nota || '') })) };
@@ -1254,7 +1361,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   };
 
   /* ================= Navegação ================= */
-  const TABS = ['visao', 'financeiro', 'agenda', 'sistema'];
+  const TABS = ['visao', 'financeiro', 'agenda', 'sistema', 'compras'];
   function tabFromHash() {
     const h = location.hash.replace('#', '');
     return TABS.includes(h) ? h : null;
@@ -1284,7 +1391,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     renderView();
   }
   function renderView() {
-    ({ visao: renderOverview, financeiro: renderFinance, agenda: renderAgenda, sistema: renderSistema })[ui.tab]();
+    ({ visao: renderOverview, financeiro: renderFinance, agenda: renderAgenda, sistema: renderSistema, compras: renderCompras })[ui.tab]();
   }
 
   function renderHeader() {
@@ -1852,6 +1959,209 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     }, 'Salvar decisão');
   }
 
+  /* ---------- Compras ---------- */
+  const mesAno = (n) => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + n); return `${MONTHS[d.getMonth()].slice(0, 3)}/${String(d.getFullYear()).slice(2)}`; };
+  const itemTotal = (i) => (Number(i.preco) || 0) * (Number(i.qtd) || 1);
+  function parcelaDe(total, n, jurosPct) {
+    n = Math.max(1, n || 1);
+    const j = (Number(jurosPct) || 0) / 100;
+    return j > 0 ? total * j / (1 - Math.pow(1 + j, -n)) : total / n;
+  }
+  // Parcelas de compras já feitas que ainda estão correndo
+  function comprometidoMes() {
+    const hoje = parse(todayISO());
+    let v = 0;
+    state.compras.listas.forEach((l) => l.itens.forEach((i) => {
+      if (!i.comprado || i.formaPaga !== 'parcelado' || !i.compradoEm) return;
+      const d = parse(i.compradoEm);
+      const meses = (hoje.getFullYear() - d.getFullYear()) * 12 + (hoje.getMonth() - d.getMonth());
+      if (meses < i.parcelasPagas) v += (i.pago || itemTotal(i)) / i.parcelasPagas;
+    }));
+    return v;
+  }
+  function sugestoesOrcamento() {
+    const mk = monthKey(todayISO());
+    const meses = [1, 2, 3].map((n) => monthFinance(shiftMonth(mk, -n)));
+    const comDados = meses.filter((f) => f.faturamento || f.totalDesp);
+    if (!comDados.length) return null;
+    const renda = comDados.reduce((a, f) => a + f.faturamento, 0) / comDados.length;
+    const sobra = comDados.reduce((a, f) => a + (f.faturamento - f.totalDesp), 0) / comDados.length;
+    return { renda: cents(renda), sobra: cents(Math.max(0, sobra)), n: comDados.length };
+  }
+  // O coração da aba: quanto tempo juntando, parcela e a sugestão de quando comprar
+  function planoItem(i) {
+    const c = state.compras;
+    const total = itemTotal(i);
+    const falta = Math.max(0, total - (i.guardado || 0));
+    const meses = c.aporte > 0 ? Math.ceil(falta / c.aporte) : null;
+    const n = i.parcelas || 1;
+    const parcela = parcelaDe(total, n, i.juros);
+    const custoJuros = Math.max(0, parcela * n - total);
+    const comprometido = comprometidoMes();
+    const limiteR = c.renda * (c.limite / 100);
+    const livre = Math.max(0, limiteR - comprometido);
+    const salarios = c.renda > 0 ? total / c.renda : null;
+    let rec;
+    if (falta <= 0) rec = { k: 'agora', t: 'Comprar agora', d: 'Você já separou o valor todo. Dá para pagar à vista.' };
+    else if (!c.renda && !c.aporte) rec = { k: 'config', t: 'Defina o orçamento', d: 'Informe sua renda e quanto consegue juntar por mês para ver a sugestão.' };
+    else if (n > 1 && c.renda > 0 && parcela <= livre) rec = { k: 'parcelar', t: 'Pode parcelar agora', d: `A parcela de <b>${money(parcela)}</b> cabe no seu limite (sobra ${money(livre)} por mês para parcelas).${custoJuros > 0 ? ` Juntando, você economiza ${money(custoJuros)} de juros.` : ''}` };
+    else if (meses !== null && meses <= 24) rec = { k: 'juntar', t: `Juntar até ${mesAno(meses)}`, d: meses <= 1 ? `Com mais um mês juntando você compra à vista, em <b>${mesAno(meses)}</b>.` : `Juntando ${money(c.aporte)} por mês, dá para comprar à vista em <b>${mesAno(meses)}</b> (${meses} meses).${n > 1 && c.renda > 0 ? ` Parcelado, a parcela de ${money(parcela)} passaria do seu limite.` : ''}` };
+    else if (meses !== null) rec = { k: 'repensar', t: 'Repensar', d: `Levaria ${Math.round(meses / 12 * 10) / 10} anos juntando ${money(c.aporte)} por mês${salarios ? ` e custa ${salarios.toFixed(1).replace('.', ',')} salários` : ''}. Aumente o quanto junta, procure um preço menor ou baixe a prioridade.` };
+    else rec = { k: c.renda > 0 && n > 1 ? 'repensar' : 'config', t: c.renda > 0 && n > 1 ? 'Parcela alta' : 'Defina quanto junta', d: c.renda > 0 && n > 1 ? `A parcela de ${money(parcela)} passa do seu limite. Informe quanto consegue juntar por mês para planejar a compra à vista.` : 'Informe quanto consegue juntar por mês para calcular o prazo.' };
+    return { total, falta, meses, parcela, n, custoJuros, salarios, rec };
+  }
+
+  function renderCompras() {
+    const c = state.compras;
+    const sug = sugestoesOrcamento();
+    const setIf = (id, v) => { const el = $(id); if (document.activeElement !== el) el.value = v; };
+    setIf('#cpRenda', c.renda ? String(c.renda.toFixed(2)).replace('.', ',') : '');
+    setIf('#cpAporte', c.aporte ? String(c.aporte.toFixed(2)).replace('.', ',') : '');
+    setIf('#cpLimite', String(c.limite));
+    $('#cpSugRenda').textContent = sug && sug.renda ? `Usar média do faturamento: ${money(sug.renda)}` : '';
+    $('#cpSugRenda').hidden = !(sug && sug.renda);
+    $('#cpSugAporte').textContent = sug && sug.sobra ? `Usar sobra média do mês: ${money(sug.sobra)}` : '';
+    $('#cpSugAporte').hidden = !(sug && sug.sobra);
+    const comp = comprometidoMes();
+    const limiteR = c.renda * (c.limite / 100);
+    $('#cpLimiteInfo').textContent = c.renda ? `Até ${money(limiteR)} por mês em parcelas` : 'Informe a renda para calcular';
+    $('#cpComprometido').textContent = comp ? `Parcelas em andamento: ${money(comp)} por mês${c.renda ? ` (${Math.round((comp / c.renda) * 100)}% da renda)` : ''}` : '';
+
+    // Chips das listas
+    const todas = c.listas.reduce((a, l) => a + l.itens.filter((i) => !i.comprado).length, 0);
+    if (ui.cpLista !== 'todas' && !c.listas.some((l) => l.id === ui.cpLista)) ui.cpLista = 'todas';
+    $('#cpListas').innerHTML = c.listas.length ? [`<button type="button" class="chip${ui.cpLista === 'todas' ? ' active' : ''}" data-cp-lista="todas">Todas<span class="n">${todas}</span></button>`]
+      .concat(c.listas.map((l) => `<button type="button" class="chip${ui.cpLista === l.id ? ' active' : ''}" data-cp-lista="${l.id}">${esc(l.nome)}<span class="n">${l.itens.filter((i) => !i.comprado).length}</span></button>`)).join('') : '';
+
+    const ordem = { alta: 0, media: 1, baixa: 2 };
+    const listas = ui.cpLista === 'todas' ? c.listas : c.listas.filter((l) => l.id === ui.cpLista);
+    $('#cpBody').innerHTML = listas.length ? listas.map((l) => {
+      const abertos = l.itens.filter((i) => !i.comprado).sort((a, b) => ordem[a.prioridade] - ordem[b.prioridade] || String(a.criado).localeCompare(String(b.criado)));
+      const comprados = l.itens.filter((i) => i.comprado);
+      const totalLista = abertos.reduce((a, i) => a + itemTotal(i), 0);
+      const faltaLista = abertos.reduce((a, i) => a + Math.max(0, itemTotal(i) - i.guardado), 0);
+      const mesesLista = c.aporte > 0 ? Math.ceil(faltaLista / c.aporte) : null;
+      return `<section class="card">
+        <div class="cp-list-h">
+          <div><h2>${esc(l.nome)}</h2><div class="sub">${plural(abertos.length, 'item', 'itens')} · ${money(totalLista)}</div></div>
+          <div class="row-actions">
+            <button class="btn btn-sm" type="button" data-act="cp-novo-item" data-lista="${l.id}">Adicionar item</button>
+            <button class="icon-btn" type="button" data-act="cp-edit-lista" data-id="${l.id}" aria-label="Renomear lista">${ICON.edit}</button>
+            <button class="icon-btn del" type="button" data-act="cp-del-lista" data-id="${l.id}" aria-label="Excluir lista">${ICON.del}</button>
+          </div>
+        </div>
+        ${abertos.length ? abertos.map((i) => {
+          const pl = planoItem(i);
+          return `<div class="cp-item">
+            <div>
+              <div class="cp-name">${esc(i.nome)} <span class="prio ${i.prioridade}">${PRIOS[i.prioridade]}</span>${i.link ? ` <a href="${esc(/^https?:\/\//.test(i.link) ? i.link : 'https://' + i.link)}" target="_blank" rel="noopener">ver loja ↗</a>` : ''}</div>
+              <div class="cp-meta">${i.qtd > 1 ? `<span>${i.qtd} × ${money(i.preco)}</span>` : ''}${i.guardado ? `<span>${money(i.guardado)} já separado</span>` : ''}${pl.salarios !== null ? `<span>${pl.salarios < 1 ? `${Math.round(pl.salarios * 100)}% do salário` : `${pl.salarios.toFixed(1).replace('.', ',')} salários`}</span>` : ''}${i.nota ? `<span>· ${esc(i.nota)}</span>` : ''}</div>
+            </div>
+            <div class="cp-price"><b>${money(pl.total)}</b>${pl.falta && pl.falta < pl.total ? `<span>faltam ${money(pl.falta)}</span>` : ''}</div>
+            <div class="cp-plan">
+              <div><small>Juntando</small><b>${pl.falta <= 0 ? 'Já tem' : pl.meses === null ? '—' : plural(pl.meses, 'mês', 'meses')}</b><span>${pl.falta <= 0 ? 'valor separado' : pl.meses === null ? 'defina quanto junta' : `pronto em ${mesAno(pl.meses)}`}</span></div>
+              <div><small>Parcelado</small><b>${pl.n > 1 ? `${pl.n}× ${money(pl.parcela)}` : 'À vista'}</b><span>${pl.n > 1 ? (pl.custoJuros ? `${String(i.juros).replace('.', ',')}% a.m. · +${money(pl.custoJuros)} de juros` : 'sem juros') : 'sem parcelamento'}</span></div>
+              <div><small>Parcela na renda</small><b>${c.renda && pl.n > 1 ? `${Math.round((pl.parcela / c.renda) * 100)}%` : '—'}</b><span>${c.renda && pl.n > 1 ? `limite ${c.limite}% (${money(c.renda * c.limite / 100)})` : c.renda ? 'compra à vista' : 'informe a renda'}</span></div>
+            </div>
+            <div class="cp-rec">
+              <p><span class="cp-tag ${pl.rec.k}">${pl.rec.t}</span> ${pl.rec.d}</p>
+              <div class="row-actions">
+                <button class="btn btn-sm${pl.rec.k === 'agora' || pl.rec.k === 'parcelar' ? ' btn-primary' : ''}" type="button" data-act="cp-comprei" data-id="${i.id}">Comprei</button>
+                <button class="icon-btn" type="button" data-act="cp-edit-item" data-id="${i.id}" aria-label="Editar ${esc(i.nome)}">${ICON.edit}</button>
+                <button class="icon-btn del" type="button" data-act="cp-del-item" data-id="${i.id}" aria-label="Excluir ${esc(i.nome)}">${ICON.del}</button>
+              </div>
+            </div>
+          </div>`;
+        }).join('') : '<p class="sm-empty" style="margin:8px 0">Lista vazia. Adicione o primeiro item.</p>'}
+        ${abertos.length ? `<div class="cp-foot"><span>Faltam juntar <b>${money(faltaLista)}</b></span><span>${mesesLista === null ? 'Defina quanto junta por mês' : faltaLista <= 0 ? 'Tudo já separado' : `Lista completa à vista em <b>${mesAno(mesesLista)}</b> (${plural(mesesLista, 'mês', 'meses')}, na ordem de prioridade)`}</span></div>` : ''}
+        ${comprados.length ? `<details class="sm-more" style="margin-top:12px"><summary>Comprados (${comprados.length})</summary><ul class="list">${comprados.map((i) => `<li>
+            <div class="grow"><div class="title">${esc(i.nome)}</div><div class="meta"><span>${fmtDate(i.compradoEm)}</span><span>${i.formaPaga === 'parcelado' ? `${i.parcelasPagas}× ${money(i.pago / i.parcelasPagas)}` : 'à vista'}</span></div></div>
+            <span class="num">${money(i.pago || itemTotal(i))}</span>
+            <button class="btn btn-sm" type="button" data-act="cp-desfazer" data-id="${i.id}">Desfazer</button>
+          </li>`).join('')}</ul></details>` : ''}
+      </section>`;
+    }).join('') : `<section class="card"><p class="sm-empty" style="margin:0 0 12px">Crie sua primeira lista: setup de trabalho, casa, viagem, presentes… Cada item mostra quanto tempo juntando, a parcela e quando vale comprar.</p><button class="btn btn-primary" type="button" data-act="cp-nova-lista">Criar lista</button></section>`;
+  }
+
+  const cpFindItem = (id) => { for (const l of state.compras.listas) { const i = l.itens.find((x) => x.id === id); if (i) return { l, i }; } return null; };
+  function listaForm(l) {
+    openDialog(l ? 'Renomear lista' : 'Nova lista', field('nome', 'Nome da lista', `<input name="nome" required maxlength="40" placeholder="Ex.: Setup de trabalho, Casa, Viagem" value="${esc(l ? l.nome : '')}">`, true), (fd) => {
+      const nome = fd.nome.trim();
+      if (!nome) return false;
+      if (l) l.nome = nome;
+      else { const nl = { id: uid(), nome, itens: [] }; state.compras.listas.push(nl); ui.cpLista = nl.id; }
+      commit();
+      toast(l ? 'Lista renomeada' : 'Lista criada');
+    }, l ? 'Salvar' : 'Criar lista');
+  }
+  function itemForm(it, listaId) {
+    const c = state.compras;
+    if (!c.listas.length) { listaForm(); return; }
+    const found = it ? cpFindItem(it.id) : null;
+    const lid = found ? found.l.id : (listaId || (ui.cpLista !== 'todas' ? ui.cpLista : c.listas[0].id));
+    it = it || { nome: '', preco: 0, qtd: 1, prioridade: 'media', parcelas: 1, juros: 0, guardado: 0, link: '', nota: '' };
+    const brl = (v) => (v ? String(Number(v).toFixed(2)).replace('.', ',') : '');
+    const body =
+      field('nome', 'Item', `<input name="nome" required maxlength="80" placeholder="Ex.: Monitor 27 polegadas" value="${esc(it.nome)}">`, true) +
+      field('lista', 'Lista', `<select name="lista">${c.listas.map((l) => `<option value="${l.id}"${l.id === lid ? ' selected' : ''}>${esc(l.nome)}</option>`).join('')}</select>`) +
+      field('prioridade', 'Prioridade', `<select name="prioridade">${Object.entries(PRIOS).map(([k, v]) => `<option value="${k}"${it.prioridade === k ? ' selected' : ''}>${v}</option>`).join('')}</select>`) +
+      field('preco', 'Preço (R$)', `<input name="preco" id="cpfPreco" type="text" inputmode="decimal" placeholder="0,00" required value="${brl(it.preco)}">`) +
+      field('qtd', 'Quantidade', `<input name="qtd" id="cpfQtd" type="number" min="1" max="999" value="${it.qtd || 1}">`) +
+      field('parcelas', 'Parcelas', `<select name="parcelas" id="cpfParc">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 18, 21, 24].map((n) => `<option value="${n}"${Number(it.parcelas) === n ? ' selected' : ''}>${n === 1 ? 'À vista' : n + '×'}</option>`).join('')}</select>`) +
+      field('juros', 'Juros ao mês (%)', `<input name="juros" id="cpfJuros" type="text" inputmode="decimal" placeholder="0 = sem juros" value="${it.juros ? String(it.juros).replace('.', ',') : ''}">`) +
+      field('guardado', 'Já separado (R$)', `<input name="guardado" id="cpfGuard" type="text" inputmode="decimal" placeholder="0,00" value="${brl(it.guardado)}">`) +
+      field('link', 'Link da loja (opcional)', `<input name="link" type="url" maxlength="300" placeholder="https://" value="${esc(it.link)}">`) +
+      field('nota', 'Observação (opcional)', `<input name="nota" maxlength="120" placeholder="Ex.: esperar promoção" value="${esc(it.nota)}">`, true) +
+      `<p class="full cp-preview" id="cpfPreview"></p>`;
+    openDialog(found ? 'Editar item' : 'Novo item', body, (fd) => {
+      const dados = normItem({ ...it, nome: fd.nome.trim(), preco: num(fd.preco), qtd: fd.qtd, prioridade: fd.prioridade, parcelas: fd.parcelas, juros: num(fd.juros), guardado: num(fd.guardado), link: fd.link.trim(), nota: fd.nota.trim() });
+      if (!dados.nome) return false;
+      const destino = c.listas.find((l) => l.id === fd.lista) || c.listas[0];
+      if (found) {
+        Object.assign(found.i, dados);
+        if (found.l !== destino) { found.l.itens = found.l.itens.filter((x) => x !== found.i); destino.itens.push(found.i); }
+      } else destino.itens.push(dados);
+      commit();
+      toast(found ? 'Item atualizado' : 'Item adicionado');
+    }, found ? 'Salvar' : 'Adicionar');
+    const draw = () => {
+      const t = num($('#cpfPreco').value) * Math.max(1, parseInt($('#cpfQtd').value, 10) || 1);
+      const n = Number($('#cpfParc').value), j = num($('#cpfJuros').value), g = num($('#cpfGuard').value);
+      const falta = Math.max(0, t - g);
+      const meses = c.aporte > 0 ? Math.ceil(falta / c.aporte) : null;
+      const pa = parcelaDe(t, n, j);
+      $('#cpfPreview').innerHTML = t ? `Total <b>${money(t)}</b>${n > 1 ? ` · ${n}× <b>${money(pa)}</b>${j ? ` (total ${money(pa * n)})` : ''}` : ''} · ${falta <= 0 ? 'já separado' : meses === null ? 'defina quanto junta por mês' : `juntando: <b>${plural(meses, 'mês', 'meses')}</b> (${mesAno(meses)})`}` : 'Preencha o preço para ver o plano.';
+    };
+    ['#cpfPreco', '#cpfQtd', '#cpfParc', '#cpfJuros', '#cpfGuard'].forEach((sel) => { $(sel).addEventListener('input', draw); $(sel).addEventListener('change', draw); });
+    draw();
+  }
+  function compreiForm(i) {
+    const total = itemTotal(i);
+    const pl = planoItem(i);
+    const body =
+      field('data', 'Data da compra', `<input name="data" type="date" required value="${todayISO()}">`) +
+      field('pago', 'Valor pago no total (R$)', `<input name="pago" type="text" inputmode="decimal" required value="${String((i.parcelas > 1 ? pl.parcela * pl.n : total).toFixed(2)).replace('.', ',')}">`) +
+      field('forma', 'Forma', `<select name="forma"><option value="avista"${i.parcelas > 1 ? '' : ' selected'}>À vista</option><option value="parcelado"${i.parcelas > 1 ? ' selected' : ''}>Parcelado</option></select>`) +
+      field('n', 'Parcelas', `<input name="n" type="number" min="1" max="48" value="${i.parcelas || 1}">`) +
+      `<label class="check full"><input type="checkbox" name="lancar" checked><span>Lançar nas despesas<small>À vista entra uma despesa; parcelado entra uma por mês, a partir da data da compra.</small></span></label>` +
+      field('categoria', 'Categoria da despesa', `<select name="categoria">${CATEGORIAS.map((cc) => `<option${cc === 'Pessoal' ? ' selected' : ''}>${cc}</option>`).join('')}</select>`, true);
+    openDialog(`Comprei: ${i.nome}`, body, (fd) => {
+      const pago = num(fd.pago) || total;
+      const parcelado = fd.forma === 'parcelado';
+      const n = parcelado ? Math.max(1, Math.min(48, parseInt(fd.n, 10) || 1)) : 1;
+      const data = /^\d{4}-\d{2}-\d{2}$/.test(fd.data) ? fd.data : todayISO();
+      Object.assign(i, { comprado: true, compradoEm: data, pago, formaPaga: parcelado ? 'parcelado' : 'avista', parcelasPagas: n });
+      if (fd.lancar) {
+        for (let k = 0; k < n; k++) {
+          const d = parse(data); const dia = d.getDate(); d.setDate(1); d.setMonth(d.getMonth() + k); d.setDate(Math.min(dia, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
+          state.despesas.push({ id: uid(), descricao: `Compra: ${i.nome}${n > 1 ? ` (${k + 1}/${n})` : ''}`, categoria: fixCategoria(fd.categoria), valor: cents(pago / n), data: iso(d), compraId: i.id });
+        }
+      }
+      commit();
+      toast(fd.lancar ? `Compra registrada${n > 1 ? ` · ${n} parcelas lançadas nas despesas` : ' e lançada nas despesas'}` : 'Compra registrada');
+    }, 'Registrar compra');
+  }
+
   /* ---------- Agenda ---------- */
   function whenBox(dateStr) {
     const d = parse(dateStr);
@@ -2209,6 +2519,8 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       go(nav.dataset.go);
       return;
     }
+    const cpChip = e.target.closest('[data-cp-lista]');
+    if (cpChip) { ui.cpLista = cpChip.dataset.cpLista; renderCompras(); return; }
     const dayBtn = e.target.closest('[data-task-day]');
     if (dayBtn) { ui.taskDay = dayBtn.dataset.taskDay; renderAgenda(); return; }
     const tchip = e.target.closest('[data-task-filter]');
@@ -2287,6 +2599,31 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       }
       case 'sm-del-lab': state.sistemaM.lab = state.sistemaM.lab.filter((x) => x.id !== id); commit(); break;
       case 'sm-del-hist': askConfirm('Excluir ciclo do histórico', 'Esta ação não pode ser desfeita.', 'Excluir', () => { state.sistemaM.ciclos = state.sistemaM.ciclos.filter((x) => x.id !== id); commit(); }); break;
+      case 'cp-nova-lista': listaForm(); break;
+      case 'cp-edit-lista': listaForm(state.compras.listas.find((l) => l.id === id)); break;
+      case 'cp-del-lista': {
+        const l = state.compras.listas.find((x) => x.id === id);
+        if (l) askConfirm('Excluir lista', `A lista "${esc(l.nome)}" e seus ${plural(l.itens.length, 'item', 'itens')} serão apagados. Despesas já lançadas continuam.`, 'Excluir', () => { state.compras.listas = state.compras.listas.filter((x) => x.id !== id); commit(); toast('Lista excluída'); });
+        break;
+      }
+      case 'cp-novo-item': itemForm(null, btn.dataset.lista); break;
+      case 'cp-edit-item': { const f = cpFindItem(id); if (f) itemForm(f.i); break; }
+      case 'cp-del-item': { const f = cpFindItem(id); if (f) askConfirm('Excluir item', `"${esc(f.i.nome)}" sai da lista.`, 'Excluir', () => { f.l.itens = f.l.itens.filter((x) => x.id !== id); commit(); }); break; }
+      case 'cp-comprei': { const f = cpFindItem(id); if (f) compreiForm(f.i); break; }
+      case 'cp-desfazer': {
+        const f = cpFindItem(id);
+        if (!f) break;
+        const n = state.despesas.filter((d) => d.compraId === id).length;
+        askConfirm('Desfazer compra', `O item volta para a lista${n ? ` e ${plural(n, 'despesa lançada será removida', 'despesas lançadas serão removidas')}` : ''}.`, 'Desfazer', () => {
+          state.despesas = state.despesas.filter((d) => d.compraId !== id);
+          Object.assign(f.i, { comprado: false, compradoEm: null, pago: 0 });
+          commit();
+          toast('Compra desfeita');
+        });
+        break;
+      }
+      case 'cp-sug-renda': { const sg = sugestoesOrcamento(); if (sg) { state.compras.renda = sg.renda; commit(); toast('Renda atualizada'); } break; }
+      case 'cp-sug-aporte': { const sg = sugestoesOrcamento(); if (sg) { state.compras.aporte = sg.sobra; commit(); toast('Valor mensal atualizado'); } break; }
       case 'del-mov': askConfirm('Excluir movimentação', 'O valor guardado será recalculado sem ela.', 'Excluir', () => { state.guardado.movs = state.guardado.movs.filter((mv) => mv.id !== id); commit(); toast('Movimentação excluída'); }); break;
       case 'edit-receb': recebForm(byId(state.recebimentos, id)); break;
       case 'del-receb': askConfirm('Excluir recebimento', 'Esta ação não pode ser desfeita.', 'Excluir', () => { remove('recebimentos', id); commit(); toast('Recebimento excluído'); }); break;
@@ -2345,6 +2682,13 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   $('#btnAddDesp').addEventListener('click', () => despForm());
   $('#btnAddMeet').addEventListener('click', () => meetForm());
   $('#userName').addEventListener('click', nameForm);
+  [['#cpRenda', 'renda'], ['#cpAporte', 'aporte'], ['#cpLimite', 'limite']].forEach(([sel, k]) => {
+    $(sel).addEventListener('change', (e) => {
+      const v = k === 'limite' ? Math.max(0, Math.min(100, parseInt(e.target.value, 10) || 0)) : Math.max(0, num(e.target.value));
+      state.compras[k] = v;
+      commit();
+    });
+  });
   $('#smLabForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const nome = $('#smLabNome').value.trim();
@@ -2447,7 +2791,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   }
   // As fontes padrão do PDF só cobrem Latin-1: troca o que ficaria quebrado
   const pdfText = (v) => String(v ?? '').replace(/[—–]/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/…/g, '...').replace(/[^\x00-\xFF]/g, '');
-  const PDF_SECTIONS = { resumo: 'Resumo', financeiro: 'Financeiro', agenda: 'Agenda', sistema: 'Sistema M' };
+  const PDF_SECTIONS = { resumo: 'Resumo', financeiro: 'Financeiro', agenda: 'Agenda', sistema: 'Sistema M', compras: 'Compras' };
   const STATUS_ORDER = { andamento: 0, revisao: 1, orcamento: 2, concluido: 3 };
 
   async function buildPdf(sections, title) {
@@ -2594,6 +2938,23 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
           return [x.nome, sit, String(labSemanas(x)), ult ? fmtDate(ult) : '-'];
         }), { columnStyles: right(2), muted: (i) => lab[i].status !== 'ativo', empty: 'Nada no laboratório.' });
       },
+      compras() {
+        const c = state.compras;
+        heading('Compras', true);
+        table(['Orçamento', 'Valor'], [['Renda mensal', c.renda ? money(c.renda) : 'Não informada'], ['Consegue juntar por mês', c.aporte ? money(c.aporte) : 'Não informado'], ['Limite para parcelas', `${c.limite}% da renda${c.renda ? ` (${money(c.renda * c.limite / 100)})` : ''}`], ['Parcelas em andamento', money(comprometidoMes())]], { columnStyles: right(1) });
+        if (!c.listas.length) { note('Nenhuma lista de compras.'); return; }
+        const ordem = { alta: 0, media: 1, baixa: 2 };
+        c.listas.forEach((l) => {
+          heading(l.nome);
+          const abertos = l.itens.filter((i) => !i.comprado).sort((a, b) => ordem[a.prioridade] - ordem[b.prioridade]);
+          table(['Item', 'Prior.', 'Total', 'Juntando', 'Parcelado', 'Sugestão'], abertos.map((i) => {
+            const pl = planoItem(i);
+            return [i.nome + (i.qtd > 1 ? ` (${i.qtd}x)` : ''), PRIOS[i.prioridade], money(pl.total), pl.falta <= 0 ? 'Já tem' : pl.meses === null ? '-' : `${plural(pl.meses, 'mês', 'meses')} (${mesAno(pl.meses)})`, pl.n > 1 ? `${pl.n}x ${money(pl.parcela)}` : 'À vista', pl.rec.t];
+          }), { foot: ['Total', '', money(abertos.reduce((a, i) => a + itemTotal(i), 0)), '', '', ''], columnStyles: { ...right(2), 1: { cellWidth: 45 } }, empty: 'Nada pendente nesta lista.' });
+          const comprados = l.itens.filter((i) => i.comprado);
+          if (comprados.length) table(['Comprado', 'Data', 'Forma', 'Valor pago'], comprados.map((i) => [i.nome, fmtDate(i.compradoEm), i.formaPaga === 'parcelado' ? `${i.parcelasPagas}x` : 'À vista', money(i.pago || itemTotal(i))]), { columnStyles: right(3) });
+        });
+      },
     };
     sections.forEach((k, i) => { if (i > 0 && y > 122) { y += 6; } sections_[k](); });
 
@@ -2614,7 +2975,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       <fieldset class="field full" style="border:0;padding:0;margin:0">
         <legend class="label" style="margin-bottom:10px">O que incluir</legend>
         <div class="check-list">
-          ${Object.entries(PDF_SECTIONS).map(([k, l]) => `<label class="check"><input type="checkbox" name="sec" value="${k}" checked><span>${l}<small>${{ resumo: 'Indicadores e faturamento x despesas por mês', financeiro: 'Recebimentos, despesas e totais por categoria', agenda: 'Reuniões e tarefas', sistema: 'Formas de renda, atividades de crescimento e laboratório' }[k]}</small></span></label>`).join('')}
+          ${Object.entries(PDF_SECTIONS).map(([k, l]) => `<label class="check"><input type="checkbox" name="sec" value="${k}" checked><span>${l}<small>${{ resumo: 'Indicadores e faturamento x despesas por mês', financeiro: 'Recebimentos, despesas e totais por categoria', agenda: 'Reuniões e tarefas', sistema: 'Formas de renda, atividades de crescimento e laboratório', compras: 'Listas com prazo juntando, parcela e sugestão de compra' }[k]}</small></span></label>`).join('')}
         </div>
       </fieldset>
       <fieldset class="field full" style="border:0;padding:0;margin:0;gap:8px">
@@ -2701,6 +3062,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         const have = new Set(state.guardado.movs.map((mv) => mv.id));
         state.guardado.movs.push(...normalize({ guardado: data.guardado }).guardado.movs.filter((mv) => !have.has(mv.id)));
       }
+      if (data.compras && typeof data.compras === 'object' && (fd.modo === 'substituir' || !state.compras.listas.length)) state.compras = normCompras(data.compras);
       if (data.sistemaM && typeof data.sistemaM === 'object' && (fd.modo === 'substituir' || (!state.sistemaM.ativos.length && !state.sistemaM.lab.length && !state.sistemaM.checks.length))) state.sistemaM = normSM(data.sistemaM);
       const added = [];
       keys.forEach((k) => {
@@ -2732,7 +3094,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   });
 
   $('#btnWipe').addEventListener('click', () => {
-    askConfirm('Zerar tudo', 'Recebimentos, despesas, reuniões, tarefas, lançamentos fixos, valor guardado e Sistema M serão apagados. Exporte um backup antes se quiser guardar algo.', 'Apagar tudo', () => {
+    askConfirm('Zerar tudo', 'Recebimentos, despesas, reuniões, tarefas, lançamentos fixos, valor guardado, Sistema M e listas de compras serão apagados. Exporte um backup antes se quiser guardar algo.', 'Apagar tudo', () => {
       state = normalize({ nome: state.nome });
       commit();
       toast('Tudo zerado');
