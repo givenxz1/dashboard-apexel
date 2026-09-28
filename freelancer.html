@@ -394,6 +394,61 @@ button.badge:hover { background: rgba(244, 244, 239, .08); }
 }
 .fee-preview { margin: 0; font-size: 13px; color: var(--text-2); }
 .fee-preview b { color: var(--text); font-family: var(--font-mono); font-weight: 500; }
+/* Treinos */
+.tr-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.tr-plan { display: grid; gap: 14px; align-content: start; box-shadow: inset 0 3px 0 var(--tc, var(--accent)); }
+.tr-plan-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.tr-plan-h h2 { margin: 0; font-family: var(--font-display); font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+.tr-days { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.tr-day { font-size: 11px; padding: 1px 6px; border-radius: 5px; background: rgba(244, 244, 239, .06); color: var(--text-3); }
+.tr-day.on { background: var(--tc-soft, var(--accent-soft)); color: var(--tc, var(--accent)); font-weight: 600; }
+.tr-desc { margin: 0; font-size: 13px; color: var(--text-2); }
+.tr-ex { list-style: none; margin: 0; padding: 0; counter-reset: ex; }
+.tr-ex li { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 9px 0; border-top: 1px solid var(--line); cursor: pointer; }
+.tr-ex li:first-child { border-top: 0; }
+.tr-ex li::before { counter-increment: ex; content: counter(ex); font-family: var(--font-mono); font-size: 11px; color: var(--text-3); }
+.tr-ex li:hover .n { color: var(--accent); }
+.tr-ex .n { font-weight: 500; font-size: 14px; }
+.tr-ex .d { font-size: 12px; color: var(--text-3); grid-column: 2; }
+.tr-ex .p { font-family: var(--font-mono); font-size: 12.5px; color: var(--text-2); white-space: nowrap; text-align: right; }
+.tr-stats { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--text-3); }
+.tr-stats b { color: var(--text-2); font-weight: 500; }
+.tr-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.tr-heat { display: grid; grid-template-columns: repeat(7, minmax(0, 26px)); gap: 5px; margin-top: 14px; }
+.tr-heat i { aspect-ratio: 1; max-width: 100%; border-radius: 4px; background: rgba(244, 244, 239, .06); display: block; }
+.tr-heat i.on { background: var(--accent); }
+.tr-heat i.plan { box-shadow: inset 0 0 0 1px rgba(244, 244, 239, .25); }
+.tr-heat i.today { outline: 1px solid var(--text); outline-offset: 1px; }
+.tr-heat-legend { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-3); margin-top: 6px; }
+.tr-week { display: flex; align-items: baseline; gap: 8px; }
+.tr-week b { font-family: var(--font-display); font-size: 34px; font-weight: 600; letter-spacing: -.02em; }
+.tr-week span { color: var(--text-2); font-size: 13px; }
+/* Sessão */
+.tr-session { display: grid; gap: 16px; border-color: var(--accent); }
+.tr-s-h { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.tr-s-h h2 { margin: 0; font-family: var(--font-display); font-size: 22px; font-weight: 600; }
+.tr-s-h .el { font-family: var(--font-mono); font-size: 13px; color: var(--text-2); }
+.tr-s-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 20px; align-items: start; }
+.tr-timer { display: grid; gap: 10px; justify-items: center; text-align: center; padding: 20px 16px; border-radius: 12px; background: rgba(244, 244, 239, .03); border: 1px solid var(--border); }
+.tr-timer .fase { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--text-3); }
+.tr-timer .fase.work { color: var(--accent); }
+.tr-timer .fase.rest { color: var(--amber); }
+.tr-timer .clock { font-family: var(--font-mono); font-size: clamp(48px, 9vw, 72px); font-weight: 500; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.tr-timer .ex { font-weight: 600; font-size: 15px; }
+.tr-timer .sub { font-size: 12.5px; color: var(--text-2); }
+.tr-s-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.tr-s-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; padding: 10px 12px; border-radius: 8px; cursor: pointer; }
+.tr-s-list li.cur { background: rgba(157, 255, 45, .06); box-shadow: inset 2px 0 0 var(--accent); }
+.tr-s-list li.ok .n { text-decoration: line-through; color: var(--text-3); }
+.tr-s-list .n { font-weight: 500; font-size: 14px; }
+.tr-s-list .p { font-family: var(--font-mono); font-size: 12px; color: var(--text-3); text-align: right; }
+.tr-sets { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
+.tr-set { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-2); font-family: var(--font-mono); font-size: 12px; cursor: pointer; transition: all .12s; }
+.tr-set.done { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 600; }
+.tr-set:hover { border-color: var(--accent); }
+.ev.treino { border-left-color: var(--accent); }
+@media (max-width: 1240px) { .tr-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1000px) { .tr-grid, .tr-s-grid { grid-template-columns: minmax(0, 1fr); } }
 /* Compras */
 .cp-budget-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 20px; }
 .cp-sug { justify-self: start; font-size: 12.5px; text-align: left; }
@@ -657,12 +712,12 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   .topbar .brand { padding: 0; }
   .topbar .brand .word { font-size: 18px; }
   .bottomnav {
-    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+    display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
     padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
     background: rgba(11, 17, 32, .96); backdrop-filter: blur(12px); border-top: 1px solid var(--border);
   }
-  .bottomnav .nav-i { flex-direction: column; justify-content: center; gap: 3px; height: 54px; padding: 0 2px; font-size: 11px; }
+  .bottomnav .nav-i { flex-direction: column; justify-content: center; gap: 3px; height: 54px; padding: 0 1px; font-size: 10px; letter-spacing: -.01em; }
   .bottomnav .nav-i span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .bottomnav .nav-i[aria-current="page"] { background: transparent; }
   .bottomnav .nav-i[aria-current="page"] span { color: var(--text); }
@@ -742,6 +797,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       <a class="nav-i" href="#agenda" data-tab="agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span>Agenda</span><em data-count="agenda"></em></a>
       <a class="nav-i" href="#sistema" data-tab="sistema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V9"/><path d="M19 21V9"/><path d="M3 21h18"/><path d="M5 9c3.5-4 10.5-4 14 0"/><path d="M12 5.8V3"/></svg><span>Sistema M</span><em data-count="sistema"></em></a>
       <a class="nav-i" href="#compras" data-tab="compras"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l1 13H5z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span>Compras</span></a>
+      <a class="nav-i" href="#treinos" data-tab="treinos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 6.5v11M17.5 6.5v11"/><path d="M3.5 9v6M20.5 9v6"/><path d="M6.5 12h11"/></svg><span>Treinos</span><em data-count="treinos"></em></a>
     </nav>
     <div class="side-foot">
       <p class="side-label">Seus dados</p>
@@ -933,6 +989,30 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     </section>
   </section>
 
+  <!-- ============ TREINOS ============ -->
+  <section class="view" data-view="treinos" aria-label="Treinos" hidden>
+    <div class="vh">
+      <div><h1>Treinos</h1><p>Seus treinos do seu jeito: exercícios, séries, rounds e descanso, com cronômetro e histórico.</p></div>
+      <div class="vh-actions"><button class="btn btn-primary" type="button" data-act="tr-novo-plano">Novo treino</button></div>
+    </div>
+    <section class="card tr-session" id="trSession" hidden></section>
+    <div class="grid-2">
+      <section class="card">
+        <div class="card-h"><h2>Hoje</h2><span class="aside" id="trHojeDia"></span></div>
+        <ul class="list" id="trHoje"></ul>
+      </section>
+      <section class="card">
+        <div class="card-h"><h2>Progresso</h2><span class="aside" id="trStreak"></span></div>
+        <div id="trProg"></div>
+      </section>
+    </div>
+    <div class="tr-grid" id="trPlanos"></div>
+    <section class="card">
+      <div class="card-h"><h2>Histórico</h2><span class="aside" id="trHistCount"></span></div>
+      <ul class="list" id="trHist"></ul>
+    </section>
+  </section>
+
   <!-- ============ COMPRAS ============ -->
   <section class="view" data-view="compras" aria-label="Compras" hidden>
     <div class="vh">
@@ -975,6 +1055,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     <a class="nav-i" href="#agenda" data-tab="agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span>Agenda</span><em data-count="agenda"></em></a>
     <a class="nav-i" href="#sistema" data-tab="sistema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V9"/><path d="M19 21V9"/><path d="M3 21h18"/><path d="M5 9c3.5-4 10.5-4 14 0"/><path d="M12 5.8V3"/></svg><span>Sistema M</span><em data-count="sistema"></em></a>
     <a class="nav-i" href="#compras" data-tab="compras"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l1 13H5z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span>Compras</span></a>
+    <a class="nav-i" href="#treinos" data-tab="treinos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 6.5v11M17.5 6.5v11"/><path d="M3.5 9v6M20.5 9v6"/><path d="M6.5 12h11"/></svg><span>Treinos</span><em data-count="treinos"></em></a>
   </nav>
 </div>
 
@@ -1159,7 +1240,19 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         { id: uid(), nome: 'MacBook Pro', preco: 18999, qtd: 1, prioridade: 'baixa', parcelas: 12, juros: 0, guardado: 0 },
       ] },
     ] };
-    return { version: 1, nome: 'Dev', projetos: [], recebimentos, despesas, reunioes, tarefas, fixos, guardado, sistemaM, compras };
+    const planos = treinosPadrao();
+    const trLog = [];
+    for (let k = 1; k <= 30; k++) {
+      const d = parse(addDays(-k));
+      planos.forEach((pl) => {
+        if (pl.dias.includes(d.getDay()) && (k * 7 + pl.nome.length) % 5 !== 0) {
+          const total = pl.exercicios.reduce((acc, e) => acc + e.series, 0);
+          trLog.push({ id: uid(), data: iso(d), hora: '19:00', planoId: pl.id, planoNome: pl.nome, duracao: 1800 + (k % 4) * 600, feitos: total - (k % 3), total, esforco: 6 + (k % 4), nota: '' });
+        }
+      });
+    }
+    const treinos = { planos, log: trLog, sessao: null, metaSemana: 0 };
+    return { version: 1, nome: 'Dev', projetos: [], recebimentos, despesas, reunioes, tarefas, fixos, guardado, sistemaM, compras, treinos };
   }
 
   /* ================= Estado ================= */
@@ -1177,6 +1270,55 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     if (/^(lazer|diversao|entretenimento)/.test(k)) return 'Lazer';
     if (/^pessoa/.test(k)) return 'Pessoal';
     return 'Despesas';
+  }
+  /* ---------- Treinos: modelo e treinos padrão ---------- */
+  const TR_CORES = { verde: ['#9DFF2D', 'rgba(157,255,45,.14)'], azul: ['#7CC8FF', 'rgba(124,200,255,.14)'], ambar: ['#FFB547', 'rgba(255,181,71,.14)'], vermelho: ['#FF5C5C', 'rgba(255,92,92,.14)'], branco: ['#F4F4EF', 'rgba(244,244,239,.12)'] };
+  const TR_MODOS = { reps: 'Repetições', tempo: 'Tempo', rounds: 'Rounds' };
+  const DIAS_CURTOS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  const ex = (nome, modo, series, reps, segundos, descanso, nota) => ({ id: uid(), nome, modo, series, reps: reps || 0, segundos: segundos || 0, descanso: descanso || 0, carga: '', nota: nota || '' });
+  function treinosPadrao() {
+    return [
+      { id: uid(), nome: 'Muay Thai', cor: 'vermelho', dias: [1, 3, 5], descricao: 'Técnica, condicionamento e rounds no saco.', exercicios: [
+        ex('Pular corda (aquecimento)', 'rounds', 3, 0, 180, 60),
+        ex('Shadow boxing', 'rounds', 3, 0, 180, 60, 'Foco na guarda e no giro do quadril'),
+        ex('Chute circular no saco', 'reps', 4, 20, 0, 60, '10 de cada lado'),
+        ex('Joelhadas no saco', 'reps', 3, 20, 0, 60, 'Alternando as pernas'),
+        ex('Combinações no saco (jab, direto, chute)', 'rounds', 5, 0, 180, 60),
+        ex('Teep (chute frontal)', 'reps', 3, 16, 0, 45, '8 de cada lado'),
+        ex('Alongamento final', 'tempo', 1, 0, 600, 0),
+      ] },
+      { id: uid(), nome: 'Abdômen', cor: 'ambar', dias: [1, 3, 5], descricao: 'Core forte para girar, chutar e proteger a lombar.', exercicios: [
+        ex('Prancha', 'tempo', 3, 0, 45, 30),
+        ex('Abdominal supra', 'reps', 3, 20, 0, 30),
+        ex('Elevação de pernas', 'reps', 3, 15, 0, 30),
+        ex('Abdominal bicicleta', 'reps', 3, 30, 0, 30, 'Contando os dois lados'),
+        ex('Prancha lateral', 'tempo', 3, 0, 30, 30, 'Cada lado'),
+        ex('Russian twist', 'reps', 3, 30, 0, 30),
+        ex('Hollow hold', 'tempo', 3, 0, 30, 30),
+      ] },
+      { id: uid(), nome: 'Calistenia', cor: 'verde', dias: [2, 4, 6], descricao: 'Força com o peso do corpo.', exercicios: [
+        ex('Flexão de braço', 'reps', 4, 12, 0, 90),
+        ex('Barra fixa', 'reps', 4, 6, 0, 120, 'Use elástico se precisar'),
+        ex('Paralelas (dips)', 'reps', 3, 10, 0, 90),
+        ex('Agachamento livre', 'reps', 4, 20, 0, 60),
+        ex('Afundo', 'reps', 3, 12, 0, 60, 'Cada perna'),
+        ex('Flexão pike', 'reps', 3, 10, 0, 90),
+        ex('Remada australiana', 'reps', 3, 12, 0, 60),
+      ] },
+    ];
+  }
+  function normEx(e) {
+    return { id: e.id || uid(), nome: String(e.nome || 'Exercício'), modo: TR_MODOS[e.modo] ? e.modo : 'reps', series: Math.max(1, Math.min(50, parseInt(e.series, 10) || 1)),
+      reps: Math.max(0, parseInt(e.reps, 10) || 0), segundos: Math.max(0, parseInt(e.segundos, 10) || 0), descanso: Math.max(0, parseInt(e.descanso, 10) || 0), carga: String(e.carga || ''), nota: String(e.nota || '') };
+  }
+  function normTreinos(t) {
+    if (!t || typeof t !== 'object' || !Array.isArray(t.planos)) return { planos: treinosPadrao(), log: [], sessao: null, metaSemana: 0 };
+    return {
+      planos: t.planos.filter((pl) => pl && pl.nome).map((pl) => ({ id: pl.id || uid(), nome: String(pl.nome), cor: TR_CORES[pl.cor] ? pl.cor : 'verde', dias: Array.isArray(pl.dias) ? pl.dias.map(Number).filter((d) => d >= 0 && d <= 6) : [], descricao: String(pl.descricao || ''), exercicios: Array.isArray(pl.exercicios) ? pl.exercicios.map(normEx) : [] })),
+      log: Array.isArray(t.log) ? t.log.filter((l) => l && /^\d{4}-\d{2}-\d{2}$/.test(l.data)) : [],
+      sessao: t.sessao && t.sessao.planoId ? t.sessao : null,
+      metaSemana: Math.max(0, parseInt(t.metaSemana, 10) || 0),
+    };
   }
   const PRIOS = { alta: 'Alta', media: 'Média', baixa: 'Baixa' };
   function normItem(i) {
@@ -1207,11 +1349,12 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     return o;
   }
   function normalize(data) {
-    const base = { version: 1, nome: 'Dev', projetos: [], recebimentos: [], despesas: [], reunioes: [], tarefas: [], fixos: [], guardado: null, sistemaM: null, compras: null };
+    const base = { version: 1, nome: 'Dev', projetos: [], recebimentos: [], despesas: [], reunioes: [], tarefas: [], fixos: [], guardado: null, sistemaM: null, compras: null, treinos: null };
     const out = Object.assign(base, data || {});
     ['projetos', 'recebimentos', 'despesas', 'reunioes', 'tarefas', 'fixos'].forEach((k) => { if (!Array.isArray(out[k])) out[k] = []; });
     out.sistemaM = normSM(out.sistemaM);
     out.compras = normCompras(out.compras);
+    out.treinos = normTreinos(out.treinos);
     delete out.saldo;
     const gm = out.guardado && Array.isArray(out.guardado.movs) ? out.guardado.movs : [];
     out.guardado = { movs: gm.filter((mv) => mv && /^\d{4}-\d{2}-\d{2}$/.test(mv.data) && Number(mv.valor)).map((mv) => ({ id: mv.id || uid(), data: mv.data, valor: Number(mv.valor), nota: String(mv.nota || '') })) };
@@ -1361,7 +1504,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   };
 
   /* ================= Navegação ================= */
-  const TABS = ['visao', 'financeiro', 'agenda', 'sistema', 'compras'];
+  const TABS = ['visao', 'financeiro', 'agenda', 'sistema', 'compras', 'treinos'];
   function tabFromHash() {
     const h = location.hash.replace('#', '');
     return TABS.includes(h) ? h : null;
@@ -1391,7 +1534,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     renderView();
   }
   function renderView() {
-    ({ visao: renderOverview, financeiro: renderFinance, agenda: renderAgenda, sistema: renderSistema, compras: renderCompras })[ui.tab]();
+    ({ visao: renderOverview, financeiro: renderFinance, agenda: renderAgenda, sistema: renderSistema, compras: renderCompras, treinos: renderTreinos })[ui.tab]();
   }
 
   function renderHeader() {
@@ -1415,6 +1558,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     const sig = smSignals();
     const nSm = sig.vencidos.length + (sig.cansaco ? 1 : 0);
     setCount('sistema', nSm, true, 'alertas do Sistema M');
+    setCount('treinos', trHoje().filter((pl) => !trFeitoEm(pl.id, todayISO())).length, false, 'treinos de hoje');
   }
 
   /* ---------- Hoje: frase-resumo + régua do dia ---------- */
@@ -1436,6 +1580,8 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       if (in7) html += ` Entram <span class="money">${money(in7)}</span> nos próximos 7 dias.`;
       if (m.atrasados.length) html += ` <span class="warn">${plural(m.atrasados.length, 'cobrança atrasada', 'cobranças atrasadas')}.</span>`;
     }
+    const trPend = trHoje().filter((pl) => !trFeitoEm(pl.id, today));
+    if (trPend.length) html += ` Treino de hoje: <b>${trPend.map((pl) => esc(pl.nome)).join(' + ')}</b>.`;
     $('#heroSummary').innerHTML = html;
     renderRuler(meets);
   }
@@ -1959,6 +2105,276 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     }, 'Salvar decisão');
   }
 
+  /* ---------- Treinos ---------- */
+  const fmtDur = (sec) => { sec = Math.max(0, Math.round(sec)); if (sec < 60) return `${sec}s`; const m = Math.floor(sec / 60), r = sec % 60; return `${m}:${pad(r)}`; };
+  const clock = (sec) => { sec = Math.max(0, Math.ceil(sec)); return `${pad(Math.floor(sec / 60))}:${pad(sec % 60)}`; };
+  const parseDur = (v) => { const t = String(v || '').trim().toLowerCase(); if (!t) return 0; if (t.includes(':')) { const [m, s2] = t.split(':').map((x) => parseInt(x, 10) || 0); return m * 60 + s2; } if (t.endsWith('min')) return (parseFloat(t) || 0) * 60; return parseInt(t, 10) || 0; };
+  const prescricao = (e) => e.modo === 'reps' ? `${e.series} × ${e.reps || '?'}` : e.modo === 'tempo' ? `${e.series > 1 ? e.series + ' × ' : ''}${fmtDur(e.segundos)}` : `${e.series} rounds × ${fmtDur(e.segundos)}`;
+  const trPlano = (id) => state.treinos.planos.find((pl) => pl.id === id);
+  const trHoje = () => { const dow = new Date().getDay(); return state.treinos.planos.filter((pl) => pl.dias.includes(dow)); };
+  const trFeitoEm = (planoId, ds) => state.treinos.log.some((l) => l.planoId === planoId && l.data === ds);
+  const trCor = (pl) => TR_CORES[pl.cor] || TR_CORES.verde;
+
+  // Cronômetro (fica fora do estado salvo; a sessão em si fica salva)
+  const timer = { fase: 'livre', fim: 0, restante: 0, rodando: false, exId: null, auto: false };
+  let audioCtx = null;
+  function beep(freq = 880, dur = 0.18, vezes = 1) {
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      for (let k = 0; k < vezes; k++) {
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain(), t0 = audioCtx.currentTime + k * (dur + 0.08);
+        o.frequency.value = freq; o.connect(g); g.connect(audioCtx.destination);
+        g.gain.setValueAtTime(0.2, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+        o.start(t0); o.stop(t0 + dur);
+      }
+    } catch (e) { /* sem áudio */ }
+    try { navigator.vibrate && navigator.vibrate(vezes > 1 ? [200, 80, 200] : 150); } catch (e) {}
+  }
+  function timerStart(fase, segundos, exId) {
+    timer.fase = fase; timer.restante = segundos; timer.fim = Date.now() + segundos * 1000; timer.rodando = true; timer.exId = exId;
+    drawTimer();
+  }
+  function timerTick() {
+    const ses = state.treinos.sessao;
+    if (!ses) return;
+    if (timer.rodando) {
+      timer.restante = (timer.fim - Date.now()) / 1000;
+      if (timer.restante <= 0) {
+        timer.rodando = false; timer.restante = 0;
+        const e = currentEx();
+        if (timer.fase === 'trabalho' && e) {
+          ses.feitos[e.id] = Math.min(e.series, (ses.feitos[e.id] || 0) + 1);
+          save();
+          const fim = ses.feitos[e.id] >= e.series;
+          if (fim) { beep(660, 0.25, 3); avancarEx(); timer.fase = 'livre'; renderTreinos(); return; }
+          beep(880, 0.2, 2);
+          if (e.descanso > 0) { timerStart('descanso', e.descanso, e.id); renderTreinos(); return; }
+          if (e.modo !== 'reps') { timerStart('trabalho', e.segundos, e.id); renderTreinos(); return; }
+        } else if (timer.fase === 'descanso') {
+          beep(1040, 0.3, 1);
+          const cur = currentEx();
+          if (cur && cur.modo !== 'reps' && (ses.feitos[cur.id] || 0) < cur.series) { timerStart('trabalho', cur.segundos, cur.id); renderTreinos(); return; }
+          timer.fase = 'livre';
+        }
+        renderTreinos();
+        return;
+      }
+    }
+    drawTimer();
+  }
+  setInterval(timerTick, 250);
+  function currentEx() {
+    const ses = state.treinos.sessao; if (!ses) return null;
+    const pl = trPlano(ses.planoId); if (!pl) return null;
+    return pl.exercicios.find((e) => e.id === ses.atual) || pl.exercicios[0] || null;
+  }
+  function avancarEx() {
+    const ses = state.treinos.sessao, pl = trPlano(ses.planoId);
+    const prox = pl.exercicios.find((e) => (ses.feitos[e.id] || 0) < e.series);
+    if (prox) ses.atual = prox.id;
+    save();
+  }
+  function drawTimer() {
+    const el = $('#tmClock'); if (!el) return;
+    const ses = state.treinos.sessao;
+    el.textContent = clock(timer.fase === 'livre' ? 0 : timer.restante);
+    const f = $('#tmFase');
+    if (f) { f.textContent = timer.fase === 'trabalho' ? (timer.rodando ? 'Trabalho' : 'Pausado') : timer.fase === 'descanso' ? (timer.rodando ? 'Descanso' : 'Descanso pausado') : 'Pronto'; f.className = 'fase ' + (timer.fase === 'trabalho' ? 'work' : timer.fase === 'descanso' ? 'rest' : ''); }
+    const elp = $('#tmElapsed'); if (elp && ses) elp.textContent = `Tempo de treino ${clock((Date.now() - ses.inicio) / 1000)}`;
+  }
+
+  function renderTreinos() {
+    const tr = state.treinos;
+    const today = todayISO();
+    const dow = new Date().getDay();
+
+    // Sessão em andamento
+    const ses = tr.sessao, sesPl = ses && trPlano(ses.planoId);
+    if (ses && !sesPl) tr.sessao = null;
+    $('#trSession').hidden = !(ses && sesPl);
+    if (ses && sesPl) {
+      const cur = currentEx();
+      const totalSets = sesPl.exercicios.reduce((a, e) => a + e.series, 0);
+      const feitos = sesPl.exercicios.reduce((a, e) => a + Math.min(e.series, ses.feitos[e.id] || 0), 0);
+      const curDone = cur ? (ses.feitos[cur.id] || 0) : 0;
+      const podeTimer = cur && (cur.modo !== 'reps' || cur.descanso > 0);
+      $('#trSession').innerHTML = `
+        <div class="tr-s-h">
+          <div><span class="sm-kicker">Treino em andamento</span><h2>${esc(sesPl.nome)}</h2></div>
+          <div class="tr-actions"><span class="el" id="tmElapsed"></span>
+            <button class="btn btn-primary btn-sm" type="button" data-act="tr-finalizar">Finalizar treino</button>
+            <button class="btn btn-sm" type="button" data-act="tr-cancelar">Cancelar</button></div>
+        </div>
+        <div class="bar"><span style="width:${totalSets ? Math.round((feitos / totalSets) * 100) : 0}%"></span></div>
+        <div class="tr-s-grid">
+          <div class="tr-timer">
+            <span class="fase" id="tmFase"></span>
+            <span class="clock" id="tmClock">00:00</span>
+            <span class="ex">${cur ? esc(cur.nome) : 'Tudo feito'}</span>
+            <span class="sub">${cur ? `${prescricao(cur)}${cur.descanso ? ` · descanso ${fmtDur(cur.descanso)}` : ''} · ${cur.modo === 'rounds' ? 'round' : 'série'} ${Math.min(curDone + 1, cur.series)} de ${cur.series}` : `${feitos} de ${totalSets} séries feitas`}</span>
+            ${cur && cur.carga ? `<span class="sub">Carga: ${esc(cur.carga)}</span>` : ''}
+            ${cur && cur.nota ? `<span class="sub">${esc(cur.nota)}</span>` : ''}
+            <div class="tr-actions" style="justify-content:center">
+              ${cur && cur.modo !== 'reps' && curDone < cur.series ? `<button class="btn btn-primary" type="button" data-act="tr-play">${timer.rodando ? 'Pausar' : timer.fase === 'livre' ? `Iniciar ${cur.modo === 'rounds' ? 'round' : 'série'}` : 'Continuar'}</button>` : ''}
+              ${cur && cur.modo === 'reps' && curDone < cur.series ? `<button class="btn btn-primary" type="button" data-act="tr-set-ok">Série feita</button>` : ''}
+              ${timer.fase !== 'livre' ? `<button class="btn" type="button" data-act="tr-skip">${timer.fase === 'descanso' ? 'Pular descanso' : 'Parar'}</button>` : ''}
+              ${cur && timer.fase === 'livre' && cur.descanso > 0 && cur.modo === 'reps' ? '' : ''}
+            </div>
+            <span class="sub" style="color:var(--text-3)">${podeTimer ? 'O cronômetro avisa com som no fim de cada round e descanso.' : ''}</span>
+          </div>
+          <ul class="tr-s-list">${sesPl.exercicios.map((e) => {
+            const d = Math.min(e.series, ses.feitos[e.id] || 0);
+            return `<li class="${cur && e.id === cur.id ? 'cur' : ''}${d >= e.series ? ' ok' : ''}" data-act="tr-atual" data-id="${e.id}">
+              <span class="n">${esc(e.nome)}</span><span class="p">${prescricao(e)}</span>
+              <div class="tr-sets">${Array.from({ length: e.series }, (_, k) => `<button type="button" class="tr-set${k < d ? ' done' : ''}" data-act="tr-set" data-id="${e.id}" data-k="${k}" aria-label="${e.modo === 'rounds' ? 'Round' : 'Série'} ${k + 1}">${k + 1}</button>`).join('')}</div>
+            </li>`;
+          }).join('')}</ul>
+        </div>`;
+      drawTimer();
+    }
+
+    // Hoje
+    $('#trHojeDia').textContent = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][dow];
+    const hoje = trHoje();
+    const outros = tr.planos.filter((pl) => !hoje.includes(pl));
+    $('#trHoje').innerHTML = (hoje.length ? hoje.map((pl) => {
+      const feito = trFeitoEm(pl.id, today);
+      return `<li><span class="attn-dot" style="background:${trCor(pl)[0]}"></span>
+        <div class="grow"><div class="title">${esc(pl.nome)}</div><div class="meta"><span>${plural(pl.exercicios.length, 'exercício', 'exercícios')}</span>${feito ? '<span style="color:var(--accent)">feito hoje ✓</span>' : ''}</div></div>
+        ${ses ? '' : `<button class="btn btn-sm${feito ? '' : ' btn-primary'}" type="button" data-act="tr-iniciar" data-id="${pl.id}">${feito ? 'Treinar de novo' : 'Iniciar'}</button>`}
+      </li>`;
+    }).join('') : '<li class="meta" style="border:0">Dia de descanso. Se quiser treinar, escolha um treino abaixo.</li>')
+      + (!ses && outros.length && !hoje.length ? outros.map((pl) => `<li><span class="attn-dot" style="background:${trCor(pl)[0]}"></span><div class="grow"><div class="title">${esc(pl.nome)}</div></div><button class="btn btn-sm" type="button" data-act="tr-iniciar" data-id="${pl.id}">Iniciar</button></li>`).join('') : '');
+
+    // Progresso
+    const semanaIni = (() => { const d = parse(today); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return iso(d); })();
+    const semanaLog = tr.log.filter((l) => l.data >= semanaIni && l.data <= today);
+    const planejadoSemana = tr.planos.reduce((a, pl) => a + pl.dias.length, 0);
+    const meta = tr.metaSemana || planejadoSemana;
+    const diasTreinados = new Set(tr.log.map((l) => l.data));
+    let streak = 0; { const d = parse(today); if (!diasTreinados.has(today)) d.setDate(d.getDate() - 1); while (diasTreinados.has(iso(d))) { streak++; d.setDate(d.getDate() - 1); } }
+    $('#trStreak').textContent = streak ? `${plural(streak, 'dia seguido', 'dias seguidos')}` : '';
+    const inicioHeat = (() => { const d = parse(semanaIni); d.setDate(d.getDate() - 28); return d; })();
+    const cells = [];
+    for (let k = 0; k < 35; k++) {
+      const d = new Date(inicioHeat); d.setDate(d.getDate() + k);
+      const ds = iso(d);
+      const planejado = tr.planos.some((pl) => pl.dias.includes(d.getDay()));
+      cells.push(`<i class="${diasTreinados.has(ds) ? 'on' : ''}${planejado && ds <= today ? ' plan' : ''}${ds === today ? ' today' : ''}" title="${fmtDate(ds)}${diasTreinados.has(ds) ? ': treinou' : ''}"></i>`);
+    }
+    const ult30 = tr.log.filter((l) => daysUntil(l.data) >= -29);
+    $('#trProg').innerHTML = `
+      <div class="tr-week"><b>${semanaLog.length}</b><span>de ${meta} treinos nesta semana</span></div>
+      <div class="bar" style="margin-top:8px"><span style="width:${meta ? Math.min(100, Math.round((semanaLog.length / meta) * 100)) : 0}%"></span></div>
+      <div class="tr-heat" aria-label="Últimas 5 semanas">${cells.join('')}</div>
+      <div class="tr-heat-legend"><span>Seg → Dom · últimas 5 semanas</span><span>${plural(ult30.length, 'treino', 'treinos')} em 30 dias${ult30.length ? ` · ${(() => { const mins = Math.round(ult30.reduce((a, l) => a + (l.duracao || 0), 0) / 60); return mins >= 120 ? `${Math.round(mins / 6) / 10} h`.replace('.', ',') : `${mins} min`; })()}` : ''}</span></div>
+      <div class="tr-actions" style="margin-top:10px"><label class="sort">Meta por semana <input id="trMeta" type="number" min="0" max="21" style="width:70px;height:32px" value="${tr.metaSemana || ''}" placeholder="${planejadoSemana}"></label></div>`;
+    $('#trMeta').addEventListener('change', (e) => { tr.metaSemana = Math.max(0, parseInt(e.target.value, 10) || 0); commit(); });
+
+    // Planos
+    $('#trPlanos').innerHTML = tr.planos.map((pl) => {
+      const [c, cs] = trCor(pl);
+      const logs = tr.log.filter((l) => l.planoId === pl.id).sort((a, b) => b.data.localeCompare(a.data));
+      const tempo = pl.exercicios.reduce((a, e) => a + (e.modo === 'reps' ? e.series * 40 : e.series * e.segundos) + Math.max(0, e.series - (e.modo === 'tempo' && e.series === 1 ? 1 : 0)) * e.descanso, 0);
+      return `<section class="card tr-plan" style="--tc:${c};--tc-soft:${cs}">
+        <div class="tr-plan-h">
+          <div><h2>${esc(pl.nome)}</h2><div class="tr-days">${DIAS_CURTOS.map((dn, k) => `<span class="tr-day${pl.dias.includes(k) ? ' on' : ''}">${dn}</span>`).join('')}</div></div>
+          <div class="row-actions">
+            <button class="icon-btn" type="button" data-act="tr-edit-plano" data-id="${pl.id}" aria-label="Editar treino ${esc(pl.nome)}">${ICON.edit}</button>
+          </div>
+        </div>
+        ${pl.descricao ? `<p class="tr-desc">${esc(pl.descricao)}</p>` : ''}
+        <ol class="tr-ex">${pl.exercicios.map((e) => `<li data-act="tr-edit-ex" data-plano="${pl.id}" data-id="${e.id}" title="Editar exercício">
+            <span class="n">${esc(e.nome)}</span><span class="p">${prescricao(e)}</span>
+            ${e.descanso || e.carga || e.nota ? `<span class="d">${[e.descanso ? `descanso ${fmtDur(e.descanso)}` : '', e.carga ? esc(e.carga) : '', e.nota ? esc(e.nota) : ''].filter(Boolean).join(' · ')}</span>` : ''}
+          </li>`).join('') || '<li style="cursor:default"><span class="n" style="color:var(--text-3)">Nenhum exercício ainda</span></li>'}</ol>
+        <div class="tr-stats"><span>≈ <b>${Math.round(tempo / 60)} min</b></span><span><b>${logs.length}</b> ${logs.length === 1 ? 'vez' : 'vezes'}</span>${logs[0] ? `<span>último: <b>${fmtDate(logs[0].data).slice(0, 5)}</b></span>` : ''}</div>
+        <div class="tr-actions">
+          ${ses ? '' : `<button class="btn btn-primary btn-sm" type="button" data-act="tr-iniciar" data-id="${pl.id}">Iniciar treino</button>`}
+          <button class="btn btn-sm" type="button" data-act="tr-novo-ex" data-plano="${pl.id}">+ Exercício</button>
+        </div>
+      </section>`;
+    }).join('') || '<section class="card"><p class="sm-empty" style="margin:0 0 12px">Nenhum treino ainda.</p><button class="btn btn-primary" type="button" data-act="tr-novo-plano">Criar treino</button></section>';
+
+    // Histórico
+    const hist = tr.log.slice().sort((a, b) => (b.data + (b.hora || '')).localeCompare(a.data + (a.hora || ''))).slice(0, ui.trHistAll ? 60 : 8);
+    $('#trHistCount').textContent = tr.log.length ? plural(tr.log.length, 'treino registrado', 'treinos registrados') : '';
+    $('#trHist').innerHTML = hist.length ? hist.map((l) => `<li>
+        ${whenBox(l.data)}
+        <div class="grow"><div class="title">${esc(l.planoNome || (trPlano(l.planoId) || {}).nome || 'Treino')}</div>
+          <div class="meta"><span>${fmtDur(l.duracao || 0)}</span><span>· ${l.feitos}/${l.total} séries</span>${l.esforco ? `<span>· esforço ${l.esforco}/10</span>` : ''}${l.nota ? `<span>· ${esc(l.nota)}</span>` : ''}</div></div>
+        <button class="icon-btn del" type="button" data-act="tr-del-log" data-id="${l.id}" aria-label="Excluir registro">${ICON.del}</button>
+      </li>`).join('') + (tr.log.length > 8 ? `<li style="justify-content:center"><button class="link-btn" type="button" data-act="tr-hist-toggle">${ui.trHistAll ? 'Mostrar menos' : 'Ver mais treinos'}</button></li>` : '') : emptyLi('Os treinos que você finalizar aparecem aqui.');
+  }
+
+  function planoForm(pl) {
+    const isNew = !pl;
+    pl = pl || { nome: '', cor: 'verde', dias: [], descricao: '' };
+    const body =
+      field('nome', 'Nome do treino', `<input name="nome" required maxlength="40" placeholder="Ex.: Muay Thai, Corrida, Pernas" value="${esc(pl.nome)}">`, true) +
+      `<fieldset class="field full" style="border:0;padding:0;margin:0"><legend class="label" style="margin-bottom:8px">Dias da semana</legend><div class="chips">${DIAS_CURTOS.map((dn, k) => `<label class="chip" style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" name="dia${k}" ${pl.dias.includes(k) ? 'checked' : ''} style="width:14px;height:14px;margin:0;accent-color:var(--accent)">${dn}</label>`).join('')}</div></fieldset>` +
+      field('cor', 'Cor', `<select name="cor">${Object.keys(TR_CORES).map((k) => `<option value="${k}"${pl.cor === k ? ' selected' : ''}>${k[0].toUpperCase() + k.slice(1)}</option>`).join('')}</select>`) +
+      field('descricao', 'Descrição (opcional)', `<input name="descricao" maxlength="120" value="${esc(pl.descricao)}">`, true) +
+      (isNew ? '' : `<div class="full tr-actions"><button class="btn btn-sm" type="button" data-act="tr-dup-plano" data-id="${pl.id}">Duplicar</button><button class="btn btn-sm btn-danger" type="button" data-act="tr-del-plano" data-id="${pl.id}">Excluir treino</button></div>`);
+    openDialog(isNew ? 'Novo treino' : 'Editar treino', body, (fd) => {
+      const dados = { nome: fd.nome.trim(), cor: TR_CORES[fd.cor] ? fd.cor : 'verde', dias: DIAS_CURTOS.map((_, k) => (fd['dia' + k] ? k : -1)).filter((k) => k >= 0), descricao: fd.descricao.trim() };
+      if (!dados.nome) return false;
+      if (isNew) state.treinos.planos.push({ id: uid(), exercicios: [], ...dados });
+      else Object.assign(pl, dados);
+      commit();
+      toast(isNew ? 'Treino criado. Agora adicione os exercícios.' : 'Treino atualizado');
+    }, isNew ? 'Criar treino' : 'Salvar');
+  }
+  function exForm(planoId, e) {
+    const pl = trPlano(planoId); if (!pl) return;
+    const isNew = !e;
+    e = e || { nome: '', modo: 'reps', series: 3, reps: 12, segundos: 60, descanso: 60, carga: '', nota: '' };
+    const idx = pl.exercicios.indexOf(e);
+    const body =
+      field('nome', 'Exercício', `<input name="nome" required maxlength="60" placeholder="Ex.: Flexão, Round no saco" value="${esc(e.nome)}">`, true) +
+      field('modo', 'Tipo', `<select name="modo" id="exModo">${Object.entries(TR_MODOS).map(([k, v]) => `<option value="${k}"${e.modo === k ? ' selected' : ''}>${v}</option>`).join('')}</select>`) +
+      field('series', 'Séries / rounds', `<input name="series" type="number" min="1" max="50" required value="${e.series}">`) +
+      `<label class="field" id="exRepsF"><span class="label">Repetições</span><input name="reps" type="number" min="0" max="999" value="${e.reps || ''}"></label>` +
+      `<label class="field" id="exSegF"><span class="label">Duração (ex.: 3:00 ou 45)</span><input name="segundos" type="text" inputmode="numeric" value="${e.segundos ? (e.segundos >= 60 ? fmtDur(e.segundos) : e.segundos) : ''}"></label>` +
+      field('descanso', 'Descanso (ex.: 1:00 ou 60)', `<input name="descanso" type="text" inputmode="numeric" value="${e.descanso ? (e.descanso >= 60 ? fmtDur(e.descanso) : e.descanso) : ''}">`) +
+      field('carga', 'Carga (opcional)', `<input name="carga" maxlength="30" placeholder="Ex.: 10 kg, elástico" value="${esc(e.carga)}">`) +
+      field('nota', 'Observação (opcional)', `<input name="nota" maxlength="80" value="${esc(e.nota)}">`, true) +
+      (isNew ? '' : `<div class="full tr-actions">
+        ${idx > 0 ? `<button class="btn btn-sm" type="button" data-act="tr-mover" data-plano="${pl.id}" data-id="${e.id}" data-dir="-1">↑ Subir</button>` : ''}
+        ${idx < pl.exercicios.length - 1 ? `<button class="btn btn-sm" type="button" data-act="tr-mover" data-plano="${pl.id}" data-id="${e.id}" data-dir="1">↓ Descer</button>` : ''}
+        <button class="btn btn-sm btn-danger" type="button" data-act="tr-del-ex" data-plano="${pl.id}" data-id="${e.id}">Excluir exercício</button></div>`);
+    openDialog(isNew ? `Novo exercício · ${pl.nome}` : 'Editar exercício', body, (fd) => {
+      const dados = normEx({ ...e, nome: fd.nome.trim(), modo: fd.modo, series: fd.series, reps: fd.reps, segundos: parseDur(fd.segundos), descanso: parseDur(fd.descanso), carga: fd.carga.trim(), nota: fd.nota.trim() });
+      if (!dados.nome) return false;
+      if (dados.modo !== 'reps' && !dados.segundos) dados.segundos = 60;
+      if (isNew) pl.exercicios.push(dados); else Object.assign(e, dados);
+      commit();
+      toast(isNew ? 'Exercício adicionado' : 'Exercício atualizado');
+    }, isNew ? 'Adicionar' : 'Salvar');
+    const sync = () => { const m = $('#exModo').value; $('#exRepsF').hidden = m !== 'reps'; $('#exSegF').hidden = m === 'reps'; };
+    $('#exModo').addEventListener('change', sync); sync();
+  }
+  function finalizarForm() {
+    const ses = state.treinos.sessao, pl = ses && trPlano(ses.planoId);
+    if (!pl) return;
+    const total = pl.exercicios.reduce((a, e) => a + e.series, 0);
+    const feitos = pl.exercicios.reduce((a, e) => a + Math.min(e.series, ses.feitos[e.id] || 0), 0);
+    const dur = Math.round((Date.now() - ses.inicio) / 1000);
+    const body =
+      `<p class="full cp-preview">${esc(pl.nome)} · <b>${fmtDur(dur)}</b> · <b>${feitos}/${total}</b> séries</p>` +
+      field('esforco', 'Esforço (1 = leve, 10 = máximo)', `<input name="esforco" type="range" min="1" max="10" value="7" oninput="this.nextElementSibling.textContent=this.value">` + '<output style="font-family:var(--font-mono);color:var(--accent)">7</output>', true) +
+      field('nota', 'Como foi? (opcional)', `<input name="nota" maxlength="120" placeholder="Ex.: chute mais firme, cansei no 4º round">`, true);
+    openDialog('Finalizar treino', body, (fd) => {
+      const now = new Date();
+      state.treinos.log.push({ id: uid(), data: todayISO(), hora: `${pad(now.getHours())}:${pad(now.getMinutes())}`, planoId: pl.id, planoNome: pl.nome, duracao: dur, feitos, total, esforco: parseInt(fd.esforco, 10) || 0, nota: (fd.nota || '').trim() });
+      state.treinos.sessao = null;
+      Object.assign(timer, { fase: 'livre', rodando: false, restante: 0 });
+      commit();
+      beep(880, 0.15, 3);
+      toast(`Treino registrado: ${fmtDur(dur)}`);
+    }, 'Salvar treino');
+  }
+
   /* ---------- Compras ---------- */
   const mesAno = (n) => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + n); return `${MONTHS[d.getMonth()].slice(0, 3)}/${String(d.getFullYear()).slice(2)}`; };
   const itemTotal = (i) => (Number(i.preco) || 0) * (Number(i.qtd) || 1);
@@ -2178,7 +2594,8 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     $('#weekStrip').innerHTML = days.map((ds, i) => {
       const d = parse(ds);
       const meets = state.reunioes.filter((r) => r.data === ds).sort((a, b) => a.hora.localeCompare(b.hora));
-      const evs = meets.map((r) => `<div class="ev meet"><small>${esc(r.hora || 'Sem horário')}</small>${esc(meetTitle(r))}</div>`);
+      const evs = meets.map((r) => `<div class="ev meet"><small>${esc(r.hora || 'Sem horário')}</small>${esc(meetTitle(r))}</div>`)
+        .concat(state.treinos.planos.filter((pl) => pl.dias.includes(d.getDay())).map((pl) => `<div class="ev treino" style="border-left-color:${trCor(pl)[0]}"><small>${trFeitoEm(pl.id, ds) ? 'Treino feito ✓' : 'Treino'}</small>${esc(pl.nome)}</div>`));
       const nt = tasksOfDay(ds).filter((t) => !t.feito).length;
       return `<div class="day${i === 0 ? ' today' : ''}${ds === ui.taskDay ? ' sel' : ''}" data-task-day="${ds}" title="Ver tarefas deste dia">
         <div class="day-h"><b>${pad(d.getDate())}</b><span>${i === 0 ? 'HOJE' : WEEKDAYS[d.getDay()]}</span></div>
@@ -2599,6 +3016,77 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       }
       case 'sm-del-lab': state.sistemaM.lab = state.sistemaM.lab.filter((x) => x.id !== id); commit(); break;
       case 'sm-del-hist': askConfirm('Excluir ciclo do histórico', 'Esta ação não pode ser desfeita.', 'Excluir', () => { state.sistemaM.ciclos = state.sistemaM.ciclos.filter((x) => x.id !== id); commit(); }); break;
+      case 'tr-novo-plano': planoForm(); break;
+      case 'tr-edit-plano': planoForm(trPlano(id)); break;
+      case 'tr-dup-plano': {
+        const pl = trPlano(id);
+        if (pl) { state.treinos.planos.push({ ...JSON.parse(JSON.stringify(pl)), id: uid(), nome: pl.nome + ' (cópia)', exercicios: pl.exercicios.map((e) => ({ ...e, id: uid() })) }); closeDialog(); commit(); toast('Treino duplicado'); }
+        break;
+      }
+      case 'tr-del-plano': {
+        const pl = trPlano(id);
+        if (pl) { closeDialog(); askConfirm('Excluir treino', `"${esc(pl.nome)}" e seus exercícios serão apagados. O histórico continua.`, 'Excluir', () => { state.treinos.planos = state.treinos.planos.filter((x) => x.id !== id); if (state.treinos.sessao && state.treinos.sessao.planoId === id) state.treinos.sessao = null; commit(); }); }
+        break;
+      }
+      case 'tr-novo-ex': exForm(btn.dataset.plano); break;
+      case 'tr-edit-ex': { const pl = trPlano(btn.dataset.plano); if (pl) exForm(pl.id, pl.exercicios.find((x) => x.id === id)); break; }
+      case 'tr-del-ex': { const pl = trPlano(btn.dataset.plano); if (pl) { pl.exercicios = pl.exercicios.filter((x) => x.id !== id); closeDialog(); commit(); toast('Exercício excluído'); } break; }
+      case 'tr-mover': {
+        const pl = trPlano(btn.dataset.plano); if (!pl) break;
+        const i = pl.exercicios.findIndex((x) => x.id === id), j = i + Number(btn.dataset.dir);
+        if (i >= 0 && j >= 0 && j < pl.exercicios.length) { [pl.exercicios[i], pl.exercicios[j]] = [pl.exercicios[j], pl.exercicios[i]]; closeDialog(); commit(); }
+        break;
+      }
+      case 'tr-iniciar': {
+        const pl = trPlano(id); if (!pl) break;
+        if (!pl.exercicios.length) { toast('Adicione exercícios antes de iniciar'); break; }
+        state.treinos.sessao = { planoId: pl.id, inicio: Date.now(), feitos: {}, atual: pl.exercicios[0].id };
+        Object.assign(timer, { fase: 'livre', rodando: false, restante: 0 });
+        beep(660, 0.05);
+        commit();
+        if (ui.tab !== 'treinos') go('treinos'); else window.scrollTo({ top: 0, behavior: 'smooth' });
+        break;
+      }
+      case 'tr-atual': { if (e.target.closest('[data-act="tr-set"]')) break; const ses = state.treinos.sessao; if (ses && ses.atual !== id) { ses.atual = id; Object.assign(timer, { fase: 'livre', rodando: false, restante: 0 }); save(); renderTreinos(); } break; }
+      case 'tr-set': {
+        const ses = state.treinos.sessao, pl = ses && trPlano(ses.planoId); if (!pl) break;
+        const ex2 = pl.exercicios.find((x) => x.id === id), k = Number(btn.dataset.k);
+        const d = ses.feitos[id] || 0;
+        ses.feitos[id] = k < d ? k : k + 1;
+        ses.atual = id;
+        if (ses.feitos[id] > d && ex2.descanso > 0 && ses.feitos[id] < ex2.series) { timerStart('descanso', ex2.descanso, id); }
+        if (ses.feitos[id] >= ex2.series) avancarEx();
+        save(); renderTreinos();
+        break;
+      }
+      case 'tr-set-ok': {
+        const cur = currentEx(), ses = state.treinos.sessao; if (!cur) break;
+        ses.feitos[cur.id] = Math.min(cur.series, (ses.feitos[cur.id] || 0) + 1);
+        if (ses.feitos[cur.id] >= cur.series) { beep(660, 0.2, 2); avancarEx(); Object.assign(timer, { fase: 'livre', rodando: false }); }
+        else if (cur.descanso > 0) timerStart('descanso', cur.descanso, cur.id);
+        save(); renderTreinos();
+        break;
+      }
+      case 'tr-play': {
+        const cur = currentEx(); if (!cur) break;
+        if (timer.rodando) { timer.rodando = false; timer.restante = (timer.fim - Date.now()) / 1000; }
+        else if (timer.fase === 'livre') { beep(990, 0.12); timerStart('trabalho', cur.segundos, cur.id); }
+        else { timer.fim = Date.now() + timer.restante * 1000; timer.rodando = true; }
+        renderTreinos();
+        break;
+      }
+      case 'tr-skip': {
+        const cur = currentEx();
+        const eraDescanso = timer.fase === 'descanso';
+        Object.assign(timer, { fase: 'livre', rodando: false, restante: 0 });
+        if (eraDescanso && cur && cur.modo !== 'reps' && (state.treinos.sessao.feitos[cur.id] || 0) < cur.series) timerStart('trabalho', cur.segundos, cur.id);
+        renderTreinos();
+        break;
+      }
+      case 'tr-finalizar': finalizarForm(); break;
+      case 'tr-cancelar': askConfirm('Cancelar treino', 'O treino em andamento não será registrado.', 'Cancelar treino', () => { state.treinos.sessao = null; Object.assign(timer, { fase: 'livre', rodando: false }); commit(); }); break;
+      case 'tr-hist-toggle': ui.trHistAll = !ui.trHistAll; renderTreinos(); break;
+      case 'tr-del-log': state.treinos.log = state.treinos.log.filter((l) => l.id !== id); commit(); break;
       case 'cp-nova-lista': listaForm(); break;
       case 'cp-edit-lista': listaForm(state.compras.listas.find((l) => l.id === id)); break;
       case 'cp-del-lista': {
@@ -2791,7 +3279,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   }
   // As fontes padrão do PDF só cobrem Latin-1: troca o que ficaria quebrado
   const pdfText = (v) => String(v ?? '').replace(/[—–]/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/…/g, '...').replace(/[^\x00-\xFF]/g, '');
-  const PDF_SECTIONS = { resumo: 'Resumo', financeiro: 'Financeiro', agenda: 'Agenda', sistema: 'Sistema M', compras: 'Compras' };
+  const PDF_SECTIONS = { resumo: 'Resumo', financeiro: 'Financeiro', agenda: 'Agenda', sistema: 'Sistema M', compras: 'Compras', treinos: 'Treinos' };
   const STATUS_ORDER = { andamento: 0, revisao: 1, orcamento: 2, concluido: 3 };
 
   async function buildPdf(sections, title) {
@@ -2938,6 +3426,17 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
           return [x.nome, sit, String(labSemanas(x)), ult ? fmtDate(ult) : '-'];
         }), { columnStyles: right(2), muted: (i) => lab[i].status !== 'ativo', empty: 'Nada no laboratório.' });
       },
+      treinos() {
+        const tr = state.treinos;
+        heading('Treinos', true);
+        tr.planos.forEach((pl) => {
+          heading(`${pl.nome}${pl.dias.length ? ' - ' + pl.dias.map((k) => DIAS_CURTOS[k]).join(', ') : ''}`);
+          table(['#', 'Exercício', 'Prescrição', 'Descanso', 'Obs.'], pl.exercicios.map((e, k) => [String(k + 1), e.nome, prescricao(e).replace('×', 'x'), e.descanso ? fmtDur(e.descanso) : '-', [e.carga, e.nota].filter(Boolean).join(' · ') || '-']), { columnStyles: { 0: { cellWidth: 22 }, 2: { cellWidth: 95 }, 3: { cellWidth: 60 } }, empty: 'Sem exercícios.' });
+        });
+        heading('Histórico (60 dias)');
+        const lg = tr.log.filter((l) => daysUntil(l.data) >= -59).sort((a, b) => b.data.localeCompare(a.data));
+        table(['Data', 'Treino', 'Duração', 'Séries', 'Esforço', 'Obs.'], lg.map((l) => [fmtDate(l.data), l.planoNome || '-', fmtDur(l.duracao || 0), `${l.feitos}/${l.total}`, l.esforco ? `${l.esforco}/10` : '-', l.nota || '-']), { columnStyles: right(2, 3, 4), empty: 'Nenhum treino registrado nos últimos 60 dias.' });
+      },
       compras() {
         const c = state.compras;
         heading('Compras', true);
@@ -2975,7 +3474,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       <fieldset class="field full" style="border:0;padding:0;margin:0">
         <legend class="label" style="margin-bottom:10px">O que incluir</legend>
         <div class="check-list">
-          ${Object.entries(PDF_SECTIONS).map(([k, l]) => `<label class="check"><input type="checkbox" name="sec" value="${k}" checked><span>${l}<small>${{ resumo: 'Indicadores e faturamento x despesas por mês', financeiro: 'Recebimentos, despesas e totais por categoria', agenda: 'Reuniões e tarefas', sistema: 'Formas de renda, atividades de crescimento e laboratório', compras: 'Listas com prazo juntando, parcela e sugestão de compra' }[k]}</small></span></label>`).join('')}
+          ${Object.entries(PDF_SECTIONS).map(([k, l]) => `<label class="check"><input type="checkbox" name="sec" value="${k}" checked><span>${l}<small>${{ resumo: 'Indicadores e faturamento x despesas por mês', financeiro: 'Recebimentos, despesas e totais por categoria', agenda: 'Reuniões e tarefas', sistema: 'Formas de renda, atividades de crescimento e laboratório', compras: 'Listas com prazo juntando, parcela e sugestão de compra', treinos: 'Treinos, exercícios e histórico dos últimos 60 dias' }[k]}</small></span></label>`).join('')}
         </div>
       </fieldset>
       <fieldset class="field full" style="border:0;padding:0;margin:0;gap:8px">
@@ -3062,6 +3561,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         const have = new Set(state.guardado.movs.map((mv) => mv.id));
         state.guardado.movs.push(...normalize({ guardado: data.guardado }).guardado.movs.filter((mv) => !have.has(mv.id)));
       }
+      if (data.treinos && typeof data.treinos === 'object' && Array.isArray(data.treinos.planos) && (fd.modo === 'substituir' || !state.treinos.log.length)) state.treinos = normTreinos(data.treinos);
       if (data.compras && typeof data.compras === 'object' && (fd.modo === 'substituir' || !state.compras.listas.length)) state.compras = normCompras(data.compras);
       if (data.sistemaM && typeof data.sistemaM === 'object' && (fd.modo === 'substituir' || (!state.sistemaM.ativos.length && !state.sistemaM.lab.length && !state.sistemaM.checks.length))) state.sistemaM = normSM(data.sistemaM);
       const added = [];
@@ -3094,7 +3594,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   });
 
   $('#btnWipe').addEventListener('click', () => {
-    askConfirm('Zerar tudo', 'Recebimentos, despesas, reuniões, tarefas, lançamentos fixos, valor guardado, Sistema M e listas de compras serão apagados. Exporte um backup antes se quiser guardar algo.', 'Apagar tudo', () => {
+    askConfirm('Zerar tudo', 'Recebimentos, despesas, reuniões, tarefas, lançamentos fixos, valor guardado, Sistema M, listas de compras e histórico de treinos serão apagados (os treinos voltam ao padrão). Exporte um backup antes se quiser guardar algo.', 'Apagar tudo', () => {
       state = normalize({ nome: state.nome });
       commit();
       toast('Tudo zerado');
