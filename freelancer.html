@@ -493,6 +493,40 @@ button.badge:hover { background: rgba(244, 244, 239, .08); }
   .cp-item { grid-template-columns: minmax(0, 1fr); }
   .cp-price { text-align: left; }
 }
+/* Calculadora de despesas */
+.calc-head, .calc-row { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, .9fr) minmax(0, .9fr) 140px 32px; gap: 8px; align-items: center; }
+.calc-head { font-size: 12px; color: var(--text-3); padding: 4px 0 6px; }
+.calc-head .r, .calc-row .calc-m { text-align: right; }
+.calc-rows { display: grid; gap: 8px; }
+.calc-row input.bad { border-color: var(--danger); }
+.calc-m { font-family: var(--font-mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+.calc-m small { display: block; font-size: 11px; color: var(--text-3); }
+.calc-add { justify-self: start; margin-top: 10px; font-size: 13px; }
+.calc-res { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.calc-res .cr { display: grid; gap: 4px; min-width: 0; }
+.calc-res .cr-l { font-size: 12.5px; color: var(--text-2); }
+.calc-res .cr-v { font-family: var(--font-mono); font-size: 18px; font-variant-numeric: tabular-nums; }
+.calc-res .cr-v.pos { color: var(--accent); }
+.calc-res .cr-v.neg { color: var(--danger); }
+.calc-res .cr-f { font-size: 12px; color: var(--text-3); }
+.calc-res .cr.cr-split { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px 10px; flex-wrap: wrap; }
+.calc-res .cr-split input { width: 64px; height: 32px; }
+.calc-bar { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: rgba(244, 244, 239, .06); overflow: hidden; }
+.calc-bar i { display: block; height: 100%; background: var(--accent); }
+.calc-bar i.warn { background: var(--amber); }
+.calc-bar i.over { background: var(--danger); }
+@media (max-width: 820px) {
+  .calc-head { display: none; }
+  .calc-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 32px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .calc-row:first-child { border-top: 0; }
+  .calc-row .c-desc { grid-column: 1 / 3; }
+  .calc-row .c-del { grid-column: 3; grid-row: 1; }
+  .calc-row .c-expr { grid-column: 1; grid-row: 2; }
+  .calc-row .c-freq { grid-column: 2 / 4; grid-row: 2; }
+  .calc-row .c-cat { grid-column: 1; grid-row: 3; }
+  .calc-row .calc-m { grid-column: 2 / 4; grid-row: 3; text-align: right; }
+  .calc-res { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 /* Valor guardado */
 .saldo { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
 .saldo-main, .saldo-side { display: grid; gap: 6px; min-width: 0; }
@@ -906,6 +940,20 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         <ul class="list" id="despList"></ul>
       </section>
     </div>
+    <section class="card calc" id="calcCard" aria-label="Calculadora de despesas">
+      <div class="card-h">
+        <h2>Calculadora de despesas</h2>
+        <div class="fixo-actions">
+          <button class="btn btn-sm" type="button" data-act="calc-limpar">Limpar</button>
+          <button class="btn btn-sm btn-primary" type="button" data-act="calc-lancar">Lançar no mês</button>
+        </div>
+      </div>
+      <p class="card-note">Some gastos antes de lançar. O valor aceita contas, como <span class="mono">12,50*3 + 8</span> ou <span class="mono">1.200/4</span>.</p>
+      <div class="calc-head" aria-hidden="true"><span>Descrição</span><span>Valor</span><span>Frequência</span><span>Categoria</span><span class="r">Por mês</span><span></span></div>
+      <div id="calcRows" class="calc-rows"></div>
+      <button class="link-btn calc-add" type="button" data-act="calc-add">+ Adicionar linha</button>
+      <div class="calc-res" id="calcRes"></div>
+    </section>
     <section class="card">
       <div class="card-h">
         <h2>Lançamentos fixos</h2>
@@ -1106,6 +1154,8 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     concluido: 'Concluído',
   };
   const CATEGORIAS = ['Comida', 'Investimentos', 'Ferramentas', 'Lazer', 'Pessoal', 'Despesas'];
+  // Frequências da calculadora: fator para virar valor por mês
+  const CALC_FREQ = { unica: { l: 'Uma vez', f: 0 }, dia: { l: 'Por dia', f: 30 }, semana: { l: 'Por semana', f: 52 / 12 }, mes: { l: 'Por mês', f: 1 }, ano: { l: 'Por ano', f: 1 / 12 } };
 
   const ICON = {
     eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
@@ -1348,13 +1398,22 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     o.lab = Array.isArray(o.lab) ? o.lab.filter((x) => x && x.nome).map((x) => ({ toques: [], status: 'ativo', ...x, toques: Array.isArray(x.toques) ? x.toques : [] })) : [];
     return o;
   }
+  function normCalc(c) {
+    const o = c && typeof c === 'object' ? c : {};
+    const linhas = Array.isArray(o.linhas) ? o.linhas.filter((l) => l && typeof l === 'object').map((l) => ({
+      id: l.id || uid(), desc: String(l.desc || ''), expr: String(l.expr || ''),
+      freq: CALC_FREQ[l.freq] ? l.freq : 'mes', cat: fixCategoria(l.cat || 'Despesas'),
+    })) : [];
+    return { linhas, pessoas: Math.max(1, Math.min(50, parseInt(o.pessoas, 10) || 1)) };
+  }
   function normalize(data) {
-    const base = { version: 1, nome: 'Dev', projetos: [], recebimentos: [], despesas: [], reunioes: [], tarefas: [], fixos: [], guardado: null, sistemaM: null, compras: null, treinos: null };
+    const base = { version: 1, nome: 'Dev', projetos: [], recebimentos: [], despesas: [], reunioes: [], tarefas: [], fixos: [], guardado: null, sistemaM: null, compras: null, treinos: null, calc: null };
     const out = Object.assign(base, data || {});
     ['projetos', 'recebimentos', 'despesas', 'reunioes', 'tarefas', 'fixos'].forEach((k) => { if (!Array.isArray(out[k])) out[k] = []; });
     out.sistemaM = normSM(out.sistemaM);
     out.compras = normCompras(out.compras);
     out.treinos = normTreinos(out.treinos);
+    out.calc = normCalc(out.calc);
     delete out.saldo;
     const gm = out.guardado && Array.isArray(out.guardado.movs) ? out.guardado.movs : [];
     out.guardado = { movs: gm.filter((mv) => mv && /^\d{4}-\d{2}-\d{2}$/.test(mv.data) && Number(mv.valor)).map((mv) => ({ id: mv.id || uid(), data: mv.data, valor: Number(mv.valor), nota: String(mv.nota || '') })) };
@@ -1720,6 +1779,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   /* ---------- Financeiro ---------- */
   let chart;
   function renderFinance() {
+    renderCalc();
     const mk = ui.finMonth;
     const f = monthFinance(mk);
     const prev = monthFinance(shiftMonth(mk, -1));
@@ -2651,6 +2711,140 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     $('#taskDayOther').addEventListener('change', (e) => { if (e.target.value) { ui.taskDay = e.target.value < today ? today : e.target.value; renderAgenda(); } });
   }
 
+
+  /* ================= Calculadora de despesas ================= */
+  // Conta simples em pt-BR, sem eval: "12,50*3 + 8", "1.200/4", "(30+20)x2", "10%"
+  function calcExpr(src) {
+    const str = String(src || '').replace(/\s+/g, '').replace(/R\$/gi, '').replace(/[x×]/gi, '*').replace(/÷/g, '/');
+    if (!str) return { v: 0, ok: true, vazio: true };
+    let i = 0;
+    const toNum = (t) => {
+      if (t.includes(',')) return parseFloat(t.replace(/\./g, '').replace(',', '.'));
+      const dots = (t.match(/\./g) || []).length;
+      if (dots > 1 || /^\d{1,3}\.\d{3}$/.test(t)) return parseFloat(t.replace(/\./g, ''));
+      return parseFloat(t);
+    };
+    const expr = () => { let v = term(); while (str[i] === '+' || str[i] === '-') { const op = str[i++]; const r = term(); v = op === '+' ? v + r : v - r; } return v; };
+    const term = () => { let v = factor(); while (str[i] === '*' || str[i] === '/') { const op = str[i++]; const r = factor(); v = op === '*' ? v * r : v / r; } return v; };
+    const factor = () => {
+      if (str[i] === '-') { i++; return -factor(); }
+      if (str[i] === '+') { i++; return factor(); }
+      let v;
+      if (str[i] === '(') { i++; v = expr(); if (str[i++] !== ')') throw new Error('par'); }
+      else {
+        const m = /^[\d.,]+/.exec(str.slice(i));
+        if (!m) throw new Error('num');
+        i += m[0].length;
+        v = toNum(m[0]);
+      }
+      while (str[i] === '%') { i++; v /= 100; }
+      return v;
+    };
+    try {
+      const v = expr();
+      if (i !== str.length || !isFinite(v)) throw new Error('fim');
+      return { v: cents(v), ok: true };
+    } catch (e) { return { v: 0, ok: false }; }
+  }
+  function calcLinha(l) {
+    const r = calcExpr(l.expr);
+    const f = CALC_FREQ[l.freq].f;
+    return { valor: r.v, ok: r.ok, mensal: f ? cents(r.v * f) : 0, unica: f ? 0 : r.v };
+  }
+  function calcTotais() {
+    const c = state.calc;
+    let unica = 0, mensal = 0;
+    c.linhas.forEach((l) => { const r = calcLinha(l); unica += r.unica; mensal += r.mensal; });
+    unica = cents(unica); mensal = cents(mensal);
+    const impacto = cents(unica + mensal);
+    const f = monthFinance(ui.finMonth);
+    const sg = sugestoesOrcamento();
+    const renda = f.faturamento ? { v: f.faturamento, l: `do faturamento de ${monthLabel(ui.finMonth).toLowerCase()}` }
+      : sg ? { v: sg.renda, l: 'da média de faturamento dos últimos meses' }
+      : state.compras.renda ? { v: state.compras.renda, l: 'da renda definida em Compras' } : null;
+    return { unica, mensal, impacto, ano: cents(mensal * 12), dia: cents(mensal / 30), f, renda, sobra: cents(f.faturamento - f.totalDesp - impacto) };
+  }
+  const calcSelect = (name, opts, cur) => `<select class="c-${name}" data-calc="${name}">${opts.map(([v, l]) => `<option value="${v}"${v === cur ? ' selected' : ''}>${l}</option>`).join('')}</select>`;
+  function renderCalc() {
+    const c = state.calc;
+    if (!c.linhas.length) c.linhas.push({ id: uid(), desc: '', expr: '', freq: 'mes', cat: 'Despesas' });
+    $('#calcRows').innerHTML = c.linhas.map((l) => `
+      <div class="calc-row" data-id="${l.id}">
+        <input class="c-desc" data-calc="desc" maxlength="80" placeholder="Ex.: Mercado, Uber, Netflix" value="${esc(l.desc)}" aria-label="Descrição">
+        <input class="mono c-expr" data-calc="expr" inputmode="text" placeholder="0,00" value="${esc(l.expr)}" aria-label="Valor ou conta">
+        ${calcSelect('freq', Object.entries(CALC_FREQ).map(([k, o]) => [k, o.l]), l.freq)}
+        ${calcSelect('cat', CATEGORIAS.map((x) => [x, x]), l.cat)}
+        <span class="calc-m" data-calc-m></span>
+        <button class="icon-btn del c-del" type="button" data-act="calc-del" data-id="${l.id}" aria-label="Remover linha">${ICON.del}</button>
+      </div>`).join('');
+    $('#calcRes').innerHTML = `
+      <div class="cr"><span class="cr-l">Gastos únicos</span><span class="cr-v" id="crUnica"></span><span class="cr-f">pagos uma vez</span></div>
+      <div class="cr"><span class="cr-l">Recorrentes por mês</span><span class="cr-v" id="crMensal"></span><span class="cr-f" id="crMensalF"></span></div>
+      <div class="cr"><span class="cr-l">Impacto no mês</span><span class="cr-v" id="crImpacto"></span><span class="cr-f" id="crImpactoF"></span></div>
+      <div class="cr"><span class="cr-l">Sobra do mês</span><span class="cr-v" id="crSobra"></span><span class="cr-f">faturamento − despesas lançadas − calculadora</span></div>
+      <div class="calc-bar" id="crBar"><i></i></div>
+      <div class="cr cr-split"><span class="cr-l">Dividir por</span><input id="calcPessoas" type="number" inputmode="numeric" min="1" max="50" step="1" value="${c.pessoas}" aria-label="Número de pessoas"><span class="cr-l">pessoas</span><span class="cr-f" id="crSplit"></span></div>`;
+    drawCalc();
+  }
+  // Atualiza só os números, sem recriar os campos (não perde o foco enquanto digita)
+  function drawCalc() {
+    const c = state.calc;
+    document.querySelectorAll('#calcRows .calc-row').forEach((row) => {
+      const l = c.linhas.find((x) => x.id === row.dataset.id);
+      if (!l) return;
+      const r = calcLinha(l);
+      row.querySelector('[data-calc=expr]').classList.toggle('bad', !r.ok);
+      const out = row.querySelector('[data-calc-m]');
+      out.innerHTML = !r.ok ? '<small>conta inválida</small>'
+        : l.freq === 'unica' ? `${money(r.valor)}<small>uma vez</small>`
+        : l.freq === 'mes' ? money(r.mensal)
+        : `${money(r.mensal)}<small>${money(r.valor)} ${CALC_FREQ[l.freq].l.toLowerCase()}</small>`;
+    });
+    const t = calcTotais();
+    $('#crUnica').textContent = money(t.unica);
+    $('#crMensal').textContent = money(t.mensal);
+    $('#crMensalF').textContent = `${money(t.ano)} por ano · ${money(t.dia)} por dia`;
+    $('#crImpacto').textContent = money(t.impacto);
+    const pct = t.renda && t.renda.v ? (t.impacto / t.renda.v) * 100 : null;
+    $('#crImpactoF').textContent = pct == null ? 'sem renda para comparar' : `${pct.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}% ${t.renda.l}`;
+    const sob = $('#crSobra');
+    sob.textContent = money(t.sobra);
+    sob.className = 'cr-v ' + (t.sobra >= 0 ? 'pos' : 'neg');
+    const bar = $('#crBar i');
+    bar.style.width = `${Math.min(100, pct || 0)}%`;
+    bar.className = pct > 100 ? 'over' : pct > 50 ? 'warn' : '';
+    $('#crBar').hidden = pct == null;
+    const n = c.pessoas;
+    $('#crSplit').textContent = n > 1 ? `${money(t.impacto / n)} para cada · ${money(t.mensal / n)} por mês recorrente` : 'coloque 2 ou mais para dividir a conta';
+  }
+  function calcLancarForm() {
+    const linhas = state.calc.linhas.map((l) => ({ l, r: calcLinha(l) })).filter(({ r }) => r.ok && r.valor > 0);
+    if (!linhas.length) { toast('Preencha pelo menos um valor na calculadora'); return; }
+    const hoje = todayISO();
+    const data = monthKey(hoje) === ui.finMonth ? hoje : `${ui.finMonth}-01`;
+    const recorrentes = linhas.filter(({ l }) => l.freq !== 'unica').length;
+    const total = linhas.reduce((a, { l, r }) => a + (l.freq === 'unica' ? r.valor : r.mensal), 0);
+    const body =
+      `<p class="full cp-preview">${plural(linhas.length, 'despesa', 'despesas')} somando <b>${money(total)}</b>. Gastos por dia, semana ou ano entram pelo valor equivalente de um mês.</p>` +
+      field('data', 'Data', `<input name="data" type="date" required value="${data}">`) +
+      (recorrentes ? `<label class="check full"><input type="checkbox" name="fixo"><span>Recorrentes viram lançamentos fixos<small>${plural(recorrentes, 'gasto recorrente passa', 'gastos recorrentes passam')} a ser lançados sozinhos todo mês.</small></span></label>` : '') +
+      `<label class="check full"><input type="checkbox" name="limpar" checked><span>Limpar a calculadora depois</span></label>`;
+    openDialog('Lançar no mês', body, (fd) => {
+      linhas.forEach(({ l, r }) => {
+        const rec = l.freq !== 'unica';
+        const desc = (l.desc.trim() || 'Despesa') + (rec && l.freq !== 'mes' ? ` (${CALC_FREQ[l.freq].l.toLowerCase()})` : '');
+        const entry = { id: uid(), descricao: desc, categoria: l.cat, valor: rec ? r.mensal : r.valor, data: fd.data, ignorado: false };
+        if (rec && fd.fixo) entry.fixoId = criarFixoDe('despesa', { descricao: desc, categoria: l.cat, valor: entry.valor }, fd.data);
+        state.despesas.push(entry);
+      });
+      if (fd.limpar) state.calc.linhas = [];
+      ui.finMonth = monthKey(fd.data) > monthKey(hoje) ? ui.finMonth : monthKey(fd.data);
+      gerarFixos();
+      commit();
+      toast(`${plural(linhas.length, 'despesa lançada', 'despesas lançadas')}`);
+    }, 'Lançar');
+  }
+
   /* ================= Dialog / formulários ================= */
   const dlg = $('#dlg');
   let onSubmit = null;
@@ -3110,6 +3304,10 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         });
         break;
       }
+      case 'calc-add': state.calc.linhas.push({ id: uid(), desc: '', expr: '', freq: 'mes', cat: 'Despesas' }); save(); renderCalc(); { const rows = document.querySelectorAll('#calcRows .c-desc'); rows[rows.length - 1].focus(); } break;
+      case 'calc-del': state.calc.linhas = state.calc.linhas.filter((l) => l.id !== id); save(); renderCalc(); break;
+      case 'calc-limpar': if (state.calc.linhas.some((l) => l.desc || l.expr)) askConfirm('Limpar calculadora', 'Todas as linhas da calculadora serão apagadas. Nada do que já foi lançado muda.', 'Limpar', () => { state.calc.linhas = []; commit(); }); break;
+      case 'calc-lancar': calcLancarForm(); break;
       case 'cp-sug-renda': { const sg = sugestoesOrcamento(); if (sg) { state.compras.renda = sg.renda; commit(); toast('Renda atualizada'); } break; }
       case 'cp-sug-aporte': { const sg = sugestoesOrcamento(); if (sg) { state.compras.aporte = sg.sobra; commit(); toast('Valor mensal atualizado'); } break; }
       case 'del-mov': askConfirm('Excluir movimentação', 'O valor guardado será recalculado sem ela.', 'Excluir', () => { state.guardado.movs = state.guardado.movs.filter((mv) => mv.id !== id); commit(); toast('Movimentação excluída'); }); break;
@@ -3170,6 +3368,23 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   $('#btnAddDesp').addEventListener('click', () => despForm());
   $('#btnAddMeet').addEventListener('click', () => meetForm());
   $('#userName').addEventListener('click', nameForm);
+  const calcEdit = (e) => {
+    const el = e.target.closest('[data-calc]'), row = e.target.closest('.calc-row');
+    if (!el || !row) return;
+    const l = state.calc.linhas.find((x) => x.id === row.dataset.id);
+    if (!l) return;
+    l[el.dataset.calc] = el.value;
+    save();
+    drawCalc();
+  };
+  $('#calcRows').addEventListener('input', calcEdit);
+  $('#calcRows').addEventListener('change', calcEdit);
+  $('#calcRes').addEventListener('input', (e) => {
+    if (e.target.id !== 'calcPessoas') return;
+    state.calc.pessoas = Math.max(1, Math.min(50, parseInt(e.target.value, 10) || 1));
+    save();
+    drawCalc();
+  });
   [['#cpRenda', 'renda'], ['#cpAporte', 'aporte'], ['#cpLimite', 'limite']].forEach(([sel, k]) => {
     $(sel).addEventListener('change', (e) => {
       const v = k === 'limite' ? Math.max(0, Math.min(100, parseInt(e.target.value, 10) || 0)) : Math.max(0, num(e.target.value));
