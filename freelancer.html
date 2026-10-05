@@ -493,6 +493,38 @@ button.badge:hover { background: rgba(244, 244, 239, .08); }
   .cp-item { grid-template-columns: minmax(0, 1fr); }
   .cp-price { text-align: left; }
 }
+/* Escola */
+.es-wnav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.es-week { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.es-day { display: grid; gap: 8px; align-content: start; padding: 12px; border: 1px solid var(--border); border-radius: var(--r-sm); min-width: 0; }
+.es-day.today { border-color: rgba(157, 255, 45, .5); }
+.es-day.future { opacity: .6; }
+.es-day-h { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+.es-day-h b { font-size: 14px; font-weight: 600; }
+.es-day-h span { font-family: var(--font-mono); font-size: 12px; color: var(--text-3); }
+.es-day-n { font-size: 12px; color: var(--text-2); }
+.es-day-n.on { color: var(--danger); }
+.es-aula { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+.es-aula .n { grid-column: 1 / -1; font-size: 13.5px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.es-aula .q { font-size: 11.5px; color: var(--text-3); grid-column: 1; grid-row: 2; }
+.es-step { grid-row: 2; grid-column: 2; display: inline-flex; align-items: center; gap: 2px; }
+.es-step button { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-2); cursor: pointer; font-size: 15px; line-height: 1; }
+.es-step button:hover:not(:disabled) { border-color: var(--text-2); color: var(--text); }
+.es-step button:disabled { opacity: .3; cursor: default; }
+.es-step output { min-width: 34px; text-align: center; font-family: var(--font-mono); font-size: 12.5px; color: var(--text-3); }
+.es-step output.on { color: var(--danger); font-weight: 600; }
+.es-day-a { display: flex; gap: 6px; flex-wrap: wrap; padding-top: 4px; }
+.es-day-a .btn { flex: 1; }
+.es-mat { display: grid !important; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; }
+.es-mat .title { font-weight: 500; }
+.es-mat .num.warn { color: var(--amber); }
+.es-mat .num.over { color: var(--danger); }
+.es-bar { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: rgba(244, 244, 239, .06); overflow: hidden; }
+.es-bar i { display: block; height: 100%; background: var(--accent); }
+.es-bar i.warn { background: var(--amber); }
+.es-bar i.over { background: var(--danger); }
+.kpi-v.warn { color: var(--amber); }
+@media (max-width: 1000px) { .es-week { grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); } }
 /* Calculadora de despesas */
 .calc-filters { display: grid; gap: 12px; margin-bottom: 12px; }
 .calc-dates { display: grid; grid-template-columns: 170px 170px minmax(0, 1fr); gap: 12px; }
@@ -738,7 +770,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   .topbar .brand { padding: 0; }
   .topbar .brand .word { font-size: 18px; }
   .bottomnav {
-    display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+    display: grid; grid-auto-flow: column; grid-auto-columns: minmax(52px, 1fr); overflow-x: auto; scrollbar-width: none;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
     padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
     background: rgba(11, 17, 32, .96); backdrop-filter: blur(12px); border-top: 1px solid var(--border);
@@ -824,6 +856,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       <a class="nav-i" href="#sistema" data-tab="sistema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V9"/><path d="M19 21V9"/><path d="M3 21h18"/><path d="M5 9c3.5-4 10.5-4 14 0"/><path d="M12 5.8V3"/></svg><span>Sistema M</span><em data-count="sistema"></em></a>
       <a class="nav-i" href="#compras" data-tab="compras"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l1 13H5z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span>Compras</span></a>
       <a class="nav-i" href="#treinos" data-tab="treinos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 6.5v11M17.5 6.5v11"/><path d="M3.5 9v6M20.5 9v6"/><path d="M6.5 12h11"/></svg><span>Treinos</span><em data-count="treinos"></em></a>
+      <a class="nav-i" href="#escola" data-tab="escola"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.2V16c3.5 2.5 8.5 2.5 12 0v-4.8"/><path d="M22 9v5"/></svg><span>Escola</span><em data-count="escola"></em></a>
     </nav>
     <div class="side-foot">
       <p class="side-label">Seus dados</p>
@@ -1058,6 +1091,49 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     </section>
   </section>
 
+  <!-- ============ ESCOLA ============ -->
+  <section class="view" data-view="escola" aria-label="Escola" hidden>
+    <div class="vh">
+      <div><h1>Escola</h1><p>Sua grade de aulas e as faltas de cada matéria, semana a semana.</p></div>
+      <div class="vh-actions">
+        <button class="btn" type="button" data-act="es-grade">Editar grade</button>
+        <button class="btn btn-primary" type="button" data-act="es-nova">Registrar falta</button>
+      </div>
+    </div>
+    <div class="kpis k4">
+      <div class="kpi"><span class="kpi-l">Faltas na semana</span><span class="kpi-v" id="esKSem">0</span><span class="kpi-f" id="esKSemF"></span></div>
+      <div class="kpi"><span class="kpi-l">Faltas no período</span><span class="kpi-v" id="esKTot">0</span><span class="kpi-f" id="esKTotF"></span></div>
+      <div class="kpi"><span class="kpi-l">Mais faltas</span><span class="kpi-v" id="esKTop">—</span><span class="kpi-f" id="esKTopF"></span></div>
+      <div class="kpi"><span class="kpi-l">Situação</span><span class="kpi-v" id="esKSit">—</span><span class="kpi-f" id="esKSitF"></span></div>
+    </div>
+    <section class="card">
+      <div class="card-h">
+        <h2>Semana</h2>
+        <div class="es-wnav">
+          <button class="link-btn" type="button" data-act="es-hoje" id="esHojeBtn">Esta semana</button>
+          <div class="month-switch">
+            <button class="icon-btn" type="button" data-act="es-prev" aria-label="Semana anterior">‹</button>
+            <span class="ml" id="esSemana"></span>
+            <button class="icon-btn" type="button" data-act="es-next" aria-label="Próxima semana">›</button>
+          </div>
+        </div>
+      </div>
+      <p class="card-note">Use − e + para marcar quantas aulas de cada matéria você faltou.</p>
+      <div class="es-week" id="esWeek"></div>
+    </section>
+    <div class="grid-2">
+      <section class="card">
+        <div class="card-h"><h2>Faltas por matéria</h2><button class="link-btn" type="button" data-act="es-config">Ajustar limite</button></div>
+        <p class="card-note" id="esLimNote"></p>
+        <ul class="list" id="esMat"></ul>
+      </section>
+      <section class="card">
+        <div class="card-h"><h2>Histórico</h2><span class="aside" id="esHistCount"></span></div>
+        <ul class="list" id="esHist"></ul>
+      </section>
+    </div>
+  </section>
+
   <!-- ============ COMPRAS ============ -->
   <section class="view" data-view="compras" aria-label="Compras" hidden>
     <div class="vh">
@@ -1095,12 +1171,13 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
 
   <!-- Navegação inferior (celular) -->
   <nav class="bottomnav" aria-label="Seções">
-    <a class="nav-i" href="#visao" data-tab="visao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Visão geral</span></a>
+    <a class="nav-i" href="#visao" data-tab="visao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Visão</span></a>
     <a class="nav-i" href="#financeiro" data-tab="financeiro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg><span>Financeiro</span><em data-count="financeiro"></em></a>
     <a class="nav-i" href="#agenda" data-tab="agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span>Agenda</span><em data-count="agenda"></em></a>
     <a class="nav-i" href="#sistema" data-tab="sistema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V9"/><path d="M19 21V9"/><path d="M3 21h18"/><path d="M5 9c3.5-4 10.5-4 14 0"/><path d="M12 5.8V3"/></svg><span>Sistema M</span><em data-count="sistema"></em></a>
     <a class="nav-i" href="#compras" data-tab="compras"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l1 13H5z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span>Compras</span></a>
     <a class="nav-i" href="#treinos" data-tab="treinos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 6.5v11M17.5 6.5v11"/><path d="M3.5 9v6M20.5 9v6"/><path d="M6.5 12h11"/></svg><span>Treinos</span><em data-count="treinos"></em></a>
+      <a class="nav-i" href="#escola" data-tab="escola"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.2V16c3.5 2.5 8.5 2.5 12 0v-4.8"/><path d="M22 9v5"/></svg><span>Escola</span><em data-count="escola"></em></a>
   </nav>
 </div>
 
@@ -1302,7 +1379,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
 
   /* ================= Estado ================= */
   let state;
-  const ui = { cpLista: 'todas', tab: 'visao', statusFilter: 'todos', taskFilter: 'todas', taskDay: todayISO(), q: '', sort: 'prazo', finMonth: monthKey(todayISO()), recebView: 'pendentes', calc: { per: 'mes', de: '', ate: '', q: '', ign: false, cats: new Set(), off: new Set() } };
+  const ui = { cpLista: 'todas', tab: 'visao', statusFilter: 'todos', taskFilter: 'todas', taskDay: todayISO(), q: '', sort: 'prazo', finMonth: monthKey(todayISO()), recebView: 'pendentes', esSemana: null, esHistAll: false, calc: { per: 'mes', de: '', ate: '', q: '', ign: false, cats: new Set(), off: new Set() } };
 
   // Aceita variações ("comida", "Alimentação", "invest.") e categorias antigas (Impostos/Outros → Despesas)
   function fixCategoria(c) {
@@ -1393,14 +1470,53 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     o.lab = Array.isArray(o.lab) ? o.lab.filter((x) => x && x.nome).map((x) => ({ toques: [], status: 'ativo', ...x, toques: Array.isArray(x.toques) ? x.toques : [] })) : [];
     return o;
   }
+  // Escola: grade por dia da semana (1 = segunda … 5 = sexta) e faltas por data + matéria
+  const ES_DIAS = { 1: 'Segunda', 2: 'Terça', 3: 'Quarta', 4: 'Quinta', 5: 'Sexta' };
+  const gradePadrao = () => ({
+    1: [{ m: 'Inglês', n: 2 }, { m: 'Geografia', n: 2 }],
+    2: [{ m: 'Ciências', n: 2 }, { m: 'Matemática', n: 2 }],
+    3: [{ m: 'Matemática', n: 2 }, { m: 'Português', n: 2 }],
+    4: [{ m: 'Português', n: 2 }, { m: 'Artes', n: 1 }, { m: 'História', n: 1 }],
+    5: [{ m: 'História', n: 2 }, { m: 'Português', n: 1 }, { m: 'Matemática', n: 1 }],
+  });
+  function normEscola(e) {
+    const o = e && typeof e === 'object' ? e : {};
+    const grade = {};
+    const g = o.grade && typeof o.grade === 'object' ? o.grade : gradePadrao();
+    Object.keys(ES_DIAS).forEach((k) => {
+      grade[k] = (Array.isArray(g[k]) ? g[k] : []).filter((a) => a && String(a.m || '').trim())
+        .map((a) => ({ m: String(a.m).trim(), n: Math.max(1, Math.min(12, parseInt(a.n, 10) || 1)) }));
+    });
+    const faltas = (Array.isArray(o.faltas) ? o.faltas : []).filter((f) => f && /^\d{4}-\d{2}-\d{2}$/.test(f.data) && String(f.materia || '').trim() && Number(f.qtd) > 0)
+      .map((f) => ({ id: f.id || uid(), data: f.data, materia: String(f.materia).trim(), qtd: Math.min(12, parseInt(f.qtd, 10) || 1) }));
+    return {
+      grade, faltas,
+      inicio: /^\d{4}-\d{2}-\d{2}$/.test(o.inicio) ? o.inicio : '',
+      semanas: Math.max(1, Math.min(52, parseInt(o.semanas, 10) || 10)),
+      minimo: Math.max(0, Math.min(100, o.minimo == null ? 75 : Number(o.minimo) || 0)),
+    };
+  }
+  // Faltas que você contou na semana de 28/09 a 02/10/2026 (todas as aulas da grade)
+  function seedFaltasEscola(es) {
+    const seg = new Date(2026, 8, 28);
+    Object.entries(es.grade).forEach(([k, aulas]) => {
+      const d = new Date(seg); d.setDate(seg.getDate() + Number(k) - 1);
+      const data = iso(d);
+      aulas.forEach((a) => {
+        const f = es.faltas.find((x) => x.data === data && x.materia === a.m);
+        if (f) f.qtd += a.n; else es.faltas.push({ id: uid(), data, materia: a.m, qtd: a.n });
+      });
+    });
+  }
   function normalize(data) {
-    const base = { version: 1, nome: 'Dev', projetos: [], recebimentos: [], despesas: [], reunioes: [], tarefas: [], fixos: [], guardado: null, sistemaM: null, compras: null, treinos: null };
+    const base = { version: 1, nome: 'Dev', projetos: [], recebimentos: [], despesas: [], reunioes: [], tarefas: [], fixos: [], guardado: null, sistemaM: null, compras: null, treinos: null, escola: null };
     const out = Object.assign(base, data || {});
     ['projetos', 'recebimentos', 'despesas', 'reunioes', 'tarefas', 'fixos'].forEach((k) => { if (!Array.isArray(out[k])) out[k] = []; });
     out.sistemaM = normSM(out.sistemaM);
     out.compras = normCompras(out.compras);
     out.treinos = normTreinos(out.treinos);
     delete out.calc;
+    out.escola = normEscola(out.escola);
     delete out.saldo;
     const gm = out.guardado && Array.isArray(out.guardado.movs) ? out.guardado.movs : [];
     out.guardado = { movs: gm.filter((mv) => mv && /^\d{4}-\d{2}-\d{2}$/.test(mv.data) && Number(mv.valor)).map((mv) => ({ id: mv.id || uid(), data: mv.data, valor: Number(mv.valor), nota: String(mv.nota || '') })) };
@@ -1410,10 +1526,16 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   function load() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return normalize(JSON.parse(raw));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const out = normalize(parsed);
+        if (!parsed.escola) { seedFaltasEscola(out.escola); localStorage.setItem(STORAGE_KEY, JSON.stringify(out)); }
+        return out;
+      }
     } catch (e) { /* storage indisponível ou corrompido */ }
     // Primeira abertura: começa do zero (mantém só o nome, se já existia na versão anterior)
     const data = normalize({});
+    seedFaltasEscola(data.escola);
     try {
       const old = JSON.parse(localStorage.getItem('apexel.freelancer.v1') || 'null');
       if (old && old.nome) data.nome = old.nome;
@@ -1550,7 +1672,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   };
 
   /* ================= Navegação ================= */
-  const TABS = ['visao', 'financeiro', 'agenda', 'sistema', 'compras', 'treinos'];
+  const TABS = ['visao', 'financeiro', 'agenda', 'sistema', 'compras', 'treinos', 'escola'];
   function tabFromHash() {
     const h = location.hash.replace('#', '');
     return TABS.includes(h) ? h : null;
@@ -1568,6 +1690,8 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       if (t.dataset.tab === tab) t.setAttribute('aria-current', 'page');
       else t.removeAttribute('aria-current');
     });
+    const cur = document.querySelector('.bottomnav [aria-current="page"]');
+    if (cur) { const nav = cur.parentElement; const r = cur.offsetLeft - (nav.clientWidth - cur.offsetWidth) / 2; nav.scrollTo({ left: Math.max(0, r) }); }
     try { localStorage.setItem(STORAGE_KEY + '.tab', tab); } catch (e) {}
     renderView();
   }
@@ -1580,7 +1704,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     renderView();
   }
   function renderView() {
-    ({ visao: renderOverview, financeiro: renderFinance, agenda: renderAgenda, sistema: renderSistema, compras: renderCompras, treinos: renderTreinos })[ui.tab]();
+    ({ visao: renderOverview, financeiro: renderFinance, agenda: renderAgenda, sistema: renderSistema, compras: renderCompras, treinos: renderTreinos, escola: renderEscola })[ui.tab]();
   }
 
   function renderHeader() {
@@ -1605,6 +1729,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     const nSm = sig.vencidos.length + (sig.cansaco ? 1 : 0);
     setCount('sistema', nSm, true, 'alertas do Sistema M');
     setCount('treinos', trHoje().filter((pl) => !trFeitoEm(pl.id, todayISO())).length, false, 'treinos de hoje');
+    { const sem = esFaltasEntre(esSegunda(todayISO()), esPlus(esSegunda(todayISO()), 6)); setCount('escola', sem, esMaterias().some((m) => m.status === 'over'), 'faltas nesta semana'); }
   }
 
   /* ---------- Hoje: frase-resumo + régua do dia ---------- */
@@ -2699,6 +2824,168 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   }
 
 
+
+  /* ================= Escola ================= */
+  const esPlus = (d, n) => { const x = parse(d); x.setDate(x.getDate() + n); return iso(x); };
+  const esSegunda = (d) => { const x = parse(d); const wd = x.getDay(); x.setDate(x.getDate() - (wd === 0 ? 6 : wd - 1)); return iso(x); };
+  const esNorm = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+  function esFaltasEntre(de, ate) { return state.escola.faltas.filter((f) => f.data >= de && f.data <= ate).reduce((a, f) => a + f.qtd, 0); }
+  function esFalta(data, materia) { const f = state.escola.faltas.find((x) => x.data === data && x.materia === materia); return f ? f.qtd : 0; }
+  function esSetFalta(data, materia, qtd) {
+    const es = state.escola;
+    const f = es.faltas.find((x) => x.data === data && x.materia === materia);
+    if (qtd <= 0) es.faltas = es.faltas.filter((x) => x !== f);
+    else if (f) f.qtd = qtd;
+    else es.faltas.push({ id: uid(), data, materia, qtd });
+  }
+  // Reaproveita a grafia da grade ("matematica" → "Matemática")
+  function esCanon(nome) {
+    const n = String(nome || '').trim();
+    const todas = [...new Set([...Object.values(state.escola.grade).flat().map((a) => a.m), ...state.escola.faltas.map((f) => f.materia)])];
+    return todas.find((m) => esNorm(m) === esNorm(n)) || n.replace(/^./, (c) => c.toUpperCase());
+  }
+  function esMaterias() {
+    const es = state.escola;
+    const porSemana = {};
+    Object.values(es.grade).forEach((aulas) => aulas.forEach((a) => { porSemana[a.m] = (porSemana[a.m] || 0) + a.n; }));
+    const faltas = {};
+    es.faltas.filter((f) => !es.inicio || f.data >= es.inicio).forEach((f) => { faltas[f.materia] = (faltas[f.materia] || 0) + f.qtd; });
+    const nomes = [...new Set([...Object.keys(porSemana), ...Object.keys(faltas)])];
+    return nomes.map((m) => {
+      const total = (porSemana[m] || 0) * es.semanas;
+      const limite = Math.floor(total * (100 - es.minimo) / 100);
+      const f = faltas[m] || 0;
+      const freq = total ? Math.max(0, Math.round(((total - f) / total) * 100)) : null;
+      const status = !total ? 'sem' : f > limite ? 'over' : f >= limite * 0.75 ? 'warn' : 'ok';
+      return { m, aulasSem: porSemana[m] || 0, total, limite, faltas: f, resta: limite - f, freq, status };
+    }).sort((a, b) => b.faltas - a.faltas || a.m.localeCompare(b.m, 'pt-BR'));
+  }
+  function renderEscola() {
+    const es = state.escola;
+    const hoje = todayISO();
+    const seg = ui.esSemana || esSegunda(hoje);
+    const sex = esPlus(seg, 4);
+    const fmtDM = (d) => fmtDate(d).slice(0, 5);
+    $('#esSemana').textContent = `${fmtDM(seg)} – ${fmtDM(sex)}`;
+    $('#esHojeBtn').hidden = seg === esSegunda(hoje);
+    // Semana
+    $('#esWeek').innerHTML = Object.entries(ES_DIAS).map(([k, nome]) => {
+      const data = esPlus(seg, Number(k) - 1);
+      const aulas = es.grade[k].slice();
+      es.faltas.filter((f) => f.data === data && !aulas.some((a) => a.m === f.materia)).forEach((f) => aulas.push({ m: f.materia, n: f.qtd, extra: true }));
+      const tot = aulas.reduce((a, x) => a + esFalta(data, x.m), 0);
+      const max = aulas.reduce((a, x) => a + x.n, 0);
+      return `<div class="es-day${data === hoje ? ' today' : ''}${data > hoje ? ' future' : ''}">
+        <div class="es-day-h"><b>${nome}</b><span>${fmtDM(data)}</span></div>
+        <div class="es-day-n${tot ? ' on' : ''}">${tot ? `${plural(tot, 'falta', 'faltas')} de ${max}` : aulas.length ? 'Sem faltas' : 'Sem aulas na grade'}</div>
+        ${aulas.map((a) => {
+          const q = esFalta(data, a.m);
+          return `<div class="es-aula">
+            <span class="n" title="${esc(a.m)}">${esc(a.m)}</span><span class="q">${a.extra ? 'fora da grade' : plural(a.n, 'aula', 'aulas')}</span>
+            <span class="es-step">
+              <button type="button" data-act="es-menos" data-d="${data}" data-m="${esc(a.m)}" ${q ? '' : 'disabled'} aria-label="Uma falta a menos em ${esc(a.m)}">−</button>
+              <output class="${q ? 'on' : ''}">${q}/${a.n}</output>
+              <button type="button" data-act="es-mais" data-d="${data}" data-m="${esc(a.m)}" data-n="${a.n}" ${q >= a.n ? 'disabled' : ''} aria-label="Uma falta a mais em ${esc(a.m)}">+</button>
+            </span>
+          </div>`;
+        }).join('')}
+        ${aulas.length ? `<div class="es-day-a">${tot < max ? `<button class="btn btn-sm" type="button" data-act="es-dia" data-d="${data}" data-k="${k}">Faltei o dia</button>` : ''}${tot ? `<button class="btn btn-sm" type="button" data-act="es-limpar-dia" data-d="${data}">Fui a todas</button>` : ''}</div>` : ''}
+      </div>`;
+    }).join('');
+    // KPIs
+    const sem = esFaltasEntre(seg, esPlus(seg, 6));
+    const aulasSem = Object.values(es.grade).flat().reduce((a, x) => a + x.n, 0);
+    $('#esKSem').textContent = sem;
+    $('#esKSem').className = 'kpi-v' + (sem ? ' neg' : '');
+    $('#esKSemF').textContent = `de ${aulasSem} aulas · ${fmtDM(seg)} a ${fmtDM(sex)}`;
+    const mats = esMaterias();
+    const tot = mats.reduce((a, m) => a + m.faltas, 0);
+    $('#esKTot').textContent = tot;
+    $('#esKTotF').textContent = es.inicio ? `desde ${fmtDate(es.inicio)}` : 'todas as registradas';
+    const top = mats.find((m) => m.faltas);
+    $('#esKTop').textContent = top ? top.m : '—';
+    $('#esKTopF').textContent = top ? plural(top.faltas, 'falta', 'faltas') : 'nenhuma falta';
+    const pior = mats.filter((m) => m.total).sort((a, b) => a.resta - b.resta)[0];
+    const sit = $('#esKSit');
+    if (!pior) { sit.textContent = '—'; sit.className = 'kpi-v'; $('#esKSitF').textContent = 'monte sua grade'; }
+    else if (pior.status === 'over') { sit.textContent = 'Acima do limite'; sit.className = 'kpi-v neg'; $('#esKSitF').textContent = `${pior.m}: ${pior.faltas} de ${pior.limite} permitidas`; }
+    else if (pior.status === 'warn') { sit.textContent = 'Atenção'; sit.className = 'kpi-v warn'; $('#esKSitF').textContent = `${pior.m}: ${pior.resta === 0 ? 'chegou no limite' : pior.resta === 1 ? 'resta 1 falta' : `restam ${pior.resta} faltas`}`; }
+    else { sit.textContent = 'Tranquilo'; sit.className = 'kpi-v pos'; $('#esKSitF').textContent = `todas acima de ${es.minimo}% de presença`; }
+    // Por matéria
+    $('#esLimNote').textContent = `Limite: ${es.minimo}% de presença em ${plural(es.semanas, 'semana', 'semanas')} de aula${es.inicio ? `, contando desde ${fmtDate(es.inicio)}` : ''}.`;
+    $('#esMat').innerHTML = mats.length ? mats.map((m) => {
+      const pct = m.limite ? Math.min(100, (m.faltas / m.limite) * 100) : m.faltas ? 100 : 0;
+      const cls = m.status === 'over' ? 'over' : m.status === 'warn' ? 'warn' : '';
+      return `<li class="es-mat">
+        <div><div class="title">${esc(m.m)}</div><div class="meta"><span>${m.aulasSem ? `${plural(m.aulasSem, 'aula', 'aulas')}/semana` : 'fora da grade'}</span>${m.freq != null ? `<span>${m.freq}% de presença</span>` : ''}</div></div>
+        <div style="text-align:right"><div class="num ${cls}">${m.faltas}${m.total ? ` / ${m.limite}` : ''}</div><div class="meta">${!m.total ? 'faltas' : m.resta < 0 ? `${-m.resta} acima do limite` : m.resta === 0 ? 'no limite' : `pode faltar mais ${m.resta}`}</div></div>
+        <div class="es-bar"><i class="${cls}" style="width:${pct}%"></i></div>
+      </li>`;
+    }).join('') : emptyLi('Monte sua grade em “Editar grade”');
+    // Histórico por dia
+    const dias = {};
+    es.faltas.forEach((f) => { (dias[f.data] = dias[f.data] || []).push(f); });
+    const datas = Object.keys(dias).sort().reverse();
+    const lim = ui.esHistAll ? datas.length : 8;
+    $('#esHistCount').textContent = tot ? plural(datas.length, 'dia', 'dias') : '';
+    $('#esHist').innerHTML = datas.length ? datas.slice(0, lim).map((d) => {
+      const fs = dias[d].sort((a, b) => a.materia.localeCompare(b.materia, 'pt-BR'));
+      const n = fs.reduce((a, f) => a + f.qtd, 0);
+      return `<li class="has-actions">
+        <div class="grow"><div class="title">${DIAS_CURTOS[parse(d).getDay()]}, ${fmtDate(d)}</div><div class="meta">${fs.map((f) => `<span>${esc(f.materia)} ${f.qtd}</span>`).join('')}</div></div>
+        <span class="num">${plural(n, 'falta', 'faltas')}</span>
+        <span class="li-actions"><button class="icon-btn" type="button" data-act="es-ir" data-d="${d}" aria-label="Ver semana">${ICON.edit}</button><button class="icon-btn del" type="button" data-act="es-limpar-dia" data-d="${d}" aria-label="Apagar faltas do dia">${ICON.del}</button></span>
+      </li>`;
+    }).join('') + (datas.length > 8 ? `<li class="empty"><button class="link-btn" type="button" data-act="es-hist-toggle">${ui.esHistAll ? 'Mostrar menos' : `Ver todos (${datas.length})`}</button></li>` : '') : emptyLi('Nenhuma falta registrada');
+  }
+  const esGradeTxt = (aulas) => aulas.map((a) => `${a.n}x ${a.m}`).join(', ');
+  function esParseGrade(txt) {
+    return String(txt || '').split(/,|;|\s+e\s+|\n/i).map((p) => p.trim()).filter(Boolean).map((p) => {
+      const m = /^(\d+)\s*x?\s*(.+)$/i.exec(p) || /^(.+?)\s*\(?x?\s*(\d+)\s*x?\)?$/i.exec(p);
+      if (!m) return { m: p, n: 1 };
+      return /^\d/.test(p) ? { m: m[2].trim(), n: parseInt(m[1], 10) } : { m: m[1].trim(), n: parseInt(m[2], 10) };
+    }).filter((a) => a.m).map((a) => ({ m: esCanon(a.m), n: Math.max(1, Math.min(12, a.n || 1)) }));
+  }
+  function esGradeForm() {
+    const es = state.escola;
+    const body = `<p class="full card-note" style="margin:0">Escreva as aulas de cada dia como “2x Inglês, 2x Geografia”.</p>` +
+      Object.entries(ES_DIAS).map(([k, nome]) => field('d' + k, nome, `<input name="d${k}" maxlength="200" placeholder="Ex.: 2x Matemática, 1x Artes" value="${esc(esGradeTxt(es.grade[k]))}">`, true)).join('');
+    openDialog('Grade de aulas', body, (fd) => {
+      Object.keys(ES_DIAS).forEach((k) => { es.grade[k] = esParseGrade(fd['d' + k]); });
+      commit();
+      toast('Grade atualizada');
+    });
+  }
+  function esFaltaForm() {
+    const mats = esMaterias().map((m) => m.m);
+    const body =
+      field('data', 'Data', `<input name="data" type="date" required value="${todayISO()}">`) +
+      field('qtd', 'Aulas que faltou', `<input name="qtd" type="number" min="1" max="12" step="1" required value="1">`) +
+      field('materia', 'Matéria', `<input name="materia" list="esMatList" required maxlength="40" placeholder="Ex.: Matemática"><datalist id="esMatList">${mats.map((m) => `<option value="${esc(m)}">`).join('')}</datalist>`, true);
+    openDialog('Registrar falta', body, (fd) => {
+      const m = esCanon(fd.materia);
+      if (!m) return false;
+      esSetFalta(fd.data, m, Math.min(12, esFalta(fd.data, m) + Math.max(1, parseInt(fd.qtd, 10) || 1)));
+      ui.esSemana = esSegunda(fd.data);
+      commit();
+      toast('Falta registrada');
+    }, 'Registrar');
+  }
+  function esConfigForm() {
+    const es = state.escola;
+    const body =
+      field('minimo', 'Presença mínima (%)', `<input name="minimo" type="number" min="0" max="100" step="1" required value="${es.minimo}">`) +
+      field('semanas', 'Semanas de aula no período', `<input name="semanas" type="number" min="1" max="52" step="1" required value="${es.semanas}">`) +
+      field('inicio', 'Contar faltas desde', `<input name="inicio" type="date" value="${es.inicio}">`, true) +
+      `<p class="full card-note" style="margin:0">Ex.: bimestre com 10 semanas e 75% de presença. Uma matéria com 5 aulas por semana tem 50 aulas e pode ter até 12 faltas. Deixe a data vazia para contar todas as faltas.</p>`;
+    openDialog('Limite de faltas', body, (fd) => {
+      es.minimo = Math.max(0, Math.min(100, Number(fd.minimo) || 0));
+      es.semanas = Math.max(1, Math.min(52, parseInt(fd.semanas, 10) || 1));
+      es.inicio = fd.inicio || '';
+      commit();
+    });
+  }
+
   /* ================= Calculadora de despesas ================= */
   // Soma despesas já lançadas: período + categorias + busca, e o que estiver marcado
   const CALC_PER = { mes: 'Mês selecionado', ant: 'Mês anterior', m3: 'Últimos 3 meses', ano: 'Ano', tudo: 'Tudo', livre: 'Personalizado' };
@@ -3224,6 +3511,18 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         });
         break;
       }
+      case 'es-grade': esGradeForm(); break;
+      case 'es-nova': esFaltaForm(); break;
+      case 'es-config': esConfigForm(); break;
+      case 'es-prev': ui.esSemana = esPlus(ui.esSemana || esSegunda(todayISO()), -7); renderEscola(); break;
+      case 'es-next': ui.esSemana = esPlus(ui.esSemana || esSegunda(todayISO()), 7); renderEscola(); break;
+      case 'es-hoje': ui.esSemana = null; renderEscola(); break;
+      case 'es-ir': ui.esSemana = esSegunda(btn.dataset.d); renderEscola(); $('#esWeek').scrollIntoView({ behavior: 'smooth', block: 'center' }); break;
+      case 'es-hist-toggle': ui.esHistAll = !ui.esHistAll; renderEscola(); break;
+      case 'es-mais': esSetFalta(btn.dataset.d, btn.dataset.m, Math.min(Number(btn.dataset.n) || 12, esFalta(btn.dataset.d, btn.dataset.m) + 1)); commit(); break;
+      case 'es-menos': esSetFalta(btn.dataset.d, btn.dataset.m, esFalta(btn.dataset.d, btn.dataset.m) - 1); commit(); break;
+      case 'es-dia': state.escola.grade[btn.dataset.k].forEach((a) => esSetFalta(btn.dataset.d, a.m, a.n)); commit(); toast('Dia marcado como falta'); break;
+      case 'es-limpar-dia': state.escola.faltas = state.escola.faltas.filter((f) => f.data !== btn.dataset.d); commit(); toast('Faltas do dia apagadas'); break;
       case 'cp-sug-renda': { const sg = sugestoesOrcamento(); if (sg) { state.compras.renda = sg.renda; commit(); toast('Renda atualizada'); } break; }
       case 'cp-sug-aporte': { const sg = sugestoesOrcamento(); if (sg) { state.compras.aporte = sg.sobra; commit(); toast('Valor mensal atualizado'); } break; }
       case 'del-mov': askConfirm('Excluir movimentação', 'O valor guardado será recalculado sem ela.', 'Excluir', () => { state.guardado.movs = state.guardado.movs.filter((mv) => mv.id !== id); commit(); toast('Movimentação excluída'); }); break;
@@ -3422,7 +3721,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   }
   // As fontes padrão do PDF só cobrem Latin-1: troca o que ficaria quebrado
   const pdfText = (v) => String(v ?? '').replace(/[—–]/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/…/g, '...').replace(/[^\x00-\xFF]/g, '');
-  const PDF_SECTIONS = { resumo: 'Resumo', financeiro: 'Financeiro', agenda: 'Agenda', sistema: 'Sistema M', compras: 'Compras', treinos: 'Treinos' };
+  const PDF_SECTIONS = { resumo: 'Resumo', financeiro: 'Financeiro', agenda: 'Agenda', sistema: 'Sistema M', compras: 'Compras', treinos: 'Treinos', escola: 'Escola' };
   const STATUS_ORDER = { andamento: 0, revisao: 1, orcamento: 2, concluido: 3 };
 
   async function buildPdf(sections, title) {
@@ -3580,6 +3879,20 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         const lg = tr.log.filter((l) => daysUntil(l.data) >= -59).sort((a, b) => b.data.localeCompare(a.data));
         table(['Data', 'Treino', 'Duração', 'Séries', 'Esforço', 'Obs.'], lg.map((l) => [fmtDate(l.data), l.planoNome || '-', fmtDur(l.duracao || 0), `${l.feitos}/${l.total}`, l.esforco ? `${l.esforco}/10` : '-', l.nota || '-']), { columnStyles: right(2, 3, 4), empty: 'Nenhum treino registrado nos últimos 60 dias.' });
       },
+      escola() {
+        const es = state.escola;
+        heading('Escola', true);
+        heading('Grade de aulas');
+        table(['Dia', 'Aulas'], Object.entries(ES_DIAS).map(([k, n]) => [n, esGradeTxt(es.grade[k]) || '-']), { columnStyles: { 0: { cellWidth: 80 } } });
+        heading('Faltas por matéria');
+        note(`Limite: ${es.minimo}% de presença em ${plural(es.semanas, 'semana', 'semanas')} de aula${es.inicio ? `, contando desde ${fmtDate(es.inicio)}` : ''}.`);
+        const mats = esMaterias();
+        table(['Matéria', 'Aulas/sem.', 'Faltas', 'Limite', 'Presença', 'Situação'], mats.map((m) => [m.m, String(m.aulasSem), String(m.faltas), m.total ? String(m.limite) : '-', m.freq != null ? `${m.freq}%` : '-', !m.total ? '-' : m.resta < 0 ? `${-m.resta} acima` : m.resta === 0 ? 'No limite' : `Pode faltar ${m.resta}`]),
+          { foot: ['Total', '', String(mats.reduce((a, m) => a + m.faltas, 0)), '', '', ''], columnStyles: right(1, 2, 3, 4), empty: 'Nenhuma matéria.' });
+        heading('Histórico de faltas');
+        const fs = es.faltas.slice().sort((a, b) => b.data.localeCompare(a.data) || a.materia.localeCompare(b.materia, 'pt-BR'));
+        table(['Data', 'Dia', 'Matéria', 'Aulas'], fs.map((f) => [fmtDate(f.data), DIAS_CURTOS[parse(f.data).getDay()], f.materia, String(f.qtd)]), { columnStyles: right(3), empty: 'Nenhuma falta registrada.' });
+      },
       compras() {
         const c = state.compras;
         heading('Compras', true);
@@ -3617,7 +3930,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       <fieldset class="field full" style="border:0;padding:0;margin:0">
         <legend class="label" style="margin-bottom:10px">O que incluir</legend>
         <div class="check-list">
-          ${Object.entries(PDF_SECTIONS).map(([k, l]) => `<label class="check"><input type="checkbox" name="sec" value="${k}" checked><span>${l}<small>${{ resumo: 'Indicadores e faturamento x despesas por mês', financeiro: 'Recebimentos, despesas e totais por categoria', agenda: 'Reuniões e tarefas', sistema: 'Formas de renda, atividades de crescimento e laboratório', compras: 'Listas com prazo juntando, parcela e sugestão de compra', treinos: 'Treinos, exercícios e histórico dos últimos 60 dias' }[k]}</small></span></label>`).join('')}
+          ${Object.entries(PDF_SECTIONS).map(([k, l]) => `<label class="check"><input type="checkbox" name="sec" value="${k}" checked><span>${l}<small>${{ resumo: 'Indicadores e faturamento x despesas por mês', financeiro: 'Recebimentos, despesas e totais por categoria', agenda: 'Reuniões e tarefas', sistema: 'Formas de renda, atividades de crescimento e laboratório', compras: 'Listas com prazo juntando, parcela e sugestão de compra', treinos: 'Treinos, exercícios e histórico dos últimos 60 dias', escola: 'Grade, faltas por matéria e histórico de faltas' }[k]}</small></span></label>`).join('')}
         </div>
       </fieldset>
       <fieldset class="field full" style="border:0;padding:0;margin:0;gap:8px">
@@ -3706,6 +4019,10 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       }
       if (data.treinos && typeof data.treinos === 'object' && Array.isArray(data.treinos.planos) && (fd.modo === 'substituir' || !state.treinos.log.length)) state.treinos = normTreinos(data.treinos);
       if (data.compras && typeof data.compras === 'object' && (fd.modo === 'substituir' || !state.compras.listas.length)) state.compras = normCompras(data.compras);
+      if (data.escola && typeof data.escola === 'object') {
+        if (fd.modo === 'substituir') state.escola = normEscola(data.escola);
+        else normEscola(data.escola).faltas.forEach((f) => { if (!esFalta(f.data, f.materia)) state.escola.faltas.push(f); });
+      }
       if (data.sistemaM && typeof data.sistemaM === 'object' && (fd.modo === 'substituir' || (!state.sistemaM.ativos.length && !state.sistemaM.lab.length && !state.sistemaM.checks.length))) state.sistemaM = normSM(data.sistemaM);
       const added = [];
       keys.forEach((k) => {
@@ -3737,7 +4054,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   });
 
   $('#btnWipe').addEventListener('click', () => {
-    askConfirm('Zerar tudo', 'Recebimentos, despesas, reuniões, tarefas, lançamentos fixos, valor guardado, Sistema M, listas de compras e histórico de treinos serão apagados (os treinos voltam ao padrão). Exporte um backup antes se quiser guardar algo.', 'Apagar tudo', () => {
+    askConfirm('Zerar tudo', 'Recebimentos, despesas, reuniões, tarefas, lançamentos fixos, valor guardado, Sistema M, listas de compras, histórico de treinos e faltas da escola serão apagados (treinos e grade voltam ao padrão). Exporte um backup antes se quiser guardar algo.', 'Apagar tudo', () => {
       state = normalize({ nome: state.nome });
       commit();
       toast('Tudo zerado');
