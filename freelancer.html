@@ -585,6 +585,12 @@ button.badge:hover { background: rgba(244, 244, 239, .08); }
 .dp-other input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
 .task-opts { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
 .task-hint { font-size: 12.5px; color: var(--text-3); }
+.task-late { display: flex; justify-content: space-between; align-items: center; gap: 8px 12px; flex-wrap: wrap; margin: 4px 0 6px; padding: 10px 12px; border-radius: 8px; background: rgba(255, 181, 71, .08); border: 1px solid rgba(255, 181, 71, .22); font-size: 13px; color: var(--text-2); }
+.task-late b { color: var(--amber); font-weight: 600; }
+.cp-tasks { display: grid; gap: 4px; max-height: 300px; overflow-y: auto; padding: 4px 2px; }
+.cp-tasks .check { padding: 6px 0; border-top: 1px solid var(--line); }
+.cp-tasks .check:first-child { border-top: 0; }
+.cp-tasks .check.done span { color: var(--text-3); }
 .day-tasks { font-size: 11.5px; color: var(--text-3); margin-top: auto; }
 .day { cursor: pointer; }
 .day.sel { background: rgba(244, 244, 239, .04); }
@@ -1010,6 +1016,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         <div class="card-h"><h2><span id="taskTitle">Tarefas de hoje</span> <span class="task-progress" id="taskProgress"></span></h2><div class="chips" id="taskFilter"></div></div>
         <div class="day-pick" id="taskDays" role="tablist" aria-label="Escolher o dia das tarefas"></div>
         <div class="bar" style="margin-bottom:6px"><span id="taskBar" style="width:0"></span></div>
+        <div class="task-late" id="taskLate" hidden></div>
         <ul class="list" id="taskList"></ul>
         <form class="task-form" id="taskForm" autocomplete="off">
           <input type="text" id="taskText" placeholder="Adicionar tarefa" maxlength="120" aria-label="Nova tarefa" required>
@@ -1029,6 +1036,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
             </select>
           </label>
           <span class="task-hint" id="taskHint"></span>
+          <button class="link-btn" type="button" data-act="task-copiar">Copiar de outro dia</button>
         </div>
       </section>
       <div class="stack">
@@ -1235,6 +1243,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     pause: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5v14M15 5v14"/></svg>',
     play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5l12 7-12 7z"/></svg>',
     edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+    today: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>',
     del: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>',
   };
 
@@ -1808,6 +1817,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         <span class="txt">${esc(t.texto)}${t.data < today ? ' <span class="alert">De ' + fmtDate(t.data).slice(0, 5) + '</span>' : ''}</span>
       </label>
       <button class="badge tag tag-${t.tag}" type="button" data-act="toggle-tag" data-id="${t.id}" title="Trocar para ${t.tag === 'pessoal' ? 'Trabalho' : 'Pessoal'}" aria-label="Tipo ${t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho'}. Trocar para ${t.tag === 'pessoal' ? 'Trabalho' : 'Pessoal'}">${t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho'}</button>
+      ${!t.feito && t.data < today ? `<button class="icon-btn" type="button" data-act="task-hoje" data-id="${t.id}" aria-label="Passar para hoje" title="Passar para hoje">${ICON.today}</button>` : ''}
       <button class="icon-btn" type="button" data-act="edit-task" data-id="${t.id}" aria-label="Editar tarefa">${ICON.edit}</button>
       <button class="icon-btn del" type="button" data-act="del-task" data-id="${t.id}" aria-label="Excluir tarefa">${ICON.del}</button>
     </li>`;
@@ -2818,6 +2828,9 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     $('#taskProgress').textContent = todays.length ? `${done}/${todays.length}` : '';
     $('#taskBar').style.width = todays.length ? `${(done / todays.length) * 100}%` : '0';
     if (ui.taskFilter !== 'todas') $('#taskTag').value = ui.taskFilter;
+    const late = day === today ? todays.filter((t) => !t.feito && t.data < today) : [];
+    $('#taskLate').hidden = !late.length;
+    $('#taskLate').innerHTML = late.length ? `<span><b>${plural(late.length, 'tarefa pendente', 'tarefas pendentes')}</b> de dias anteriores</span><button class="btn btn-sm" type="button" data-act="task-hoje-todas">Passar todas para hoje</button>` : '';
     $('#taskList').innerHTML = visible.length ? visible.map((t) => taskLi(t, today)).join('') : emptyLi(day === today ? 'Nenhuma tarefa aqui' : 'Nada planejado para esse dia ainda');
     $('#taskDayOther').addEventListener('click', (e) => { try { e.target.showPicker(); } catch (err) { /* navegador sem showPicker */ } });
     $('#taskDayOther').addEventListener('change', (e) => { if (e.target.value) { ui.taskDay = e.target.value < today ? today : e.target.value; renderAgenda(); } });
@@ -3181,6 +3194,51 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     bindFeePreview();
   }
 
+  // Copia (ou passa) tarefas de um dia anterior para o dia aberto na Agenda
+  function copiarTarefasForm() {
+    const today = todayISO();
+    const alvo = ui.taskDay && ui.taskDay >= today ? ui.taskDay : today;
+    const dias = [...new Set(state.tarefas.filter((t) => t.data < alvo).map((t) => t.data))].sort().reverse().slice(0, 30);
+    if (!dias.length) { toast('Nenhuma tarefa em dias anteriores'); return; }
+    const alvoTxt = alvo === today ? 'hoje' : fmtDate(alvo);
+    const body =
+      field('origem', 'Copiar do dia', `<select name="origem" id="cpOrigem">${dias.map((d) => {
+        const ts = state.tarefas.filter((t) => t.data === d);
+        return `<option value="${d}">${DIAS_CURTOS[parse(d).getDay()]}, ${fmtDate(d)} (${plural(ts.length, 'tarefa', 'tarefas')})</option>`;
+      }).join('')}</select>`, true) +
+      `<div class="full" style="grid-column:1/-1"><div class="cp-tasks-h" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span class="label" style="font-size:13px;color:var(--text-2)">Tarefas</span><button class="link-btn" type="button" id="cpTodas" style="font-size:12.5px">Marcar todas</button></div><div class="cp-tasks" id="cpTasks"></div></div>` +
+      `<label class="check full" style="grid-column:1/-1"><input type="checkbox" name="mover"><span>Mover em vez de copiar<small>A tarefa sai do dia antigo e vai para ${alvoTxt}. Sem marcar, o dia antigo fica como estava.</small></span></label>`;
+    openDialog(`Copiar tarefas para ${alvoTxt}`, body, (fd) => {
+      const ids = [...document.querySelectorAll('#cpTasks input:checked')].map((i) => i.value);
+      if (!ids.length) { toast('Marque pelo menos uma tarefa'); return false; }
+      ids.forEach((tid) => {
+        const t = byId(state.tarefas, tid);
+        if (!t) return;
+        if (fd.mover) { t.data = alvo; t.feito = false; delete t.serieId; }
+        else state.tarefas.push({ id: uid(), texto: t.texto, tag: t.tag, feito: false, data: alvo });
+      });
+      ui.taskDay = alvo;
+      commit();
+      toast(`${plural(ids.length, fd.mover ? 'tarefa passada' : 'tarefa copiada', fd.mover ? 'tarefas passadas' : 'tarefas copiadas')} para ${alvoTxt}`);
+    }, 'Copiar');
+    const draw = () => {
+      const origem = $('#cpOrigem').value;
+      const jaTem = new Set(state.tarefas.filter((t) => t.data === alvo).map((t) => t.texto.trim().toLowerCase()));
+      const ts = state.tarefas.filter((t) => t.data === origem).sort((a, b) => Number(a.feito) - Number(b.feito));
+      $('#cpTasks').innerHTML = ts.map((t) => {
+        const dup = jaTem.has(t.texto.trim().toLowerCase());
+        const nota = dup ? (alvo === today ? 'já existe hoje' : `já existe em ${alvoTxt}`) : t.feito ? 'concluída' : alvo === today ? 'pendente (já aparece hoje)' : 'pendente';
+        return `<label class="check${t.feito ? ' done' : ''}"><input type="checkbox" value="${t.id}" ${dup || (alvo === today && !t.feito) ? '' : 'checked'}><span>${esc(t.texto)}<small>${t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho'} · ${nota}</small></span></label>`;
+      }).join('');
+    };
+    $('#cpOrigem').addEventListener('change', draw);
+    $('#cpTodas').addEventListener('click', () => {
+      const boxes = [...document.querySelectorAll('#cpTasks input')];
+      const all = boxes.every((b) => b.checked);
+      boxes.forEach((b) => { b.checked = !all; });
+    });
+    draw();
+  }
   function despForm(d) {
     const isNew = !d;
     d = d || { descricao: '', categoria: 'Ferramentas', valor: null, data: todayISO() };
@@ -3549,6 +3607,16 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         break;
       }
       case 'edit-task': taskForm(byId(state.tarefas, id)); break;
+      case 'task-hoje': { const t = byId(state.tarefas, id); if (t) { t.data = todayISO(); commit(); toast('Tarefa passada para hoje'); } break; }
+      case 'task-hoje-todas': {
+        const today = todayISO();
+        const late = state.tarefas.filter((t) => !t.feito && t.data < today);
+        late.forEach((t) => { t.data = today; });
+        commit();
+        toast(`${plural(late.length, 'tarefa passada', 'tarefas passadas')} para hoje`);
+        break;
+      }
+      case 'task-copiar': copiarTarefasForm(); break;
     }
   });
 
