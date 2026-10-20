@@ -95,6 +95,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .side-btn:hover { background: rgba(244, 244, 239, .04); color: var(--text); }
 .side-btn.danger:hover { color: var(--danger); }
 .side-note { margin: 10px 0 0; padding: 0 10px; font-size: 12px; color: var(--text-3); }
+.side-note.ok::before, .side-note.wait::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--accent); vertical-align: 1px; }
+.side-note.wait::before { background: var(--amber); }
 
 .topbar { display: none; }
 .bottomnav { display: none; }
@@ -871,7 +873,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       <button class="side-btn" type="button" id="btnExport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg>Exportar backup</button>
       <button class="side-btn" type="button" id="btnReset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Carregar exemplo</button>
       <button class="side-btn danger" type="button" id="btnWipe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>Zerar tudo</button>
-      <p class="side-note">Salvo só neste navegador.</p>
+      <p class="side-note" id="syncNote">Salvo só neste navegador.</p>
       <input type="file" id="importFile" accept="application/json,.json" hidden>
     </div>
   </aside>
@@ -1553,9 +1555,11 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     } catch (e) {}
     return data;
   }
-  function save() {
+  // silent: grava só neste aparelho (ajustes automáticos ao abrir, dados que vieram da nuvem)
+  function save(silent) {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
     catch (e) { toast('Não foi possível salvar no navegador'); }
+    if (!silent) syncMarcar();
   }
   function commit() { save(); render(); }
 
@@ -3636,7 +3640,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
           <button class="btn" type="button" data-cmd="sample">Carregar exemplo</button>
           <button class="btn btn-danger" type="button" data-cmd="wipe">Zerar tudo</button>
         </div>
-        <p class="full muted" style="margin:0;font-size:13px">Seus dados ficam salvos só neste navegador.</p>`, () => {}, 'Fechar');
+        <p class="full muted" style="margin:0;font-size:13px">${esc(syncTexto(true))}</p>`, () => {}, 'Fechar');
       $('#dlgCancel').hidden = true;
       return;
     }
@@ -4141,18 +4145,205 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   // Atualiza saudação/data e alertas quando o dia vira
   let lastDay = todayISO();
   setInterval(() => {
-    if (todayISO() !== lastDay) { lastDay = todayISO(); if (gerarFixos()) save(); render(); } else renderHeader();
+    if (todayISO() !== lastDay) { lastDay = todayISO(); if (gerarFixos()) save(true); render(); } else renderHeader();
   }, 60000);
+
+
+  /* ================= Sincronização entre aparelhos ================= */
+  // O estado vai para a área privada da sua conta (data/users/<id>), em partes de até 180 mil caracteres.
+  // "sync" guarda a versão (rev), o aparelho que salvou e o hash de cada parte.
+  const SYNC_KEY = 'apexel.sync';
+  const SYNC = (() => {
+    let o = {};
+    try { o = JSON.parse(localStorage.getItem(SYNC_KEY) || '{}') || {}; } catch (e) {}
+    if (!o.dev) o.dev = Math.random().toString(36).slice(2, 10);
+    return { dev: o.dev, rev: o.rev || '', dirty: !!o.dirty, at: o.at || 0, hashes: o.hashes || [], db: null, uid: null, ready: false, status: 'local', timer: null, pushing: false, gen: 0, pendente: null, ultimo: 0 };
+  })();
+  function syncGuardar() {
+    try { localStorage.setItem(SYNC_KEY, JSON.stringify({ dev: SYNC.dev, rev: SYNC.rev, dirty: SYNC.dirty, at: SYNC.at, hashes: SYNC.hashes })); } catch (e) {}
+  }
+  function syncTexto(longo) {
+    const quando = SYNC.ultimo ? new Date(SYNC.ultimo).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+    if (SYNC.status === 'ok') return longo ? `Sincronizado com sua conta${quando ? ` às ${quando}` : ''}. Abra este mesmo link no celular ou no computador e tudo aparece igual.` : `Sincronizado${quando ? ` · ${quando}` : ''}`;
+    if (SYNC.status === 'enviando') return 'Sincronizando…';
+    if (SYNC.status === 'pausado') return longo ? 'Sincronização pausada. Recarregue a página para escolher de novo como juntar os dados.' : 'Sincronização pausada';
+    if (SYNC.status === 'erro') return longo ? 'Não consegui falar com a sua conta agora. As mudanças ficam salvas aqui e vão quando a conexão voltar.' : 'Sem conexão · salvo aqui';
+    return longo ? 'Seus dados ficam salvos só neste navegador.' : 'Salvo só neste navegador.';
+  }
+  function syncDesenhar(status) {
+    if (status) SYNC.status = status;
+    const el = $('#syncNote');
+    if (!el) return;
+    el.textContent = syncTexto(false);
+    el.className = 'side-note' + (SYNC.status === 'ok' ? ' ok' : SYNC.status === 'enviando' || SYNC.status === 'erro' ? ' wait' : '');
+  }
+  function syncMarcar() {
+    SYNC.dirty = true; SYNC.at = Date.now(); SYNC.gen++;
+    syncGuardar();
+    if (!SYNC.ready) return;
+    syncDesenhar('enviando');
+    clearTimeout(SYNC.timer);
+    SYNC.timer = setTimeout(syncEnviar, 1200);
+  }
+  const hashStr = (str) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36) + ':' + str.length; };
+  const syncRef = (nome) => SYNC.db.doc(`data/users/${SYNC.uid}/${nome}`);
+  async function syncEnviar() {
+    if (!SYNC.ready) return;
+    if (SYNC.pushing) { clearTimeout(SYNC.timer); SYNC.timer = setTimeout(syncEnviar, 800); return; }
+    SYNC.pushing = true;
+    const gen = SYNC.gen;
+    try {
+      const json = JSON.stringify(state);
+      const partes = [];
+      for (let i = 0; i < json.length || i === 0; i += 180000) partes.push(json.slice(i, i + 180000));
+      const hashes = partes.map(hashStr);
+      for (let i = 0; i < partes.length; i++) {
+        if (hashes[i] !== SYNC.hashes[i]) await syncRef('parte-' + i).set({ h: hashes[i], d: partes[i] });
+      }
+      const rev = uid();
+      await syncRef('sync').set({ rev, n: partes.length, h: hashes, dev: SYNC.dev, at: Date.now() });
+      SYNC.rev = rev; SYNC.hashes = hashes; SYNC.ultimo = Date.now();
+      if (gen === SYNC.gen) SYNC.dirty = false;
+      syncGuardar();
+      syncDesenhar(SYNC.dirty ? 'enviando' : 'ok');
+    } catch (e) {
+      syncDesenhar('erro');
+      clearTimeout(SYNC.timer);
+      SYNC.timer = setTimeout(syncEnviar, 15000);
+    } finally { SYNC.pushing = false; }
+  }
+  // Lê as partes da nuvem; devolve o estado ou null se ainda estiver no meio de um envio
+  async function syncBaixar(m) {
+    const partes = [];
+    for (let i = 0; i < m.n; i++) {
+      const sn = await syncRef('parte-' + i).get();
+      const d = sn.exists ? sn.data() : null;
+      if (!d || d.h !== m.h[i]) return null;
+      partes.push(d.d);
+    }
+    try { return normalize(JSON.parse(partes.join(''))); } catch (e) { return null; }
+  }
+  function syncAplicar(novo, m) {
+    state = novo;
+    if (gerarFixos()) { /* os dois aparelhos geram igual; o próximo envio leva */ }
+    save(true);
+    SYNC.rev = m.rev; SYNC.hashes = m.h.slice(); SYNC.dirty = false; SYNC.ultimo = Date.now();
+    syncGuardar();
+    render();
+    syncDesenhar('ok');
+  }
+  async function syncReceber(m) {
+    if (dlg.open) { SYNC.pendente = m; return; }
+    const novo = await syncBaixar(m);
+    if (!novo) return; // envio do outro aparelho ainda em andamento: o próximo aviso traz completo
+    if (SYNC.dirty || SYNC.pushing) return;
+    syncAplicar(novo, m);
+    toast('Atualizado com o outro aparelho');
+  }
+  dlg.addEventListener('close', () => {
+    if (SYNC.pendente) { const m = SYNC.pendente; SYNC.pendente = null; syncReceber(m); }
+  });
+  const temDados = (st) => ['recebimentos', 'despesas', 'reunioes', 'tarefas', 'fixos'].some((k) => st[k].length) || st.guardado.movs.length || st.compras.listas.length || st.treinos.log.length ||
+    st.sistemaM.fontes.length || st.sistemaM.ativos.length || st.sistemaM.lab.length || st.sistemaM.checks.length;
+  // Junta dois estados sem duplicar: une por id (e por chaves naturais quando os dois aparelhos criaram a mesma coisa)
+  function juntarEstados(a, b) {
+    const out = normalize(JSON.parse(JSON.stringify(a)));
+    const uniao = (xs, ys, chave) => { const ks = new Set(xs.map(chave)); ys.forEach((y) => { const k = chave(y); if (!ks.has(k)) { ks.add(k); xs.push(y); } }); return xs; };
+    const fixoKey = (x, campoData) => (x.fixoId ? `fx:${x.fixoId}:${monthKey(x[campoData] || '')}` : 'id:' + x.id);
+    ['recebimentos', 'despesas'].forEach((k) => {
+      const campo = k === 'despesas' ? 'data' : 'dataPrevista';
+      const ids = new Set(out[k].map((x) => x.id)), fx = new Set(out[k].map((x) => fixoKey(x, campo)));
+      b[k].forEach((x) => { if (!ids.has(x.id) && !fx.has(fixoKey(x, campo))) out[k].push(x); });
+    });
+    uniao(out.reunioes, b.reunioes, (x) => x.id);
+    uniao(out.fixos, b.fixos, (x) => x.id);
+    uniao(out.tarefas, b.tarefas, (x) => `${x.data}|${String(x.texto).trim().toLowerCase()}`);
+    uniao(out.guardado.movs, b.guardado.movs, (x) => x.id);
+    uniao(out.treinos.log, b.treinos.log, (x) => x.id);
+    uniao(out.treinos.planos, b.treinos.planos, (x) => String(x.nome).trim().toLowerCase());
+    b.compras.listas.forEach((l) => {
+      const igual = out.compras.listas.find((x) => x.id === l.id || x.nome.trim().toLowerCase() === l.nome.trim().toLowerCase());
+      if (igual) uniao(igual.itens, l.itens, (i) => i.id); else out.compras.listas.push(l);
+    });
+    ['renda', 'aporte'].forEach((k) => { if (!out.compras[k]) out.compras[k] = b.compras[k]; });
+    const sm = out.sistemaM, sb = b.sistemaM;
+    uniao(sm.fontes, sb.fontes, (x) => String(x.nome).trim().toLowerCase());
+    uniao(sm.ativos, sb.ativos, (x) => x.id);
+    uniao(sm.ciclos, sb.ciclos, (x) => x.id || `${x.area}|${x.inicio}`);
+    uniao(sm.lab, sb.lab, (x) => String(x.nome).trim().toLowerCase());
+    uniao(sm.checks, sb.checks, (x) => x.data);
+    b.escola.faltas.forEach((f) => {
+      const igual = out.escola.faltas.find((x) => x.data === f.data && x.materia === f.materia);
+      if (igual) igual.qtd = Math.max(igual.qtd, f.qtd); else out.escola.faltas.push(f);
+    });
+    return out;
+  }
+  function syncEscolher(m, nuvem) {
+    const body = `<p class="full" style="margin:0;color:var(--text-2)">Sua conta já tem dados de outro aparelho, e este aparelho também tem os dele. Como você quer começar a sincronizar?</p>
+      <div class="full check-list">
+        <label class="check"><input type="radio" name="como" value="juntar" checked><span>Juntar os dois<small>Recomendado. Fica tudo o que existe nos dois aparelhos, sem repetir.</small></span></label>
+        <label class="check"><input type="radio" name="como" value="nuvem"><span>Usar os da conta<small>Este aparelho passa a mostrar o que veio do outro. O que só existe aqui sai.</small></span></label>
+        <label class="check"><input type="radio" name="como" value="local"><span>Usar os deste aparelho<small>O que está aqui vai para a conta e substitui o do outro aparelho.</small></span></label>
+      </div>`;
+    let escolheu = false;
+    openDialog('Conectar aparelhos', body, (fd) => {
+      escolheu = true;
+      if (fd.como === 'nuvem') { syncAplicar(nuvem, m); SYNC.ready = true; toast('Dados da conta carregados'); return; }
+      if (fd.como === 'juntar') { state = juntarEstados(nuvem, state); gerarFixos(); }
+      SYNC.rev = m.rev; SYNC.hashes = m.h.slice(); SYNC.ready = true;
+      commit();
+      toast(fd.como === 'juntar' ? 'Dados juntados e sincronizados' : 'Dados deste aparelho enviados');
+    }, 'Continuar');
+    dlg.addEventListener('close', () => { if (!escolheu && !SYNC.ready) syncDesenhar('pausado'); }, { once: true });
+  }
+  async function syncConectar() {
+    const c = window.claude;
+    if (!c || typeof c.use !== 'function') return;
+    try {
+      const [db, user] = await Promise.all([c.use('db'), c.use('user')]);
+      if (!db || !user || typeof user.id !== 'function') return;
+      const id = await user.id();
+      if (!id) return;
+      SYNC.db = db; SYNC.uid = id;
+      syncDesenhar('enviando');
+      const sn = await syncRef('sync').get();
+      const m = sn.exists ? sn.data() : null;
+      if (!m || !m.rev) {
+        SYNC.ready = true; SYNC.hashes = [];
+        await syncEnviar();
+      } else if (m.rev === SYNC.rev) {
+        SYNC.ready = true; SYNC.ultimo = m.at || Date.now();
+        if (SYNC.dirty) await syncEnviar(); else syncDesenhar('ok');
+      } else {
+        const nuvem = await syncBaixar(m);
+        if (!nuvem) { SYNC.ready = true; syncDesenhar('ok'); }
+        else if (!SYNC.rev && temDados(state) && temDados(nuvem)) { syncEscolher(m, nuvem); }
+        else if (!SYNC.rev && !temDados(nuvem)) { SYNC.rev = m.rev; SYNC.hashes = m.h.slice(); SYNC.ready = true; await syncEnviar(); }
+        else if (SYNC.dirty && SYNC.rev && SYNC.at > (m.at || 0)) { SYNC.hashes = m.h.slice(); SYNC.ready = true; await syncEnviar(); }
+        else { SYNC.ready = true; syncAplicar(nuvem, m); }
+      }
+      syncRef('sync').onSnapshot((snap) => {
+        if (!SYNC.ready || !snap.exists) return;
+        const mm = snap.data();
+        if (!mm || mm.rev === SYNC.rev || mm.dev === SYNC.dev) return;
+        syncReceber(mm);
+      }, () => syncDesenhar('erro'));
+    } catch (e) {
+      syncDesenhar('erro');
+    }
+  }
 
   /* ================= Init ================= */
   state = load();
-  if (gerarFixos()) save();
+  if (gerarFixos()) save(true);
   let savedTab = null;
   try { savedTab = localStorage.getItem(STORAGE_KEY + '.tab'); } catch (e) {}
   ui.tab = tabFromHash() || (TABS.includes(savedTab) ? savedTab : 'visao');
   renderHeader();
   renderTabBadges();
   showTab(ui.tab);
+  syncDesenhar();
+  syncConectar();
 })();
 </script>
 </body>
