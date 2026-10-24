@@ -315,6 +315,11 @@ input::placeholder, textarea::placeholder { color: var(--text-3); }
 button.badge { background: transparent; cursor: pointer; transition: background .15s; }
 button.badge:hover { background: rgba(244, 244, 239, .08); }
 .task.done .tag { opacity: .7; }
+.task.failed .txt { text-decoration: line-through; text-decoration-color: rgba(255, 92, 92, .6); color: var(--text-3); }
+.task.failed .tag { opacity: .7; }
+.task.failed input[type=checkbox] { border-color: rgba(255, 92, 92, .5); }
+.fail-tag { display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 4px; background: var(--danger-soft); color: var(--danger); font-size: 10.5px; font-weight: 600; text-decoration: none; vertical-align: 1px; }
+.icon-btn.fail-btn:hover, .icon-btn.fail-btn.on { color: var(--danger); background: var(--danger-soft); }
 .check-list { display: grid; gap: 10px; }
 /* Sistema M */
 .sm-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
@@ -1294,6 +1299,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     pause: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5v14M15 5v14"/></svg>',
     play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5l12 7-12 7z"/></svg>',
     edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
     today: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>',
     del: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>',
   };
@@ -1739,9 +1745,12 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     const d = parse(ds);
     return `de ${['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'][d.getDay()]}, ${fmtDate(ds).slice(0, 5)}`;
   };
+  // Tarefa em aberto: nem feita nem marcada como falhou
+  const aberta = (t) => !t.feito && !t.falhou;
+  const taskOrdem = (t) => (t.falhou ? 2 : t.feito ? 1 : 0);
   const todaysTasks = () => {
     const today = todayISO();
-    return state.tarefas.filter((t) => t.data === today || (!t.feito && t.data < today));
+    return state.tarefas.filter((t) => t.data === today || (aberta(t) && t.data < today));
   };
 
   /* ================= Navegação ================= */
@@ -1797,7 +1806,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       e.title = title;
     });
     setCount('financeiro', m.atrasados.length, true, 'recebimentos atrasados');
-    setCount('agenda', todaysTasks().filter((t) => !t.feito).length, false, 'tarefas pendentes hoje');
+    setCount('agenda', todaysTasks().filter(aberta).length, false, 'tarefas pendentes hoje');
     const sig = smSignals();
     const nSm = sig.vencidos.length + (sig.cansaco ? 1 : 0);
     setCount('sistema', nSm, true, 'alertas do Sistema M');
@@ -1810,7 +1819,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   function renderHero(m) {
     const today = todayISO();
     const meets = state.reunioes.filter((r) => r.data === today).sort((a, b) => a.hora.localeCompare(b.hora));
-    const pend = todaysTasks().filter((t) => !t.feito).length;
+    const pend = todaysTasks().filter(aberta).length;
     const in7 = sum(m.pendentes.filter((r) => { const n = daysUntil(r.dataPrevista); return n >= 0 && n <= 7; }));
     const empty = ['recebimentos', 'despesas', 'reunioes', 'tarefas'].every((k) => !state[k].length);
     $('#heroCta').hidden = !empty;
@@ -1875,13 +1884,19 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   const fonteNome = (r) => { const f = r.fonteId && state.sistemaM.fontes.find((x) => x.id === r.fonteId); return f ? f.nome : ''; };
   const ignTag = (x) => (x.ignorado ? '<span class="ign">Desconsiderado</span>' : '');
   const emptyLi = (msg) => `<li class="empty" style="justify-content:center">${msg}</li>`;
-  const taskLi = (t, today) => `<li class="task${t.feito ? ' done' : ''}">
+  const taskProgresso = (ts) => {
+    if (!ts.length) return '';
+    const f = ts.filter((t) => t.feito).length, x = ts.filter((t) => t.falhou).length;
+    return `${f}/${ts.length}` + (x ? ` · ${x} falhou` : '');
+  };
+  const taskLi = (t, today) => `<li class="task${t.feito ? ' done' : ''}${t.falhou ? ' failed' : ''}">
       <label>
         <input type="checkbox" data-act="toggle-task" data-id="${t.id}" ${t.feito ? 'checked' : ''}>
-        <span class="txt">${esc(t.texto)}${t.data < today ? ' <span class="alert">De ' + fmtDate(t.data).slice(0, 5) + '</span>' : ''}</span>
+        <span class="txt">${esc(t.texto)}${t.falhou ? ' <span class="fail-tag">Falhou</span>' : ''}${t.data < today && aberta(t) ? ' <span class="alert">De ' + fmtDate(t.data).slice(0, 5) + '</span>' : ''}</span>
       </label>
       <button class="badge tag tag-${t.tag}" type="button" data-act="toggle-tag" data-id="${t.id}" title="Trocar para ${t.tag === 'pessoal' ? 'Trabalho' : 'Pessoal'}" aria-label="Tipo ${t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho'}. Trocar para ${t.tag === 'pessoal' ? 'Trabalho' : 'Pessoal'}">${t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho'}</button>
-      ${!t.feito && t.data < today ? `<button class="icon-btn" type="button" data-act="task-hoje" data-id="${t.id}" aria-label="Passar para hoje" title="Passar para hoje">${ICON.today}</button>` : ''}
+      ${!t.feito ? `<button class="icon-btn fail-btn${t.falhou ? ' on' : ''}" type="button" data-act="task-falhou" data-id="${t.id}" aria-pressed="${!!t.falhou}" aria-label="${t.falhou ? 'Desfazer falha' : 'Marcar que falhou'}" title="${t.falhou ? 'Desfazer falha' : 'Falhou'}">${ICON.x}</button>` : ''}
+      ${aberta(t) && t.data < today ? `<button class="icon-btn" type="button" data-act="task-hoje" data-id="${t.id}" aria-label="Passar para hoje" title="Passar para hoje">${ICON.today}</button>` : ''}
       <button class="icon-btn" type="button" data-act="edit-task" data-id="${t.id}" aria-label="Editar tarefa">${ICON.edit}</button>
       <button class="icon-btn del" type="button" data-act="del-task" data-id="${t.id}" aria-label="Excluir tarefa">${ICON.del}</button>
     </li>`;
@@ -1908,7 +1923,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     // Precisa de atenção
     const items = [];
     m.atrasados.forEach((r) => items.push({ sev: 0, title: `${r.cliente} · ${money(r.valor)}`, meta: `Recebimento previsto para ${fmtDate(r.dataPrevista)}`, tab: 'financeiro', label: 'Cobrar' }));
-    const oldTasks = state.tarefas.filter((t) => !t.feito && t.data < today);
+    const oldTasks = state.tarefas.filter((t) => aberta(t) && t.data < today);
     if (oldTasks.length) items.push({ sev: 2, title: plural(oldTasks.length, 'tarefa atrasada', 'tarefas atrasadas'), meta: 'De dias anteriores', tab: 'agenda', amber: true, label: 'Agenda' });
     const smSig = smSignals();
     smSig.vencidos.forEach((c) => items.push({ sev: 1, title: `Avaliar ciclo: ${c.area}`, meta: `O prazo de crescimento acabou em ${fmtDate(cicloInfo(c).fim)}`, tab: 'sistema', amber: true, label: 'Sistema M' }));
@@ -1931,12 +1946,13 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       </li>`).join('') : '<li class="meta" style="border:0">Nenhuma reunião hoje.</li>';
     const tasks = todaysTasks();
     const done = tasks.filter((t) => t.feito).length;
-    $('#ovTaskProgress').textContent = tasks.length ? `${done}/${tasks.length}` : '';
+    const falhas = tasks.filter((t) => t.falhou).length;
+    $('#ovTaskProgress').textContent = taskProgresso(tasks);
     $('#ovTaskBar').style.width = tasks.length ? `${(done / tasks.length) * 100}%` : '0';
-    const pend = tasks.filter((t) => !t.feito);
+    const pend = tasks.filter(aberta);
     $('#ovTasks').innerHTML = pend.length
       ? pend.slice(0, 5).map((t) => taskLi(t, today)).join('') + (pend.length > 5 ? `<li><button class="link-btn" type="button" data-go="agenda">+ ${pend.length - 5} tarefas →</button></li>` : '')
-      : tasks.length ? '<li class="ok-state">Checklist do dia concluído.</li>' : '<li class="meta" style="border:0">Nenhuma tarefa para hoje.</li>';
+      : tasks.length ? (falhas ? `<li class="meta" style="border:0">Dia encerrado: ${plural(done, 'feita', 'feitas')}, ${falhas} falhou.</li>` : '<li class="ok-state">Checklist do dia concluído.</li>') : '<li class="meta" style="border:0">Nenhuma tarefa para hoje.</li>';
 
     // Próximas reuniões
     const next = state.reunioes.filter((r) => r.data >= today).sort((a, b) => (a.data + a.hora).localeCompare(b.data + b.hora)).slice(0, 5);
@@ -2842,7 +2858,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       const meets = state.reunioes.filter((r) => r.data === ds).sort((a, b) => a.hora.localeCompare(b.hora));
       const evs = meets.map((r) => `<div class="ev meet"><small>${esc(r.hora || 'Sem horário')}</small>${esc(meetTitle(r))}</div>`)
         .concat(state.treinos.planos.filter((pl) => pl.dias.includes(d.getDay())).map((pl) => `<div class="ev treino" style="border-left-color:${trCor(pl)[0]}"><small>${trFeitoEm(pl.id, ds) ? 'Treino feito ✓' : 'Treino'}</small>${esc(pl.nome)}</div>`));
-      const nt = tasksOfDay(ds).filter((t) => !t.feito).length;
+      const nt = tasksOfDay(ds).filter(aberta).length;
       return `<div class="day${i === 0 ? ' today' : ''}${ds === ui.taskDay ? ' sel' : ''}" data-task-day="${ds}" title="Ver tarefas deste dia">
         <div class="day-h"><b>${pad(d.getDate())}</b><span>${i === 0 ? 'HOJE' : WEEKDAYS[d.getDay()]}</span></div>
         <div class="day-evs">${evs.join('') || (nt ? '' : '<span class="day-empty">Livre</span>')}${nt ? `<span class="day-tasks">${plural(nt, 'tarefa', 'tarefas')}</span>` : ''}</div>
@@ -2871,7 +2887,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     for (let i = 0; i < 7; i++) pick.push(addDays(i));
     const extra = !pick.includes(day) ? day : null;
     $('#taskDays').innerHTML = pick.concat(extra ? [extra] : []).map((ds, i) => {
-      const d = parse(ds), n = tasksOfDay(ds).filter((t) => !t.feito).length;
+      const d = parse(ds), n = tasksOfDay(ds).filter(aberta).length;
       return `<button type="button" class="dp${ds === day ? ' active' : ''}" data-task-day="${ds}" role="tab" aria-selected="${ds === day}">
         <span>${i === 0 ? 'Hoje' : i === 1 && !extra ? 'Amanhã' : WEEKDAYS[d.getDay()]}</span><b>${pad(d.getDate())}</b><i>${n ? n : ''}</i></button>`;
     }).join('') + `<label class="dp dp-other" title="Escolher outro dia"><span>Outro</span><b>…</b><i></i><input type="date" id="taskDayOther" min="${today}" aria-label="Escolher outro dia" value="${day}"></label>`;
@@ -2887,12 +2903,12 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     ).join('');
     const visible = todays
       .filter((t) => ui.taskFilter === 'todas' || t.tag === ui.taskFilter)
-      .sort((a, b) => Number(a.feito) - Number(b.feito));
+      .sort((a, b) => taskOrdem(a) - taskOrdem(b));
     const done = todays.filter((t) => t.feito).length;
-    $('#taskProgress').textContent = todays.length ? `${done}/${todays.length}` : '';
+    $('#taskProgress').textContent = taskProgresso(todays);
     $('#taskBar').style.width = todays.length ? `${(done / todays.length) * 100}%` : '0';
     if (ui.taskFilter !== 'todas') $('#taskTag').value = ui.taskFilter;
-    const late = day === today ? todays.filter((t) => !t.feito && t.data < today) : [];
+    const late = day === today ? todays.filter((t) => aberta(t) && t.data < today) : [];
     $('#taskLate').hidden = !late.length;
     $('#taskLate').innerHTML = late.length ? `<span><b>${plural(late.length, 'tarefa pendente', 'tarefas pendentes')}</b> de dias anteriores</span><button class="btn btn-sm" type="button" data-act="task-hoje-todas">Passar todas para hoje</button>` : '';
     $('#taskList').innerHTML = visible.length ? visible.map((t) => taskLi(t, today)).join('') : emptyLi(day === today ? 'Nenhuma tarefa aqui' : 'Nada planejado para esse dia ainda');
@@ -3437,7 +3453,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       ids.forEach((tid) => {
         const t = byId(state.tarefas, tid);
         if (!t) return;
-        if (fd.mover) { t.data = alvo; t.feito = false; delete t.serieId; }
+        if (fd.mover) { t.data = alvo; t.feito = false; delete t.falhou; delete t.serieId; }
         else state.tarefas.push({ id: uid(), texto: t.texto, tag: t.tag, feito: false, data: alvo });
       });
       ui.taskDay = alvo;
@@ -3447,11 +3463,11 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
     const draw = () => {
       const origem = $('#cpOrigem').value;
       const jaTem = new Set(state.tarefas.filter((t) => t.data === alvo).map((t) => t.texto.trim().toLowerCase()));
-      const ts = state.tarefas.filter((t) => t.data === origem).sort((a, b) => Number(a.feito) - Number(b.feito));
+      const ts = state.tarefas.filter((t) => t.data === origem).sort((a, b) => taskOrdem(a) - taskOrdem(b));
       $('#cpTasks').innerHTML = ts.map((t) => {
         const dup = jaTem.has(t.texto.trim().toLowerCase());
-        const nota = dup ? (alvo === today ? 'já existe hoje' : `já existe em ${alvoTxt}`) : t.feito ? 'concluída' : alvo === today ? 'pendente (já aparece hoje)' : 'pendente';
-        return `<label class="check${t.feito ? ' done' : ''}"><input type="checkbox" value="${t.id}" ${dup || (alvo === today && !t.feito) ? '' : 'checked'}><span>${esc(t.texto)}<small>${t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho'} · ${nota}</small></span></label>`;
+        const nota = dup ? (alvo === today ? 'já existe hoje' : `já existe em ${alvoTxt}`) : t.feito ? 'concluída' : t.falhou ? 'falhou' : alvo === today ? 'pendente (já aparece hoje)' : 'pendente';
+        return `<label class="check${t.feito ? ' done' : ''}"><input type="checkbox" value="${t.id}" ${dup || (alvo === today && aberta(t)) ? '' : 'checked'}><span>${esc(t.texto)}<small>${t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho'} · ${nota}</small></span></label>`;
       }).join('');
     };
     $('#cpOrigem').addEventListener('change', draw);
@@ -3584,13 +3600,14 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       field('texto', 'Tarefa', `<input name="texto" required maxlength="120" value="${esc(t.texto)}">`, true) +
       field('tag', 'Tipo', `<select name="tag"><option value="trabalho"${t.tag !== 'pessoal' ? ' selected' : ''}>Trabalho</option><option value="pessoal"${t.tag === 'pessoal' ? ' selected' : ''}>Pessoal</option></select>`) +
       field('data', 'Data', `<input name="data" type="date" required value="${esc(t.data)}">`) +
-      `<label class="check full"><input type="checkbox" name="feito" ${t.feito ? 'checked' : ''}><span>Concluída</span></label>` +
+      field('status', 'Situação', `<select name="status"><option value="aberta"${aberta(t) ? ' selected' : ''}>Pendente</option><option value="feita"${t.feito ? ' selected' : ''}>Feita</option><option value="falhou"${t.falhou ? ' selected' : ''}>Falhou</option></select>`) +
       (t.serieId ? `<label class="check full"><input type="checkbox" name="serie"><span>Aplicar texto e tipo às próximas repetições<small>As tarefas desta série a partir de ${fmtDate(t.data)}.</small></span></label>
         <div class="full"><button class="btn btn-sm btn-danger" type="button" data-act="del-serie" data-id="${t.id}">Excluir esta e as próximas repetições</button></div>` : '');
     openDialog('Editar tarefa', body, (fd) => {
       const campos = { texto: fd.texto.trim(), tag: fd.tag === 'pessoal' ? 'pessoal' : 'trabalho' };
       if (fd.serie && t.serieId) state.tarefas.filter((x) => x.serieId === t.serieId && x.data >= t.data && x.id !== t.id).forEach((x) => Object.assign(x, campos));
-      Object.assign(t, campos, { data: fd.data, feito: !!fd.feito });
+      Object.assign(t, campos, { data: fd.data, feito: fd.status === 'feita' });
+      if (fd.status === 'falhou') t.falhou = true; else delete t.falhou;
       commit();
       toast('Tarefa atualizada');
     });
@@ -3837,9 +3854,19 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
       }
       case 'edit-task': taskForm(byId(state.tarefas, id)); break;
       case 'task-hoje': { const t = byId(state.tarefas, id); if (t) { t.data = todayISO(); commit(); toast('Tarefa passada para hoje'); } break; }
+      case 'task-falhou': {
+        const t = byId(state.tarefas, id);
+        if (t) {
+          if (t.falhou) { delete t.falhou; commit(); break; }
+          t.falhou = true; t.feito = false;
+          commit();
+          toast(t.data < todayISO() ? `Tarefa de ${fmtDate(t.data).slice(0, 5)} marcada como falhou e saiu de hoje` : 'Tarefa marcada como falhou');
+        }
+        break;
+      }
       case 'task-hoje-todas': {
         const today = todayISO();
-        const late = state.tarefas.filter((t) => !t.feito && t.data < today);
+        const late = state.tarefas.filter((t) => aberta(t) && t.data < today);
         late.forEach((t) => { t.data = today; });
         commit();
         toast(`${plural(late.length, 'tarefa passada', 'tarefas passadas')} para hoje`);
@@ -3852,7 +3879,7 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
   document.addEventListener('change', (e) => {
     if (e.target.dataset.act === 'toggle-task') {
       const t = byId(state.tarefas, e.target.dataset.id);
-      if (t) { t.feito = e.target.checked; commit(); }
+      if (t) { t.feito = e.target.checked; if (t.feito) delete t.falhou; commit(); }
     }
   });
 
@@ -4145,9 +4172,9 @@ dialog::backdrop { background: rgba(5, 8, 16, .7); backdrop-filter: blur(4px); }
         const meets = [...state.reunioes].sort((a, b) => (a.data + a.hora).localeCompare(b.data + b.hora));
         table(['Data', 'Hora', 'Cliente', 'Assunto'], meets.map((r) => [fmtDate(r.data), r.hora || 'Sem horário', r.cliente || '', r.assunto]), { columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: 70 } }, empty: 'Nenhuma reunião cadastrada.' });
         heading('Tarefas');
-        const tasks = [...state.tarefas].sort((a, b) => String(b.data).localeCompare(String(a.data)) || Number(a.feito) - Number(b.feito));
-        table(['Data', 'Tarefa', 'Tipo', 'Status'], tasks.map((t) => [fmtDate(t.data), t.texto, t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho', t.feito ? 'Feita' : t.data > todayISO() ? 'Planejada' : 'Pendente']), {
-          columnStyles: { 0: { cellWidth: 70 }, 2: { cellWidth: 65 }, 3: { cellWidth: 60 } }, muted: (i) => tasks[i].feito, empty: 'Nenhuma tarefa cadastrada.',
+        const tasks = [...state.tarefas].sort((a, b) => String(b.data).localeCompare(String(a.data)) || taskOrdem(a) - taskOrdem(b));
+        table(['Data', 'Tarefa', 'Tipo', 'Status'], tasks.map((t) => [fmtDate(t.data), t.texto, t.tag === 'pessoal' ? 'Pessoal' : 'Trabalho', t.feito ? 'Feita' : t.falhou ? 'Falhou' : t.data > todayISO() ? 'Planejada' : 'Pendente']), {
+          columnStyles: { 0: { cellWidth: 70 }, 2: { cellWidth: 65 }, 3: { cellWidth: 60 } }, muted: (i) => !aberta(tasks[i]), empty: 'Nenhuma tarefa cadastrada.',
         });
       },
       sistema() {
